@@ -1,24 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PagosMoviles.AdminWeb.Models.ClientesCore
+namespace PagosMoviles.CoreBancarioService.DTOs
 {
-    public class ClienteViewModel
+    public class ClienteDto
     {
         public int ClienteId { get; set; }
 
-        [Required(ErrorMessage = "La identificación es requerida")]
+        [Required]
         public string Identificacion { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El tipo de identificación es requerido")]
+        [Required]
         public string TipoIdentificacion { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El nombre completo es requerido")]
+        [Required]
         public string NombreCompleto { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La fecha de nacimiento es requerida")]
+        [Required]
         public DateTime FechaNacimiento { get; set; }
 
-        [Required(ErrorMessage = "El teléfono es requerido")]
+        [Required]
         public string Telefono { get; set; } = string.Empty;
 
         public bool Activo { get; set; } = true;
