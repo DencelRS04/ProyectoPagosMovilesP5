@@ -1,0 +1,6 @@
+@PagosMoviles.Solucion_HostAddress = http://localhost:5291
+
+GET {{PagosMoviles.Solucion_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

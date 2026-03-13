@@ -1,0 +1,6 @@
+@PagosMoviles.CoreBancarioService_HostAddress = http://localhost:5008
+
+GET {{PagosMoviles.CoreBancarioService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

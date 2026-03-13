@@ -1,0 +1,6 @@
+@PagosMoviles.API_HostAddress = http://localhost:5172
+
+GET {{PagosMoviles.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

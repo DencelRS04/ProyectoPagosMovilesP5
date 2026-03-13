@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/PagosMoviles.API/">
+    <Project Path="PagosMoviles.API/PagosMoviles.API.csproj" Id="562333c7-4011-4f5e-83cd-d44d9a4a9b98" />
+  </Folder>
+  <Folder Name="/PagosMoviles.CoreBancarioService/">
+    <Project Path="PagosMoviles.CoreBancarioService/PagosMoviles.CoreBancarioService.csproj" Id="c7456352-e226-4e1f-8e45-16c16b019f43" />
+  </Folder>
+  <Folder Name="/PagosMoviles.UsuarioService/">
+    <Project Path="PagosMoviles.Solucion/PagosMoviles.Solucion.csproj" Id="844144e5-533b-4a40-acc3-16b761f7caf9" />
+  </Folder>
+</Solution>
