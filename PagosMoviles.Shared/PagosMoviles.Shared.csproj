@@ -42,14 +42,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Dtos\Afiliacion\AfiliacionResponseDto.cs" />
-    <Compile Include="Dtos\Afiliacion\RegisterPagoMovilDto.cs" />
-    <Compile Include="Dtos\Common\ApiResponseDto.cs" />
-    <Compile Include="Dtos\Common\ErrorResponseDto.cs" />
-    <Compile Include="Dtos\Core\ClienteDto.cs" />
-    <Compile Include="Dtos\Core\CreateClienteDto.cs" />
-    <Compile Include="Dtos\Core\UpdateClienteDto.cs" />
+    <Compile Include="Constants\ApiRoutes.cs" />
+    <Compile Include="Constants\Roles.cs" />
+    <Compile Include="Constants\SessionKeys.cs" />
+    <Compile Include="DTOs\Auth\LoginRequestDto.cs" />
+    <Compile Include="DTOs\Auth\LoginResponseDto.cs" />
+    <Compile Include="DTOs\Auth\ValidateTokenDto.cs" />
+    <Compile Include="Extensions\HttpClientExtensions.cs" />
+    <Compile Include="Helpers\DateTimeHelper.cs" />
+    <Compile Include="Helpers\JsonHelper.cs" />
+    <Compile Include="Models\ApiResponse.cs" />
+    <Compile Include="Models\ErrorResponse.cs" />
+    <Compile Include="Models\UsuarioSesionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DTOs\Afiliacion\" />
+    <Folder Include="DTOs\Core\" />
+    <Folder Include="DTOs\Entidades\" />
+    <Folder Include="DTOs\Movimientos\" />
+    <Folder Include="DTOs\Pantallas\" />
+    <Folder Include="DTOs\Parametros\" />
+    <Folder Include="DTOs\Roles\" />
+    <Folder Include="DTOs\Saldo\" />
+    <Folder Include="DTOs\Transferencias\" />
+    <Folder Include="DTOs\Usuarios\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

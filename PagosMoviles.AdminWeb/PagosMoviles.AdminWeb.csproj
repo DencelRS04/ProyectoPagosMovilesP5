@@ -6,4 +6,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\CuentasCore\" />
+    <Folder Include="Models\Entidades\" />
+    <Folder Include="Models\Pantallas\" />
+    <Folder Include="Models\Parametros\" />
+    <Folder Include="Models\Reportes\" />
+    <Folder Include="Models\Roles\" />
+    <Folder Include="Models\Usuarios\" />
+    <Folder Include="Services\CuentasCore\" />
+    <Folder Include="Services\Entidades\" />
+    <Folder Include="Services\Pantallas\" />
+    <Folder Include="Services\Parametros\" />
+    <Folder Include="Services\Reportes\" />
+    <Folder Include="Services\Roles\" />
+    <Folder Include="Services\Usuarios\" />
+  </ItemGroup>
+
 </Project>
