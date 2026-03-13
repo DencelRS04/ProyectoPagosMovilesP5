@@ -36,35 +36,35 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <style>
-        .left-panel {
-            position: fixed;
-            left: 20px;
-            top: 120px;
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            z-index: 999;
-        }
-
-            .left-panel button {
-                width: 100%;
-                padding: 16px;
-                font-size: 16px;
-                border: none;
-                border-radius: 10px;
-                background: #4e73df;
-                color: white;
-                font-weight: 600;
-                cursor: pointer;
-                transition: 0.2s;
-                box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+            .left-panel {
+                position: fixed;
+                left: 20px;
+                top: 120px;
+                width: 250px;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                z-index: 999;
             }
 
-                .left-panel button:hover {
-                    background: #2e59d9;
-                    transform: scale(1.05);
+                .left-panel button {
+                    width: 100%;
+                    padding: 16px;
+                    font-size: 16px;
+                    border: none;
+                    border-radius: 10px;
+                    background: #4e73df;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.2s;
+                    box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
                 }
+
+                    .left-panel button:hover {
+                        background: #2e59d9;
+                        transform: scale(1.05);
+                    }
     </style>
 
     <div class="left-panel">
