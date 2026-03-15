@@ -1,0 +1,112 @@
+@page
+@model PagosMoviles.AdminWeb.Pages.Parametros.IndexModel
+@{
+    ViewData["Title"] = "Administración de Parámetros";
+}
+
+<h2 class="mb-3">Administración de Parámetros</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success">@Model.MensajeExito</div>
+}
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">@Model.MensajeError</div>
+}
+
+@* Buscador *@
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="Busqueda" value="@Model.Busqueda"
+               class="form-control" placeholder="Buscar por identificador..." />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">Buscar</button>
+        <a asp-page="/Parametros/Index" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+    <div class="col-auto ms-auto">
+        <button type="button" class="btn btn-primary" onclick="abrirNuevoParametro()">+ Nuevo Parámetro</button>
+    </div>
+</form>
+
+@* Tabla *@
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Identificador</th>
+            <th>Valor</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Parametros)
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(p,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                });
+            <tr>
+                <td><strong>@p.ParametroId</strong></td>
+                <td>@p.Valor</td>
+                <td>
+                    <button class="btn btn-sm btn-warning"
+                            data-parametro='@Html.Raw(json)'
+                            onclick="abrirEditarParametro(this)">
+                        Editar
+                    </button>
+                    <form method="post" asp-page-handler="Eliminar" style="display:inline"
+                          onsubmit="return confirm('¿Seguro que desea eliminar el parámetro @p.ParametroId?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@p.ParametroId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        @if (!Model.Parametros.Any())
+        {
+            <tr><td colspan="3" class="text-center text-muted">No se encontraron parámetros.</td></tr>
+        }
+    </tbody>
+</table>
+
+@* Modal *@
+<div class="modal fade" id="modalParametro" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Guardar">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo">Parámetro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Formulario.ParametroIdOriginal" id="fParamIdOriginal" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Identificador * <small class="text-muted">(mayúsculas, máx. 10 letras)</small></label>
+                        <input asp-for="Formulario.ParametroId" id="fParamId" class="form-control"
+                               placeholder="Ej: TASA" style="text-transform:uppercase" />
+                        <span asp-validation-for="Formulario.ParametroId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor * <small class="text-muted">(máx. 500 caracteres)</small></label>
+                        <textarea asp-for="Formulario.Valor" id="fParamValor" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Formulario.Valor" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/parametros.js"></script>
+}

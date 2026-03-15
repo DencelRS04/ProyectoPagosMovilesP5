@@ -26,8 +26,7 @@
         <a asp-page="/Usuarios/Index" class="btn btn-outline-secondary">Limpiar</a>
     </div>
     <div class="col-auto ms-auto">
-        <button type="button" class="btn btn-primary"
-                onclick="abrirFormulario(null)">+ Nuevo Usuario</button>
+        <button type="button" class="btn btn-primary" onclick="abrirNuevo()">+ Nuevo Usuario</button>
     </div>
 </form>
 
@@ -45,6 +44,11 @@
     <tbody>
         @foreach (var u in Model.Usuarios)
         {
+            var json = System.Text.Json.JsonSerializer.Serialize(u,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                });
             <tr>
                 <td>@u.NombreCompleto</td>
                 <td>@u.Email</td>
@@ -52,7 +56,8 @@
                 <td>@(u.RolId == 1 ? "Admin" : "Usuario")</td>
                 <td>
                     <button class="btn btn-sm btn-warning"
-                            onclick="abrirFormulario(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(u, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase })))">
+                            data-usuario='@Html.Raw(json)'
+                            onclick="abrirEditar(this)">
                         Editar
                     </button>
                     <form method="post" asp-page-handler="Eliminar" style="display:inline"
@@ -128,24 +133,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        function abrirFormulario(usuario) {
-            const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
-            if (usuario) {
-                document.getElementById('modalTitulo').innerText = 'Editar Usuario';
-                document.getElementById('fUserId').value = usuario.usuarioId;
-                document.getElementById('Formulario_NombreCompleto').value = usuario.nombreCompleto;
-                document.getElementById('Formulario_Email').value = usuario.email;
-                document.getElementById('Formulario_Identificacion').value = usuario.identificacion;
-                document.getElementById('Formulario_RolId').value = usuario.rolId;
-                document.getElementById('Formulario_Telefono').value = '';
-                document.getElementById('Formulario_Password').value = '';
-            } else {
-                document.getElementById('modalTitulo').innerText = 'Nuevo Usuario';
-                document.querySelector('form[method="post"]').reset();
-                document.getElementById('fUserId').value = '';
-            }
-            modal.show();
-        }
-    </script>
+    <script src="~/js/usuarios.js"></script>
 }

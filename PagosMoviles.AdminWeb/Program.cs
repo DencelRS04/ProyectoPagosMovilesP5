@@ -15,8 +15,12 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient("UsuarioApi", client =>
 {
-    // Apunta al microservicio /user (ajusta el puerto si difiere)
-    client.BaseAddress = new Uri(builder.Configuration["UsuarioApiUrl"] ?? "https://localhost:7002/");
+    client.BaseAddress = new Uri(builder.Configuration["UsuarioApiUrl"] ?? "https://localhost:7154/");
+});
+
+builder.Services.AddHttpClient("ParametroApi", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ParametroApiUrl"] ?? "https://localhost:7143/");
 });
 
 var app = builder.Build();
