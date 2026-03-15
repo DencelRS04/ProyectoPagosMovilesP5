@@ -1,7 +1,23 @@
+using PagosMoviles.AdminWeb.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient("UsuarioApi", client =>
+{
+    // Apunta al microservicio /user (ajusta el puerto si difiere)
+    client.BaseAddress = new Uri(builder.Configuration["UsuarioApiUrl"] ?? "https://localhost:7002/");
+});
 
 var app = builder.Build();
 
@@ -18,8 +34,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 
+
+app.UseSession();
+app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();

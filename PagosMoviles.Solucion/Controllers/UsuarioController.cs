@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PagosMoviles.UsuariosService.DTOs;
 using PagosMoviles.UsuariosService.Services;
 
@@ -7,6 +8,7 @@ namespace PagosMoviles.UsuariosService.Controllers
     [ApiController]
     [Route("user")]
     [Produces("application/json")]
+    [AllowAnonymous] //para pruebas, tengo que eliminarlo cuando este implementado el login 
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _service;
