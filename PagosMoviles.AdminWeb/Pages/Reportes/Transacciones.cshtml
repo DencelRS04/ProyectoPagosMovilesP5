@@ -1,4 +1,6 @@
-﻿@page
+﻿
+@page
+@using PagosMoviles.AdminWeb.Models.Transacciones;
 @model TransaccionesModel
 @{
     ViewData["Title"] = "Reporte de Transacciones Diarias";
@@ -52,7 +54,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var t in Model.Transacciones)
+                            @foreach (var t in Model.Transacciones)  // ← Así debe ser
                             {
                                 <tr>
                                     <td>@t.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
