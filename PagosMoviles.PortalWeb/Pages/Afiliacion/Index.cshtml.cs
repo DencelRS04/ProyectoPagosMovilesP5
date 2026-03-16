@@ -26,9 +26,18 @@ namespace PagosMoviles.PortalWeb.Pages.Afiliacion
 
         public async Task<IActionResult> OnPostValidarClienteAsync()
         {
+            ModelState.Remove("Afiliacion.NumeroCuenta");
+            ModelState.Remove("Afiliacion.Telefono");
+
             if (string.IsNullOrWhiteSpace(Afiliacion.Identificacion))
             {
-                ModelState.AddModelError("Afiliacion.Identificacion", "La identificación es requerida");
+                ModelState.AddModelError("Afiliacion.Identificacion", "La identificación es obligatoria");
+                return Page();
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(Afiliacion.Identificacion, @"^\d{9}$"))
+            {
+                ModelState.AddModelError("Afiliacion.Identificacion", "La identificación debe tener 9 dígitos");
                 return Page();
             }
 
@@ -48,6 +57,7 @@ namespace PagosMoviles.PortalWeb.Pages.Afiliacion
                 return Page();
 
             var existe = await _service.ClienteExisteAsync(Afiliacion.Identificacion);
+
             if (!existe)
             {
                 ModelState.AddModelError(string.Empty, "El cliente no existe en el core bancario");
@@ -63,6 +73,9 @@ namespace PagosMoviles.PortalWeb.Pages.Afiliacion
             }
 
             Mensaje = resultado.mensaje;
+            ModelState.Clear();
+            Afiliacion = new AfiliacionViewModel();
+
             return RedirectToPage();
         }
     }

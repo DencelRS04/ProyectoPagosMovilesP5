@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 ///{
 ///    options.SuppressModelStateInvalidFilter = true;
 ///});
-///
+
 builder.Services.AddControllers()
 .ConfigureApiBehaviorOptions(options =>
 {
