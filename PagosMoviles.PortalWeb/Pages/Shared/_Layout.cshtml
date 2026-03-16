@@ -4,114 +4,62 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pagos Móviles</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/layout.css" />
 </head>
-
 <body>
-
     <div class="app-shell">
-
         <partial name="_Sidebar" />
 
         <div class="app-main">
-
             <partial name="_Topbar" />
 
             <main class="page-content">
                 @RenderBody()
             </main>
-
         </div>
-
     </div>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/session-timeout.js" asp-append-version="true"></script>
 
-</body>
-</html>
-<!-- ========================================= -->
-<!-- PANEL DE BOTONES LATERAL IZQUIERDO -->
-<!-- ========================================= -->
+    @await RenderSectionAsync("Scripts", required: false)
 
-<style>
-
-    .left-panel {
-        position: fixed;
-        left: 15px; /* separación del borde */
-        top: 120px; /* altura desde arriba */
-        width: 250px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px; /* separación entre botones */
-        z-index: 999;
-    }
-
-        /* ESTILO DE LOS BOTONES */
-        .left-panel button {
-            width: 100%;
-            padding: 16px;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
-            background: #4e73df;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+    <style>
+        .left-panel {
+            position: fixed;
+            left: 20px;
+            top: 120px;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 999;
         }
 
-            /* EFECTO HOVER */
-            .left-panel button:hover {
-                background: #2e59d9;
-                transform: scale(1.05);
+            .left-panel button {
+                width: 100%;
+                padding: 16px;
+                font-size: 16px;
+                border: none;
+                border-radius: 10px;
+                background: #4e73df;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
             }
 
-</style>
+                .left-panel button:hover {
+                    background: #2e59d9;
+                    transform: scale(1.05);
+                }
+    </style>
 
-
-<div class="left-panel">
-
-    <!-- BOTON 1 -->
-    <!-- CAMBIAR RUTA CUANDO TENGAS LA PAGINA -->
-    <button onclick="location.href='/Usuarios'">
-        Gestión de Usuarios
-    </button>
-
-    <!-- BOTON 2 -->
-    <button onclick="location.href='/Solicitudes'">
-        Solicitudes
-    </button>
-
-    <!-- BOTON 3 -->
-    <button onclick="location.href='/Historial'">
-        Historial
-    </button>
-
-    <!-- BOTON 4 -->
-    <button onclick="location.href='/Reportes'">
-        Reportes
-    </button>
-
-    <!-- BOTON 5 -->
-    <button onclick="location.href='/Bitacora'">
-        Bitácora
-    </button>
-
-    <!-- BOTON 6 -->
-    <button onclick="location.href='/Roles'">
-        Gestión de Roles
-    </button>
-
-    <!-- BOTON 7 -->
-    <button onclick="location.href='/Parametros'">
-        Parámetros
-    </button>
-
-    <!-- BOTON 8 -->
-    <button onclick="location.href='/Configuracion'">
-        Configuración
-    </button>
-
-</div>
+    <div class="left-panel">
+        <button onclick="location.href='/Desinscripcion'">Desinscripción</button>
+    </div>
+</body>
 </html>
