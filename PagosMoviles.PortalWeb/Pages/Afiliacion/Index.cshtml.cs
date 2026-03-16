@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.PortalWeb.Models.Afiliacion;
 using PagosMoviles.PortalWeb.Services.Afiliacion;
 
-namespace PagosMoviles.AdminWeb.Pages.Roles
+namespace PagosMoviles.PortalWeb.Pages.Afiliacion
 {
-    public class DeleteModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly AfiliacionService _service;
 

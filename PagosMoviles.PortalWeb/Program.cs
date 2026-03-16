@@ -1,12 +1,17 @@
+<<<<<<< HEAD
 using PagosMoviles.PortalWeb.Services.Auth;
 using PagosMoviles.PortalWeb.Services.Perfil;
 using PagosMoviles.PortalWeb.Services.Saldo;
 using PagosMoviles.PortalWeb.Services.Transferencias;
+=======
+using PagosMoviles.PortalWeb.Services.Afiliacion;
+>>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 
+<<<<<<< HEAD
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient("gateway", client =>
@@ -33,6 +38,25 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(
         builder.Configuration.GetValue<int>("SessionSettings:TimeoutMinutes", 5));
 });
+=======
+builder.Services.AddHttpClient("GatewayApi", client =>
+{
+    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
+
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
+builder.Services.AddScoped<AfiliacionService>();
+>>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
 
 var app = builder.Build();
 
