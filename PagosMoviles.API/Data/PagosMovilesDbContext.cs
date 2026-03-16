@@ -33,8 +33,12 @@ public class PagosMovilesDbContext : DbContext
             entity.Property(e => e.NombreCompleto).HasMaxLength(150).IsUnicode(false);
             entity.Property(e => e.Telefono).HasMaxLength(20).IsUnicode(false);
             entity.Property(e => e.PasswordHash).HasMaxLength(255).IsUnicode(false);
+            entity.Property(e => e.IntentosFallidos).HasDefaultValue(0);
+            entity.Property(e => e.Bloqueado).HasDefaultValue(false);
             entity.HasIndex(e => e.Email).IsUnique();
             entity.HasOne<Rol>().WithMany().HasForeignKey(e => e.RolId);
+            entity.Property(e => e.FotoPerfil).HasMaxLength(255).IsUnicode(false);
+            entity.Property(e => e.ColorAvatar).HasMaxLength(20).IsUnicode(false);
         });
 
         // Rol

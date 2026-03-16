@@ -1,19 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PagosMoviles.Shared.Models
 {
-
     public class UsuarioSesionModel
     {
-        public string UsuarioId { get; set; } = string.Empty;
-        public string UsuarioNombre { get; set; } = string.Empty;
-        public string Rol { get; set; } = string.Empty;
-        public string AccessToken { get; set; } = string.Empty;
-        public string RefreshToken { get; set; } = string.Empty;
+        public string UsuarioId { get; set; }
+        public string UsuarioNombre { get; set; }
+        public string Rol { get; set; }
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
         public DateTime ExpiraEn { get; set; }
+        public string FotoPerfil { get; set; } = string.Empty;
+        public string ColorAvatar { get; set; } = "#4285F4";
+
+        public UsuarioSesionModel()
+        {
+            UsuarioId = string.Empty;
+            UsuarioNombre = string.Empty;
+            Rol = string.Empty;
+            AccessToken = string.Empty;
+            RefreshToken = string.Empty;
+        }
     }
 }

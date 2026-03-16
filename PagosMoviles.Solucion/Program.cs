@@ -6,7 +6,6 @@ using PagosMoviles.UsuariosService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers + filtro global (valida token preguntándole a la API)
 builder.Services.AddControllers(o =>
 {
     o.Filters.AddService<GatewayBearerGuardFilter>();
@@ -39,14 +38,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// DB
 var cn = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(cn))
     throw new InvalidOperationException("Falta ConnectionStrings:DefaultConnection en appsettings.json");
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(cn));
 
-// HttpClient hacia PagosMoviles.API
 builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -64,13 +61,11 @@ builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-// DI (tus servicios)
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AfiliacionService>();
 builder.Services.AddScoped<CoreClientService>();
 builder.Services.AddScoped<BitacoraClient>();
 
-// Seguridad nueva (nombres nuevos)
 builder.Services.AddScoped<GatewayTokenProbe>();
 builder.Services.AddScoped<GatewayBearerGuardFilter>();
 
@@ -83,5 +78,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.MapControllers();
 app.Run();

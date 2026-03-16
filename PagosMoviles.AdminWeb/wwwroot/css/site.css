@@ -20,3 +20,24 @@ html {
 body {
   margin-bottom: 60px;
 }
+.perfil-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-volver {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all .2s ease;
+}
+
+    .btn-volver:hover {
+        background: #d1d5db;
+        color: #111827;
+    }

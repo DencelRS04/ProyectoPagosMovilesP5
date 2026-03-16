@@ -5,7 +5,7 @@ using PagosMoviles.Shared.Constants;
 
 namespace PagosMoviles.PortalWeb.Filters
 {
-    public class SessionExpirationFilter : ActionFilterAttribute
+    /*public class SessionExpirationFilter : ActionFilterAttribute
     {
         private readonly int _timeoutMinutes;
 
@@ -44,5 +44,5 @@ namespace PagosMoviles.PortalWeb.Filters
             SessionHelper.ActualizarActividad(session);
             base.OnActionExecuting(context);
         }
-    }
+    }*/
 }

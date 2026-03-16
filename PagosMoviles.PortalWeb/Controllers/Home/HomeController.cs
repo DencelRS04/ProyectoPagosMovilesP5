@@ -5,7 +5,7 @@ namespace PagosMoviles.PortalWeb.Controllers.Home
 {
 
     [PortalAuthorize]
-    [ServiceFilter(typeof(SessionExpirationFilter))]
+
     public class HomeController : Controller
     {
         public IActionResult Index()

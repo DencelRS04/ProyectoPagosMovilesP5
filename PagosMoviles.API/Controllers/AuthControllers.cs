@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using PagosMoviles.API.Data;
 using PagosMoviles.API.Models;
 using PagosMoviles.API.Services;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PagosMoviles.API.Controllers
 {
@@ -20,7 +22,6 @@ namespace PagosMoviles.API.Controllers
             _jwt = jwt;
         }
 
-        // POST /auth/login
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login()
@@ -29,14 +30,56 @@ namespace PagosMoviles.API.Controllers
             var password = Request.Headers["password"].ToString();
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                return BadRequest(new { codigo = -1, descripcion = "Todos los datos son requeridos" });
+            {
+                return BadRequest(new
+                {
+                    codigo = -1,
+                    descripcion = "Usuario y/o contraseña incorrectos."
+                });
+            }
 
             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
 
-            // ⚠️ Aquí estás comparando hash vs texto, si lo tienes hasheado debes verificar con tu PasswordHasher
-            if (user == null || user.PasswordHash != password)
-                return Unauthorized(new { codigo = -1, descripcion = "Usuario y/o contraseña incorrectos" });
+            if (user == null)
+            {
+                return Unauthorized(new
+                {
+                    codigo = -1,
+                    descripcion = "Usuario y/o contraseña incorrectos."
+                });
+            }
 
+            if (user.Bloqueado)
+            {
+                return Unauthorized(new
+                {
+                    codigo = -1,
+                    descripcion = "Usuario bloqueado por 3 intentos fallidos."
+                });
+            }
+
+            var hashedPassword = HashPassword(password);
+
+            if (user.PasswordHash != hashedPassword)
+            {
+                user.IntentosFallidos++;
+
+                if (user.IntentosFallidos >= 3)
+                {
+                    user.Bloqueado = true;
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Unauthorized(new
+                {
+                    codigo = -1,
+                    descripcion = "Usuario y/o contraseña incorrectos."
+                });
+            }
+
+            user.IntentosFallidos = 0;
+            await _context.SaveChangesAsync();
             var jwt = _jwt.GenerarToken(user);
             var refresh = Guid.NewGuid().ToString();
 
@@ -57,16 +100,33 @@ namespace PagosMoviles.API.Controllers
                 expires_in = DateTime.Now.AddMinutes(5),
                 access_token = jwt,
                 refresh_token = refresh,
-                usuarioID = user.UsuarioId
+                usuarioID = user.UsuarioId,
+                nombreCompleto = user.NombreCompleto,
+                rol = user.RolId == 1 ? "ADMIN" : "USUARIO",
+                fotoPerfil = user.FotoPerfil,
+                colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar
             });
         }
 
-        // GET /auth/validate  (requiere Bearer token)
         [HttpGet("validate")]
         public IActionResult Validate()
         {
-            // Si llegó aquí, significa que TokenValidationFilter lo dejó pasar
-            return Ok(new { codigo = 0, descripcion = "Token válido", data = true });
+            return Ok(new
+            {
+                codigo = 0,
+                descripcion = "Token válido",
+                data = true
+            });
+        }
+
+        private static string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(password);
+                var hash = sha256.ComputeHash(bytes);
+                return Convert.ToBase64String(hash);
+            }
         }
     }
 }

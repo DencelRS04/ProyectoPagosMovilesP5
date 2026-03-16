@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PagosMoviles.Shared.Constants
+﻿namespace PagosMoviles.Shared.Constants
 {
-
     public static class SessionKeys
     {
         public const string UsuarioSesion = "USUARIO_SESION";

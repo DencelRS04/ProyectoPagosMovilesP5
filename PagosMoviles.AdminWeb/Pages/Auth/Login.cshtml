@@ -1,0 +1,52 @@
+﻿@page
+@model PagosMoviles.AdminWeb.Pages.Auth.LoginModel
+@{
+    ViewData["Title"] = "Login Administrativo";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Login Administrativo</title>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="~/img/logo.png" alt="Logo" class="login-logo" />
+                <h2>Pagos Móviles - Administración</h2>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+            {
+                <div>@Model.Mensaje</div>
+            }
+
+            @if (Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError))
+            {
+                <div>@Model.Input.MensajeError</div>
+            }
+
+            <form method="post" action="/Auth/Login">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <label for="Usuario">Usuario</label>
+                    <input type="text" id="Usuario" name="Input.Usuario"
+                           value="@(Model.Input != null ? Model.Input.Usuario : "")" />
+                </div>
+
+                <div>
+                    <label for="Contrasena">Contraseña</label>
+                    <input type="password" id="Contrasena" name="Input.Contrasena"
+                           value="@(Model.Input != null ? Model.Input.Contrasena : "")" />
+                </div>
+
+                <button type="submit">Aceptar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

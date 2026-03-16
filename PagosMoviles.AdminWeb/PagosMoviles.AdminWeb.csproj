@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Auth\" />
+    <Folder Include="Controllers\Home\" />
     <Folder Include="Models\CuentasCore\" />
     <Folder Include="Models\Entidades\" />
     <Folder Include="Models\Pantallas\" />
@@ -21,6 +23,10 @@
     <Folder Include="Services\Reportes\" />
     <Folder Include="Services\Roles\" />
     <Folder Include="Services\Usuarios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PagosMoviles.PortalWeb\PagosMoviles.PortalWeb.csproj" />
   </ItemGroup>
 
 </Project>

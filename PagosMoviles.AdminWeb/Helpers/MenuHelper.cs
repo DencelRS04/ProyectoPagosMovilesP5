@@ -1,22 +1,33 @@
-﻿using PagosMoviles.AdminWeb.Models.Shared;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using PagosMoviles.AdminWeb.Models.Shared;
+
 namespace PagosMoviles.AdminWeb.Helpers
 {
     public static class MenuHelper
     {
-        public static List<MenuItemViewModel> ObtenerMenuAdmin()
+        public static List<MenuItemViewModel> ObtenerMenuAdmin(ISession session)
         {
-            return
-            [
-                new() { Texto = "Inicio", Controlador = "Home", Accion = "Index" },
-            new() { Texto = "Usuarios", Controlador = "Usuarios", Accion = "Index" },
-            new() { Texto = "Pantallas", Controlador = "Pantallas", Accion = "Index" },
-            new() { Texto = "Roles", Controlador = "Roles", Accion = "Index" },
-            new() { Texto = "Parámetros", Controlador = "Parametros", Accion = "Index" },
-            new() { Texto = "Entidades", Controlador = "Entidades", Accion = "Index" },
-            new() { Texto = "Clientes Core", Controlador = "ClientesCore", Accion = "Index" },
-            new() { Texto = "Cuentas Core", Controlador = "CuentasCore", Accion = "Index" },
-            new() { Texto = "Reportes", Controlador = "Reportes", Accion = "Index" }
-            ];
+            var usuario = SessionHelper.ObtenerUsuarioSesion(session);
+            var menu = new List<MenuItemViewModel>();
+
+            if (usuario == null)
+                return menu;
+
+            if (usuario.Rol == "ADMIN")
+            {
+                menu.Add(new MenuItemViewModel { Texto = "Bienvenida", Url = "/Home/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Usuarios", Url = "/Usuarios/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Pantallas", Url = "/Pantallas/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Roles", Url = "/Roles/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Parámetros", Url = "/Parametros/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Entidades", Url = "/Entidades/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Clientes Core", Url = "/ClientesCore/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Cuentas Core", Url = "/CuentasCore/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Reportes", Url = "/Reportes/Index" });
+            }
+
+            return menu;
         }
     }
 }

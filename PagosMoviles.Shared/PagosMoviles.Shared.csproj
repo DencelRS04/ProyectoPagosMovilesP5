@@ -48,17 +48,23 @@
     <Compile Include="DTOs\Auth\LoginRequestDto.cs" />
     <Compile Include="DTOs\Auth\LoginResponseDto.cs" />
     <Compile Include="DTOs\Auth\ValidateTokenDto.cs" />
+    <Compile Include="DTOs\Common\ApiResponseDto.cs" />
+    <Compile Include="DTOs\Common\ErrorResponseDto.cs" />
+    <Compile Include="DTOs\Core\ClienteDto.cs" />
+    <Compile Include="DTOs\Core\CreateClienteDto.cs" />
+    <Compile Include="DTOs\Core\UpdateClienteDto.cs" />
+    <Compile Include="DTOs\Usuarios\UsuarioPerfilDto.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Models\ApiResponse.cs" />
     <Compile Include="Models\ErrorResponse.cs" />
+    <Compile Include="Models\MenuItemViewModel.cs" />
     <Compile Include="Models\UsuarioSesionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DTOs\Afiliacion\" />
-    <Folder Include="DTOs\Core\" />
     <Folder Include="DTOs\Entidades\" />
     <Folder Include="DTOs\Movimientos\" />
     <Folder Include="DTOs\Pantallas\" />
@@ -66,7 +72,6 @@
     <Folder Include="DTOs\Roles\" />
     <Folder Include="DTOs\Saldo\" />
     <Folder Include="DTOs\Transferencias\" />
-    <Folder Include="DTOs\Usuarios\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
