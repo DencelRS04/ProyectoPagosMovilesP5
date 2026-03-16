@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using PagosMoviles.PortalWeb.Models.Afiliacion;
 
 namespace PagosMoviles.PortalWeb.Services.Afiliacion
@@ -16,10 +17,29 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var response = await client.GetFromJsonAsync<ApiResponse<ClienteExisteResponse>>(
+            var httpResponse = await client.GetAsync(
                 $"gateway/admin/core/client-exists?identificacion={Uri.EscapeDataString(identificacion)}");
 
-            return response?.Datos?.Existe ?? false;
+            var rawContent = await httpResponse.Content.ReadAsStringAsync();
+
+            if (!httpResponse.IsSuccessStatusCode || string.IsNullOrWhiteSpace(rawContent))
+                return false;
+
+            try
+            {
+                var response = JsonSerializer.Deserialize<ApiResponse<ClienteExisteResponse>>(
+                    rawContent,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                return response?.Datos?.Existe ?? false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<(bool ok, string mensaje)> RegistrarAsync(AfiliacionViewModel model)
@@ -43,14 +63,14 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
 
                 try
                 {
-                    var errorResponse = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<object>>(
+                    var errorResponse = JsonSerializer.Deserialize<ApiResponse<object>>(
                         rawContent,
-                        new System.Text.Json.JsonSerializerOptions
+                        new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
                         });
 
-                    return (false, errorResponse?.Descripcion ?? $"Error HTTP {(int)httpResponse.StatusCode}");
+                    return (false, errorResponse?.Descripcion ?? rawContent);
                 }
                 catch
                 {
@@ -63,9 +83,9 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
 
             try
             {
-                var okResponse = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<object>>(
+                var okResponse = JsonSerializer.Deserialize<ApiResponse<object>>(
                     rawContent,
-                    new System.Text.Json.JsonSerializerOptions
+                    new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
@@ -74,7 +94,7 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
             }
             catch
             {
-                return (true, "Afiliación registrada, pero la respuesta no vino en JSON");
+                return (true, "Afiliación registrada correctamente");
             }
         }
 

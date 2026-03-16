@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using PagosMoviles.AdminWeb.Models.ClientesCore;
 
 namespace PagosMoviles.AdminWeb.Services.ClientesCore
@@ -16,7 +17,21 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var response = await client.GetFromJsonAsync<ApiResponse<List<ClienteViewModel>>>("gateway/admin/core/client");
+            var httpResponse = await client.GetAsync("gateway/admin/core/client");
+            var raw = await httpResponse.Content.ReadAsStringAsync();
+
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception($"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return new List<ClienteViewModel>();
+
+            var response = JsonSerializer.Deserialize<ApiResponse<List<ClienteViewModel>>>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return response?.Datos ?? new List<ClienteViewModel>();
         }
@@ -25,7 +40,21 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var response = await client.GetFromJsonAsync<ApiResponse<ClienteViewModel>>($"gateway/admin/core/client/{id}");
+            var httpResponse = await client.GetAsync($"gateway/admin/core/client/{id}");
+            var raw = await httpResponse.Content.ReadAsStringAsync();
+
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new Exception($"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return null;
+
+            var response = JsonSerializer.Deserialize<ApiResponse<ClienteViewModel>>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return response?.Datos;
         }
@@ -35,11 +64,20 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var httpResponse = await client.PostAsJsonAsync("gateway/admin/core/client", model);
-
-            var response = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<ClienteViewModel>>();
+            var raw = await httpResponse.Content.ReadAsStringAsync();
 
             if (!httpResponse.IsSuccessStatusCode)
-                return (false, response?.Descripcion ?? "No se pudo crear el cliente");
+                return (false, $"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return (true, "Cliente creado correctamente");
+
+            var response = JsonSerializer.Deserialize<ApiResponse<ClienteViewModel>>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return (true, response?.Descripcion ?? "Cliente creado correctamente");
         }
@@ -49,11 +87,20 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var httpResponse = await client.PutAsJsonAsync($"gateway/admin/core/client/{id}", model);
-
-            var response = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<object>>();
+            var raw = await httpResponse.Content.ReadAsStringAsync();
 
             if (!httpResponse.IsSuccessStatusCode)
-                return (false, response?.Descripcion ?? "No se pudo actualizar el cliente");
+                return (false, $"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return (true, "Cliente actualizado correctamente");
+
+            var response = JsonSerializer.Deserialize<ApiResponse<object>>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return (true, response?.Descripcion ?? "Cliente actualizado correctamente");
         }
@@ -63,11 +110,20 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var httpResponse = await client.DeleteAsync($"gateway/admin/core/client/{id}");
-
-            var response = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<object>>();
+            var raw = await httpResponse.Content.ReadAsStringAsync();
 
             if (!httpResponse.IsSuccessStatusCode)
-                return (false, response?.Descripcion ?? "No se pudo eliminar el cliente");
+                return (false, $"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
+
+            if (string.IsNullOrWhiteSpace(raw))
+                return (true, "Cliente desactivado correctamente");
+
+            var response = JsonSerializer.Deserialize<ApiResponse<object>>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return (true, response?.Descripcion ?? "Cliente desactivado correctamente");
         }

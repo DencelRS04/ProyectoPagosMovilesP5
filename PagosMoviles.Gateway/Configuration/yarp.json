@@ -31,7 +31,7 @@
       "auth-cluster": {
         "Destinations": {
           "destination1": {
-            "Address": "https://localhost:5001/"
+            "Address": "https://localhost:7154/"
           }
         }
       }
