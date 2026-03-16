@@ -1,0 +1,21 @@
+﻿@page "{id:int}"
+@model PagosMoviles.AdminWeb.Pages.Entidades.EditModel
+
+<h2>Editar Entidad</h2>
+
+<form method="post">
+
+    <input type="hidden" asp-for="Entidad.Identificador" />
+
+    <div class="form-group">
+        <label>Nombre</label>
+        <input asp-for="Entidad.Nombre" class="form-control" required />
+    </div>
+
+    <br>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+
+</form>

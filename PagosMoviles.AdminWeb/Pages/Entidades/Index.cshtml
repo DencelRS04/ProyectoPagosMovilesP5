@@ -1,0 +1,65 @@
+﻿@page
+@model PagosMoviles.AdminWeb.Pages.Entidades.IndexModel
+
+<h2>Administración de Entidades Bancarias</h2>
+
+<div class="mb-3">
+    <input type="text" id="buscar" class="form-control" placeholder="Buscar por identificador">
+</div>
+
+<a asp-page="Create" class="btn btn-primary mb-3">Nueva Entidad</a>
+
+<table class="table table-bordered" id="tablaEntidades">
+    <thead>
+        <tr>
+            <th>Identificador</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var entidad in Model.Entidades)
+        {
+            <tr>
+                <td>@entidad.Identificador</td>
+                <td>@entidad.Nombre</td>
+
+                <td>
+                    <a asp-page="Edit" asp-route-id="@entidad.Identificador"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                    <form method="post"
+                          asp-page-handler="Eliminar"
+                          asp-route-id="@entidad.Identificador"
+                          style="display:inline">
+
+                        <button class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Desea eliminar esta entidad?')">
+                            Eliminar
+                        </button>
+
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    document.getElementById("buscar").addEventListener("keyup", function () {
+
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll("#tablaEntidades tbody tr");
+
+        filas.forEach(fila => {
+
+            let id = fila.children[0].textContent.toLowerCase();
+
+            fila.style.display = id.includes(filtro) ? "" : "none";
+        });
+
+    });
+</script>

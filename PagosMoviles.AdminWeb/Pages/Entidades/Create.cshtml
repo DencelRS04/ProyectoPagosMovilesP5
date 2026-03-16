@@ -1,0 +1,24 @@
+﻿@page
+@model PagosMoviles.AdminWeb.Pages.Entidades.CreateModel
+
+<h2>Crear Entidad</h2>
+
+<form method="post">
+
+    <div class="form-group">
+        <label>Identificador</label>
+        <input asp-for="Entidad.Identificador" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Nombre</label>
+        <input asp-for="Entidad.Nombre" class="form-control" required />
+    </div>
+
+    <br>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+
+</form>
