@@ -9,18 +9,17 @@ builder.Services.AddSession();
 
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
-    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
-
-    if (string.IsNullOrWhiteSpace(baseUrl))
-        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
-
-    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.BaseAddress = new Uri("https://localhost:7130/");
     client.Timeout = TimeSpan.FromSeconds(15);
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+builder.Services.AddHttpClient("GatewayApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7205/");
 });
 
 builder.Services.AddScoped<ClientesCoreService>();
