@@ -6,16 +6,24 @@ using PagosMoviles.UsuariosService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers + filtro global (valida token preguntándole a la API)
+// Controllers + filtro global
 builder.Services.AddControllers(o =>
 {
     o.Filters.AddService<GatewayBearerGuardFilter>();
 });
 
+// Si quieres poder probar /auth/register sin token,
+// comenta temporalmente el filtro de arriba y usa:
+// builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PagosMoviles.UsuarioService", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PagosMoviles.UsuarioService",
+        Version = "v1"
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -32,7 +40,11 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
             },
             Array.Empty<string>()
         }
@@ -44,9 +56,10 @@ var cn = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(cn))
     throw new InvalidOperationException("Falta ConnectionStrings:DefaultConnection en appsettings.json");
 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(cn));
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(cn));
 
-// HttpClient hacia PagosMoviles.API
+// HttpClient hacia PagosMoviles.API / Gateway
 builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -64,13 +77,29 @@ builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-// DI (tus servicios)
+// Typed client para consultar Core
+builder.Services.AddHttpClient<CoreClientService>((sp, client) =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = cfg["CoreApi:BaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta CoreApi:BaseUrl en appsettings.json");
+
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
+// DI
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AfiliacionService>();
-builder.Services.AddScoped<CoreClientService>();
 builder.Services.AddScoped<BitacoraClient>();
 
-// Seguridad nueva (nombres nuevos)
 builder.Services.AddScoped<GatewayTokenProbe>();
 builder.Services.AddScoped<GatewayBearerGuardFilter>();
 

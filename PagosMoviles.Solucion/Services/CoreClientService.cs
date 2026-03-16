@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using PagosMoviles.UsuariosService.Utils;
 
 namespace PagosMoviles.UsuariosService.Services
@@ -15,23 +14,57 @@ namespace PagosMoviles.UsuariosService.Services
 
         public async Task<SrvResponse<bool>> VerificarClienteEnCoreAsync(string identificacion)
         {
-            var resp = await _http.GetAsync($"/core/client-exists?identificacion={identificacion}");
+            if (string.IsNullOrWhiteSpace(identificacion))
+                return SrvResponse<bool>.Fail("La identificación es requerida");
+
+            var resp = await _http.GetAsync($"core/client-exists?identificacion={Uri.EscapeDataString(identificacion)}");
 
             if (!resp.IsSuccessStatusCode)
-                return SrvResponse<bool>.Fail("Error consultando Core");
+            {
+                var errorBody = await resp.Content.ReadAsStringAsync();
+                return SrvResponse<bool>.Fail(
+                    $"Error consultando Core. HTTP {(int)resp.StatusCode}. {errorBody}");
+            }
 
-            var existe = await resp.Content.ReadFromJsonAsync<bool>();
+            var content = await resp.Content.ReadAsStringAsync();
 
-            return existe
+            if (string.IsNullOrWhiteSpace(content))
+                return SrvResponse<bool>.Fail("El Core respondió vacío");
+
+            CoreApiResponse<CoreExistsData>? result;
+
+            try
+            {
+                result = System.Text.Json.JsonSerializer.Deserialize<CoreApiResponse<CoreExistsData>>(
+                    content,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+            }
+            catch (Exception ex)
+            {
+                return SrvResponse<bool>.Fail($"No se pudo interpretar la respuesta del Core: {ex.Message}");
+            }
+
+            if (result?.Datos == null)
+                return SrvResponse<bool>.Fail("Respuesta inválida del Core");
+
+            return result.Datos.Existe
                 ? SrvResponse<bool>.Ok(true, "Cliente existe en el core")
                 : SrvResponse<bool>.Fail("Cliente no encontrado en el core");
         }
 
-        private class CoreExistsResponse
+        private class CoreApiResponse<T>
         {
-            public bool success { get; set; }
-            public string? message { get; set; }
-            public bool data { get; set; }
+            public int Codigo { get; set; }
+            public string Descripcion { get; set; } = string.Empty;
+            public T? Datos { get; set; }
+        }
+
+        private class CoreExistsData
+        {
+            public bool Existe { get; set; }
         }
     }
 }

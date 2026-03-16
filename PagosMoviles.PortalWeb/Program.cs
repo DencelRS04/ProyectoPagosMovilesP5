@@ -1,15 +1,32 @@
+using PagosMoviles.PortalWeb.Services.Afiliacion;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddHttpClient("GatewayApi", client =>
+{
+    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
+
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
+builder.Services.AddScoped<AfiliacionService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

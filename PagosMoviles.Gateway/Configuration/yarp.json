@@ -1,3 +1,40 @@
 {
-
+  "ReverseProxy": {
+    "Routes": {
+      "core-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway/admin" }
+        ]
+      },
+      "auth-route": {
+        "ClusterId": "auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      }
+    },
+    "Clusters": {
+      "core-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:7191/"
+          }
+        }
+      },
+      "auth-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:5001/"
+          }
+        }
+      }
+    }
+  }
 }
