@@ -14,7 +14,7 @@ namespace PagosMoviles.Shared.DTOs.Auth
         public int RolId { get; set; }
         public string FotoPerfil { get; set; } = string.Empty;
         public string ColorAvatar { get; set; } = "#4285F4";
-        public bool Bloqueado { get; set; }
+        public string Mensaje { get; set; }
 
         public LoginResponseDto()
         {

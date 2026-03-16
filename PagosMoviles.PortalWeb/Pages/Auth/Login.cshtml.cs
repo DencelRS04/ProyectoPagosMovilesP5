@@ -14,6 +14,9 @@ namespace PagosMoviles.PortalWeb.Pages.Auth
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
 
+        // ✅ CONTADOR DE INTENTOS
+        private static int intentosFallidos = 0;
+
         public LoginModel(IAuthService authService, IConfiguration configuration)
         {
             _authService = authService;
@@ -55,19 +58,37 @@ namespace PagosMoviles.PortalWeb.Pages.Auth
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
 
-            // 👇 USUARIO BLOQUEADO
-            if (result != null && !result.Item1 && result.Item2 == "BLOQUEADO")
+            if (!result.Item1)
             {
-                Input.MensajeError = "El usuario se encuentra bloqueado por demasiados intentos fallidos.";
-                return Page();
-            }
+                var mensajeServicio = (result.Item2 ?? "").ToLower();
 
-            if (result == null || !result.Item1 || result.Item3 == null)
-            {
-                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
-                Input.Contrasena = string.Empty;
+                // 🔴 SI YA ESTÁ BLOQUEADO EN LA BD
+                if (mensajeServicio.Contains("bloqueado"))
+                {
+                    Input.MensajeError = "El usuario se encuentra bloqueado.";
+                    return Page();
+                }
+
+                intentosFallidos++;
+
+                if (intentosFallidos == 3)
+                {
+                    Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
+                }
+                else
+                {
+                    Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                }
+
                 return Page();
             }
+            var usuario = result.Item3;
+
+            // asegurar valores de avatar
+            usuario.FotoPerfil = usuario.FotoPerfil ?? "";
+            usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
+            // ✅ Login correcto → reinicia intentos
+            intentosFallidos = 0;
 
             int rol = result.Item3.RolId;
 
@@ -83,7 +104,6 @@ namespace PagosMoviles.PortalWeb.Pages.Auth
 
             return Redirect("/Home/Index");
         }
-
 
         public IActionResult OnPostLogout()
         {

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.AdminWeb.Helpers;
 using PagosMoviles.AdminWeb.Models.Auth;
@@ -10,7 +10,7 @@ namespace PagosMoviles.AdminWeb.Pages
     {
         private readonly IAuthService _authService;
         private const int ADMIN_ROL = 5;
-
+        private static int intentosFallidos = 0;
         public IndexModel(IAuthService authService)
         {
             _authService = authService;
@@ -33,27 +33,56 @@ namespace PagosMoviles.AdminWeb.Pages
 
             if (string.IsNullOrWhiteSpace(Input.Usuario) || string.IsNullOrWhiteSpace(Input.Contrasena))
             {
-                Input.MensajeError = "Usuario y/o contrase�a incorrectos.";
+                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                Input.Usuario = string.Empty;
+                Input.Contrasena = string.Empty;
                 return Page();
             }
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
-            if (result != null && !result.Item1 && result.Item2 == "BLOQUEADO")
+            if (!result.Item1)
             {
-                Input.MensajeError = "El usuario se encuentra bloqueado por demasiados intentos fallidos.";
+                var mensajeServicio = (result.Item2 ?? "").ToLower();
+
+                // 🔴 si el servicio indica que el usuario está bloqueado
+                if (mensajeServicio.Contains("bloqueado"))
+                {
+                    Input.MensajeError = "El usuario se encuentra bloqueado.";
+                    Input.Usuario = string.Empty;
+                    Input.Contrasena = string.Empty;
+                    return Page();
+                }
+
+                // 🔴 intento número 3
+                intentosFallidos++;
+
+                if (intentosFallidos >= 3)
+                {
+                    Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
+                    Input.Usuario = string.Empty;
+                    Input.Contrasena = string.Empty;
+                    return Page();
+                }
+
+                // 🔴 intentos 1 y 2
+                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                Input.Usuario = string.Empty;
+                Input.Contrasena = string.Empty;
                 return Page();
             }
+            var usuario = result.Item3;
 
-            if (result == null || !result.Item1 || result.Item3 == null)
-            {
-                Input.MensajeError = "Usuario y/o contrase�a incorrectos.";
-                return Page();
-            }
-
+            // asegurar valores de avatar
+            usuario.FotoPerfil = usuario.FotoPerfil ?? "";
+            usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
+            // si entra correctamente reiniciamos intentos
+            intentosFallidos = 0;
 
             if (result.Item3.RolId != ADMIN_ROL)
             {
                 Input.MensajeError = "No tiene permisos para acceder al portal administrativo.";
+                Input.Usuario = string.Empty;
+                Input.Contrasena = string.Empty;
                 return Page();
             }
 

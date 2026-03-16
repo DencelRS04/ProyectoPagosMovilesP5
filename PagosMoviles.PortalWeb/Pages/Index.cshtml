@@ -23,10 +23,17 @@
                 <span class="brand-name">Pagos Móviles</span>
             </div>
 
-            <button class="login-trigger" type="button" onclick="openLoginModal()">
-                <span class="login-icon">👤</span>
-                <span>Login</span>
-            </button>
+            <div class="header-buttons">
+                <button class="login-trigger" type="button" onclick="openLoginModal()">
+                    <span class="login-icon">👤</span>
+                    <span>Login</span>
+                </button>
+
+                <a href="/Auth/Register" class="login-trigger">
+                    <span class="login-icon">📝</span>
+                    <span>Registrarse</span>
+                </a>
+            </div>
         </header>
 
         <main class="landing-content">
@@ -56,7 +63,7 @@
 
             @if (Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError))
             {
-                <div class="msg-box msg-error">@Model.Input.MensajeError</div>
+                <div class="msg-box msg-error">@Html.Raw(Model.Input.MensajeError)</div>
             }
 
             <form method="post">
@@ -79,6 +86,13 @@
                 </div>
 
                 <button type="submit" class="btn-accept">Aceptar</button>
+
+                @if (Model.Input != null && Model.Input.MensajeError != null && Model.Input.MensajeError.Contains("no está registrado"))
+                {
+                    <a href="/Auth/Register" class="btn-accept" style="margin-top:10px; display:block; text-align:center;">
+                        Registrarse
+                    </a>
+                }
             </form>
         </div>
     </div>

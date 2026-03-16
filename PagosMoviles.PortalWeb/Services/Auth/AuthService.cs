@@ -33,12 +33,40 @@ namespace PagosMoviles.PortalWeb.Services.Auth
 
                 var response = await _httpClient.SendAsync(request);
 
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Credenciales incorrectas.", null);
-                }
-
                 var json = await response.Content.ReadAsStringAsync();
+
+                // 🔴 SI FALLA EL LOGIN
+                if (!response.IsSuccessStatusCode)
+                {
+                    var texto = json.ToLower();
+
+                    // Usuario bloqueado
+                    if (texto.Contains("bloqueado"))
+                    {
+                        return new Tuple<bool, string, UsuarioSesionModel>(
+                            false,
+                            "El usuario se encuentra bloqueado.",
+                            null
+                        );
+                    }
+
+                    // 3 intentos fallidos
+                    if (texto.Contains("intentos") || texto.Contains("3"))
+                    {
+                        return new Tuple<bool, string, UsuarioSesionModel>(
+                            false,
+                            "El usuario se bloqueó por fallar 3 veces.",
+                            null
+                        );
+                    }
+
+                    // Credenciales incorrectas
+                    return new Tuple<bool, string, UsuarioSesionModel>(
+                        false,
+                        "Usuario y/o contraseña incorrectos.",
+                        null
+                    );
+                }
 
                 var options = new JsonSerializerOptions
                 {
@@ -52,6 +80,7 @@ namespace PagosMoviles.PortalWeb.Services.Auth
                     return new Tuple<bool, string, UsuarioSesionModel>(false, "Login inválido.", null);
                 }
 
+                // 🔵 NO SE TOCA EL LOGIN EXITOSO
                 var usuarioSesion = new UsuarioSesionModel
                 {
                     UsuarioId = loginResponse.UsuarioID.ToString(),

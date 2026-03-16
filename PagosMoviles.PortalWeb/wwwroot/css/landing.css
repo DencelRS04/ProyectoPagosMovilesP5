@@ -194,3 +194,8 @@
     background: #f8d7da;
     color: #842029;
 }
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}

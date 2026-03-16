@@ -12,7 +12,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
     public class LoginModel : PageModel
     {
         private readonly IAuthService _authService;
-
+        private static int intentosFallidos = 0;
         public LoginModel(IAuthService authService)
         {
             _authService = authService;
@@ -48,24 +48,39 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
             }
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
-            if (result != null && !result.Item1 && result.Item2 == "BLOQUEADO")
+
+            if (!result.Item1)
             {
-                Input.MensajeError = "El usuario está bloqueado por demasiados intentos fallidos.";
+                var mensajeServicio = (result.Item2 ?? "").ToLower();
+
+                // 🔴 usuario ya bloqueado
+                if (mensajeServicio.Contains("bloqueado"))
+                {
+                    Input.MensajeError = "El usuario se encuentra bloqueado.";
+                    return Page();
+                }
+
+                intentosFallidos++;
+
+                if (intentosFallidos == 3)
+                {
+                    Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
+                }
+                else
+                {
+                    Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                }
+
                 return Page();
             }
-
-            if (result == null || !result.Item1 || result.Item3 == null)
-            {
-                intentos++;
-                HttpContext.Session.SetInt32("IntentosLogin", intentos);
-
-                Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentos} de {MAX_INTENTOS}.";
-                return Page();
-            }
-
+            // si entra correctamente reiniciamos intentos
+            intentosFallidos = 0;
 
             var usuario = result.Item3;
 
+            // asegurar valores de avatar
+            usuario.FotoPerfil = usuario.FotoPerfil ?? "";
+            usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
             if (usuario.RolId != Roles.Admin)
             {
 

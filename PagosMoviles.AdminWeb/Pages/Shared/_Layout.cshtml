@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="~/css/layout.css" />
 </head>
 
+@using PagosMoviles.AdminWeb.Helpers
+@using PagosMoviles.Shared.Models
+
+@{
+        var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(Context.Session);
+}
+
 <body>
     <div class="app-shell">
         <partial name="_Sidebar" />
@@ -57,49 +64,42 @@
                 }
 
     </style>
+
     <div class="left-panel">
 
-        <!-- BOTON 1 -->
-        <!-- CAMBIAR RUTA CUANDO TENGAS LA PAGINA -->
         <button onclick="location.href='/Usuarios'">
             Gestión de Usuarios
         </button>
 
-        <!-- BOTON 2 -->
         <button onclick="location.href='/Solicitudes'">
             Solicitudes
         </button>
 
-        <!-- BOTON 3 -->
         <button onclick="location.href='/Historial'">
             Historial
         </button>
 
-        <!-- BOTON 4 -->
         <button onclick="location.href='/Reportes'">
             Reportes
         </button>
 
-        <!-- BOTON 5 -->
         <button onclick="location.href='/Bitacora'">
             Bitácora
         </button>
 
-        <!-- BOTON 6 -->
         <button onclick="location.href='/Roles'">
             Gestión de Roles
         </button>
 
-        <!-- BOTON 7 -->
         <button onclick="location.href='/Parametros'">
             Parámetros
         </button>
 
-        <!-- BOTON 8 -->
         <button onclick="location.href='/Configuracion'">
             Configuración
         </button>
-    </div>
-</body>
 
+    </div>
+
+</body>
 </html>
