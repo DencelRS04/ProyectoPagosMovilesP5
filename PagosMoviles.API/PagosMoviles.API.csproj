@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PagosMoviles.AdminWeb\PagosMoviles.AdminWeb.csproj" />
     <ProjectReference Include="..\PagosMoviles.Shared\PagosMoviles.Shared.csproj" />
   </ItemGroup>
 

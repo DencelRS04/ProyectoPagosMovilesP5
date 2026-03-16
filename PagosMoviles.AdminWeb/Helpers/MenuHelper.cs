@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using PagosMoviles.AdminWeb.Models.Shared;
 using PagosMoviles.Shared.Constants;
+using PagosMoviles.Shared.Models;
 
 namespace PagosMoviles.AdminWeb.Helpers
 {

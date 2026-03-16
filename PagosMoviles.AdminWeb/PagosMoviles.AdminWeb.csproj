@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Auth\" />
+    <Folder Include="Controllers\Auth\" />  
     <Folder Include="Controllers\Home\" />
     <Folder Include="Models\CuentasCore\" />
     <Folder Include="Models\Entidades\" />
@@ -15,6 +15,7 @@
     <Folder Include="Models\Parametros\" />
     <Folder Include="Models\Reportes\" />
     <Folder Include="Models\Roles\" />
+    <Folder Include="Models\Shared\" />
     <Folder Include="Models\Usuarios\" />
     <Folder Include="Services\CuentasCore\" />
     <Folder Include="Services\Entidades\" />
@@ -26,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PagosMoviles.PortalWeb\PagosMoviles.PortalWeb.csproj" />
+    <ProjectReference Include="..\PagosMoviles.Shared\PagosMoviles.Shared.csproj" />
   </ItemGroup>
 
 </Project>
