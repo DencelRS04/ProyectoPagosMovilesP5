@@ -1,15 +1,16 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddReverseProxy()  // ← Esto es clave
+       .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,8 +19,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+// 🔹 No Authorization por ahora
+// app.UseAuthorization();
 
 app.MapControllers();
+app.MapReverseProxy();  // ← Funciona solo si AddReverseProxy está agregado
 
 app.Run();

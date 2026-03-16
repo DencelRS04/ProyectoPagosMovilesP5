@@ -17,7 +17,7 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var response = await client.GetFromJsonAsync<ApiResponse<List<EntidadViewModel>>>
-                ("gateway/admin/entidad");
+            ("gateway/admin/entidad");
 
             return response?.Datos ?? new List<EntidadViewModel>();
         }
@@ -80,12 +80,12 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
             return (true, response?.Descripcion ?? "Entidad eliminada correctamente");
         }
 
-        internal async Task CrearAsync(EntidadCreateModel entidad)
+        internal async Task ActualizarAsync(int identificador, EntidadEditModel entidad)
         {
             throw new NotImplementedException();
         }
 
-        internal async Task ActualizarAsync(int identificador, EntidadEditModel entidad)
+        internal async Task CrearAsync(EntidadCreateModel entidad)
         {
             throw new NotImplementedException();
         }
