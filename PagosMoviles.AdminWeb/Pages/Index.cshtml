@@ -1,10 +1,101 @@
 ﻿@page
-@model IndexModel
+@model PagosMoviles.AdminWeb.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Inicio";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio - Pagos Móviles</title>
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="landing-bg">
+        <div class="landing-overlay"></div>
+
+        <header class="landing-header">
+            <div class="brand">
+                <img src="~/Imagenes/logo.png" alt="Logo" class="brand-logo" />
+                <span class="brand-name">Pagos Móviles</span>
+            </div>
+
+            <button class="login-trigger" type="button" onclick="openLoginModal()">
+                <span class="login-icon">👤</span>
+                <span>Login</span>
+            </button>
+        </header>
+
+        <main class="landing-content">
+            <div class="hero-card">
+                <h1>Bienvenido a Pagos Móviles</h1>
+                <p>
+                    Plataforma administrativa del sistema. Ingrese con sus credenciales
+                    para acceder a las opciones correspondientes.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <div id="loginModal" class="modal-backdrop">
+        <div class="login-modal">
+            <button class="close-btn" type="button" onclick="closeLoginModal()">×</button>
+
+            <div class="login-header-box">
+                <img src="~/Imagenes/logo.png" alt="Logo" class="login-logo" />
+                <h2>Ingreso al sistema</h2>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+            {
+                <div class="msg-box msg-warning">@Model.Mensaje</div>
+            }
+
+            @if (Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError))
+            {
+                <div class="msg-box msg-error">@Model.Input.MensajeError</div>
+            }
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label for="Usuario">Usuario</label>
+                    <input type="text"
+                           id="Usuario"
+                           name="Input.Usuario"
+                           value="@(Model.Input != null ? Model.Input.Usuario : "")" />
+                </div>
+
+                <div class="form-group">
+                    <label for="Contrasena">Contraseña</label>
+                    <input type="password"
+                           id="Contrasena"
+                           name="Input.Contrasena"
+                           value="@(Model.Input != null ? Model.Input.Contrasena : "")" />
+                </div>
+
+                <button type="submit" class="btn-accept">Aceptar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        @if ((Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError)) || !string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+                    <text>openLoginModal();</text>
+        }
+    </script>
+</body>
+</html>
