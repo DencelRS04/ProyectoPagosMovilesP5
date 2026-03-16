@@ -40,9 +40,9 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
         public async Task<IActionResult> OnGetAsync()
         {
             // TODO: Descomentar cuando Login esté implementado por el compañero
-            // var token = HttpContext.Session.GetString("JwtToken");
-            // if (string.IsNullOrEmpty(token))
-            //     return RedirectToPage("/Login");
+             var token = HttpContext.Session.GetString("JwtToken");
+             if (string.IsNullOrEmpty(token))
+                 return RedirectToPage("/Login");
 
             var client = CrearClienteConToken();
             var response = await client.GetAsync("user");

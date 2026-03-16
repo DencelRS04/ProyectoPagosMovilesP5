@@ -8,7 +8,7 @@ namespace PagosMoviles.UsuariosService.Controllers
     [ApiController]
     [Route("user")]
     [Produces("application/json")]
-    [AllowAnonymous] //para pruebas, tengo que eliminarlo cuando este implementado el login 
+    
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _service;

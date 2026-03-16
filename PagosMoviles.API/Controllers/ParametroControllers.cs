@@ -12,7 +12,7 @@ namespace PagosMoviles.API.Controllers;
 
 [ApiController]
 [Route("parametro")]
-[AllowAnonymous] // TODO: Remover cuando Login esté implementado
+
 public class ParametroController : ControllerBase
 {
     private readonly PagosMovilesDbContext _context;

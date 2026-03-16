@@ -342,7 +342,7 @@ public class CuentasController : ControllerBase
     // Body: { telefono, identificacion, numeroCuenta }  (como el service original)
     
 
-    [AllowAnonymous] //quitar cuando este implementado el loginnnnnnn
+    
     [HttpPost("unsubscribe")]
     public async Task<IActionResult> Desinscribir([FromBody] CancelarSuscripcionRequest req)
     {
