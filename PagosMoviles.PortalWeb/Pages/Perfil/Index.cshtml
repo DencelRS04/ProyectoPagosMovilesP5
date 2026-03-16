@@ -1,0 +1,152 @@
+﻿@page
+@model PagosMoviles.PortalWeb.Pages.Perfil.IndexModel
+@using PagosMoviles.PortalWeb.Helpers
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+
+    var nombre = Model.Input != null ? Model.Input.NombreCompleto : "";
+    var email = Model.Input != null ? Model.Input.Email : "";
+    var identificacion = Model.Input != null ? Model.Input.Identificacion : "";
+    var telefono = Model.Input != null ? Model.Input.Telefono : "";
+
+    var colorAvatar = Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.ColorAvatar)
+        ? Model.Input.ColorAvatar
+        : "#4285F4";
+
+    var fotoPerfil = Model.Input != null ? Model.Input.FotoPerfil : "";
+
+    // 🔹 usar foto de sesión si no viene en el modelo
+    if (string.IsNullOrWhiteSpace(fotoPerfil))
+    {
+        var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+        if (usuarioSesion != null && !string.IsNullOrWhiteSpace(usuarioSesion.FotoPerfil))
+        {
+            fotoPerfil = usuarioSesion.FotoPerfil;
+        }
+    }
+
+    // 🔹 evitar caché del navegador
+    var fotoPerfilCache = !string.IsNullOrWhiteSpace(fotoPerfil)
+        ? fotoPerfil + "?v=" + DateTime.Now.Ticks
+        : "";
+
+    var inicial = !string.IsNullOrWhiteSpace(nombre)
+        ? nombre.Substring(0, 1).ToUpper()
+        : "U";
+}
+
+<div class="perfil-wrapper">
+    <div class="perfil-card">
+        <div class="perfil-header">
+            <div class="perfil-header-left">
+
+                <a href="/Home/Index" class="btn-volver">
+                    ← Volver
+                </a>
+
+                <div>
+                    <h1>Mi Perfil</h1>
+                    <p>Actualiza tu información personal y tu imagen de usuario.</p>
+                </div>
+
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <div class="perfil-alert success">@Model.Mensaje</div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Error))
+        {
+            <div class="perfil-alert error">@Model.Error</div>
+        }
+
+        <form method="post" enctype="multipart/form-data" class="perfil-form">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="Input.UsuarioId" value="@(Model.Input != null ? Model.Input.UsuarioId : 0)" />
+            <input type="hidden" name="Input.FotoPerfil" value="@fotoPerfil" />
+
+            <div class="perfil-top">
+                <div class="perfil-avatar-box">
+
+                    @if (!string.IsNullOrWhiteSpace(fotoPerfilCache))
+                    {
+                        <img src="@fotoPerfilCache" alt="Foto de perfil" class="perfil-avatar-img" />
+                    }
+                    else
+                    {
+                        <div class="perfil-avatar-default" style="background:@colorAvatar;">
+                            @inicial
+                        </div>
+                    }
+
+                    <div class="perfil-avatar-note">Imagen actual del usuario</div>
+                </div>
+
+                <div class="perfil-grid">
+                    <div class="form-group">
+                        <label for="NombreCompleto">Nombre completo</label>
+                        <input id="NombreCompleto"
+                               name="Input.NombreCompleto"
+                               class="form-control"
+                               value="@nombre" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Email">Correo electrónico</label>
+                        <input id="Email"
+                               name="Input.Email"
+                               class="form-control readonly"
+                               value="@email"
+                               readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Identificacion">Cédula</label>
+                        <input id="Identificacion"
+                               name="Input.Identificacion"
+                               class="form-control readonly"
+                               value="@identificacion"
+                               readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Telefono">Teléfono</label>
+                        <input id="Telefono"
+                               name="Input.Telefono"
+                               class="form-control"
+                               value="@telefono" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ColorAvatar">Color del avatar</label>
+                        <div class="color-input-wrap">
+                            <input id="ColorAvatar"
+                                   name="Input.ColorAvatar"
+                                   type="color"
+                                   class="color-input"
+                                   value="@colorAvatar" />
+                            <span class="color-value">@colorAvatar</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Imagen">Cambiar imagen</label>
+                        <input id="Imagen"
+                               name="Input.Imagen"
+                               type="file"
+                               class="form-control file-input" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="perfil-actions">
+                <button type="submit" class="btn-save">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
