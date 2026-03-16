@@ -1,8 +1,26 @@
-﻿using System;
+﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using PagosMoviles.AdminWeb.Models.Entidades;
+using PagosMoviles.AdminWeb.Models.Transacciones;
+using PagosMoviles.AdminWeb.Pages.Reportes;
 
-public class Class1
+public class ReporteService
 {
-	public Class1()
-	{
-	}
+    private readonly IHttpClientFactory _http;
+
+    public ReporteService(IHttpClientFactory http)
+    {
+        _http = http;
+    }
+
+    public async Task<List<TransaccionesModel>> ObtenerPorFecha(DateTime fecha)
+    {
+        var client = _http.CreateClient("GatewayApi");
+
+        var response = await client.GetFromJsonAsync<ApiResponse<List< TransaccionesModel >>> (
+            $"transacciones?fecha={fecha:yyyy-MM-dd}"
+        );
+
+        return response.Data;
+    }
 }

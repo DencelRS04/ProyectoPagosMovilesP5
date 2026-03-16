@@ -1,0 +1,155 @@
+﻿@page
+@model TransaccionesModel
+@{
+    ViewData["Title"] = "Reporte de Transacciones Diarias";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">
+                <i class="fas fa-chart-line me-2"></i>Reporte de Transacciones Diarias
+            </h2>
+        </div>
+
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Fecha</label>
+                    <input type="date"
+                           class="form-control"
+                           name="fecha"
+                           value="@Model.Fecha?.ToString("yyyy-MM-dd")"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Consultar
+                    </button>
+                </div>
+
+                @if (Model.Fecha.HasValue)
+                {
+                    <div class="col-md-2">
+                        <a href="/Transacciones" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-undo me-2"></i>Limpiar
+                        </a>
+                    </div>
+                }
+            </form>
+
+            @if (Model.Transacciones.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Teléfono Origen</th>
+                                <th>Teléfono Destino</th>
+                                <th class="text-end">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var t in Model.Transacciones)
+                            {
+                                <tr>
+                                    <td>@t.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@t.TelefonoOrigen</td>
+                                    <td>@t.TelefonoDestino</td>
+                                    <td class="text-end fw-bold text-success">
+                                        $@t.Monto.ToString("N2")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-secondary">
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Total del día:</td>
+                                <td class="text-end fw-bold text-primary h5">
+                                    $@Model.Total.ToString("N2")
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Total de transacciones:</strong> @Model.Transacciones.Count
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.Fecha.HasValue)
+            {
+                <div class="alert alert-warning text-center py-4">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                    <h4>No hay transacciones para la fecha seleccionada</h4>
+                    <p class="mb-0">Prueba con otra fecha para ver los resultados.</p>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light text-center py-5 border rounded">
+                    <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Selecciona una fecha para consultar</h4>
+                    <p class="text-muted mb-0">Usa el formulario superior para buscar transacciones por día.</p>
+                </div>
+            }
+        </div>
+
+        <div class="card-footer text-muted">
+            <small>
+                <i class="fas fa-clock me-1"></i>
+                Última actualización: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+            </small>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        .table th {
+            font-weight: 600;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(0,123,255,0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+            border-color: #80bdff;
+        }
+    </style>
+}

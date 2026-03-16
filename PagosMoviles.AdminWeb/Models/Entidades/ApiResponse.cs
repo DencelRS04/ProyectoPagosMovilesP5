@@ -7,5 +7,6 @@
         public string Descripcion { get; set; }
 
         public T Datos { get; set; }
+        public List<TransaccionViewModel> Data { get; internal set; }
     }
 }

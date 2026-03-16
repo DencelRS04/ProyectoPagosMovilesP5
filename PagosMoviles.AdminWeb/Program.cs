@@ -25,6 +25,7 @@ builder.Services.AddHttpClient("GatewayApi", client =>
 
 builder.Services.AddScoped<ClientesCoreService>();
 builder.Services.AddScoped<EntidadService>();
+builder.Services.AddScoped<ReporteService>();
 
 var app = builder.Build();
 
