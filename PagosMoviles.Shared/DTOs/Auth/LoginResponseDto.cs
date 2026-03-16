@@ -11,9 +11,10 @@ namespace PagosMoviles.Shared.DTOs.Auth
         public string Refresh_Token { get; set; }
         public int UsuarioID { get; set; }
         public string NombreCompleto { get; set; }
-        public string Rol { get; set; }
+        public int RolId { get; set; }
         public string FotoPerfil { get; set; } = string.Empty;
         public string ColorAvatar { get; set; } = "#4285F4";
+        public bool Bloqueado { get; set; }
 
         public LoginResponseDto()
         {
@@ -21,7 +22,7 @@ namespace PagosMoviles.Shared.DTOs.Auth
             Access_Token = string.Empty;
             Refresh_Token = string.Empty;
             NombreCompleto = string.Empty;
-            Rol = string.Empty;
+
         }
     }
 }

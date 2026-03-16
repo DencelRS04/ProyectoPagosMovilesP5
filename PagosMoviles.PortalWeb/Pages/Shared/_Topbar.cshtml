@@ -1,44 +1,30 @@
-﻿@using PagosMoviles.AdminWeb.Helpers
+﻿@using PagosMoviles.PortalWeb.Helpers
 @{
     var usuario = SessionHelper.ObtenerUsuarioSesion(Context.Session);
-
     var nombreUsuario = usuario != null && !string.IsNullOrWhiteSpace(usuario.UsuarioNombre)
         ? usuario.UsuarioNombre
-        : "Administrador";
+        : "Cliente";
 
     var inicial = !string.IsNullOrWhiteSpace(nombreUsuario)
         ? nombreUsuario.Substring(0, 1).ToUpper()
-        : "A";
+        : "C";
 
     var foto = usuario != null ? usuario.FotoPerfil : "";
-
     var colorAvatar = usuario != null && !string.IsNullOrWhiteSpace(usuario.ColorAvatar)
         ? usuario.ColorAvatar
         : "#4285F4";
 }
 
 <div class="topbar">
-
-
     <div class="topbar-spacer"></div>
 
     <div class="topbar-user">
-
         <span class="topbar-username">@nombreUsuario</span>
 
         <a href="/Perfil/Index" class="avatar-link">
-
             @if (!string.IsNullOrWhiteSpace(foto))
             {
-                <img src="@foto"
-                     alt="Avatar"
-                     class="avatar"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-
-                <div class="avatar-default"
-                     style="background:@colorAvatar; display:none;">
-                    @inicial
-                </div>
+                <img src="@foto" alt="Avatar" class="avatar" />
             }
             else
             {
@@ -46,14 +32,11 @@
                     @inicial
                 </div>
             }
-
         </a>
 
-        <form method="post" action="/?handler=Logout" class="logout-form">
+        <form method="post" action="/Auth/Login?handler=Logout" class="logout-form">
             @Html.AntiForgeryToken()
             <button type="submit" class="btn-logout">Salir</button>
         </form>
-
     </div>
-
 </div>

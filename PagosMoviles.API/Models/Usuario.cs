@@ -11,10 +11,11 @@
         public int RolId { get; set; }
         public string PasswordHash { get; set; } = string.Empty;
         public DateTime FechaCreacion { get; set; }
+
         public int IntentosFallidos { get; set; }
         public bool Bloqueado { get; set; }
 
         public string FotoPerfil { get; set; } = string.Empty;
-        public string ColorAvatar { get; set; } = string.Empty;
+        public string ColorAvatar { get; set; } = "#4285F4";
     }
 }

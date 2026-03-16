@@ -19,47 +19,64 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
         }
 
         [BindProperty]
-        public LoginInputModel Input { get; set; }
+        public LoginInputModel Input { get; set; } = new LoginInputModel();
 
-        public string Mensaje { get; set; }
+        private const int MAX_INTENTOS = 3;
 
         public void OnGet()
         {
-            Input = new LoginInputModel();
-            Mensaje = string.Empty;
-
-            var mensajeExpirado = HttpContext.Session.GetString(SessionKeys.SessionExpiredMessage);
-            if (!string.IsNullOrWhiteSpace(mensajeExpirado))
+            if (HttpContext.Session.GetString("UsuarioId") != null)
             {
-                Mensaje = mensajeExpirado;
-                HttpContext.Session.Remove(SessionKeys.SessionExpiredMessage);
+                Response.Redirect("/Home/Index");
             }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (Input == null)
-                Input = new LoginInputModel();
-
-            Input.Usuario = (Input.Usuario ?? "").Trim();
-            Input.Contrasena = (Input.Contrasena ?? "").Trim();
-
-            if (string.IsNullOrWhiteSpace(Input.Usuario) || string.IsNullOrWhiteSpace(Input.Contrasena))
+            if (!ModelState.IsValid)
             {
-                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                Input.MensajeError = "Debe completar todos los campos.";
+                return Page();
+            }
+
+            int intentos = HttpContext.Session.GetInt32("IntentosLogin") ?? 0;
+
+            if (intentos >= MAX_INTENTOS)
+            {
+                Input.MensajeError = "Usuario bloqueado por demasiados intentos fallidos.";
                 return Page();
             }
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
-
-            if (result == null || !result.Item1 || result.Item3 == null)
+            if (result != null && !result.Item1 && result.Item2 == "BLOQUEADO")
             {
-                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                Input.MensajeError = "El usuario está bloqueado por demasiados intentos fallidos.";
                 return Page();
             }
 
-            SessionHelper.LimpiarSesion(HttpContext.Session);
-            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, result.Item3);
+            if (result == null || !result.Item1 || result.Item3 == null)
+            {
+                intentos++;
+                HttpContext.Session.SetInt32("IntentosLogin", intentos);
+
+                Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentos} de {MAX_INTENTOS}.";
+                return Page();
+            }
+
+
+            var usuario = result.Item3;
+
+            if (usuario.RolId != Roles.Admin)
+            {
+
+                Console.WriteLine("ROL RECIBIDO: " + usuario.RolId);
+                Input.MensajeError = "No tiene permisos para acceder al portal administrativo.";
+                return Page();
+            }
+
+            HttpContext.Session.SetInt32("IntentosLogin", 0);
+
+            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, usuario);
 
             return Redirect("/Home/Index");
         }

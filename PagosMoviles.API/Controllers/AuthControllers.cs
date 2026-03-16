@@ -31,7 +31,7 @@ namespace PagosMoviles.API.Controllers
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                return BadRequest(new
+                return Unauthorized(new
                 {
                     codigo = -1,
                     descripcion = "Usuario y/o contraseña incorrectos."
@@ -80,6 +80,7 @@ namespace PagosMoviles.API.Controllers
 
             user.IntentosFallidos = 0;
             await _context.SaveChangesAsync();
+
             var jwt = _jwt.GenerarToken(user);
             var refresh = Guid.NewGuid().ToString();
 
@@ -102,7 +103,7 @@ namespace PagosMoviles.API.Controllers
                 refresh_token = refresh,
                 usuarioID = user.UsuarioId,
                 nombreCompleto = user.NombreCompleto,
-                rol = user.RolId == 1 ? "ADMIN" : "USUARIO",
+                rolId = user.RolId, 
                 fotoPerfil = user.FotoPerfil,
                 colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar
             });

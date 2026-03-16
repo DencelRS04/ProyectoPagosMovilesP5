@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PagosMoviles.PortalWeb.Helpers;
-using PagosMoviles.Shared.Constants;
 
 namespace PagosMoviles.PortalWeb.Filters
 {
-    /*public class SessionExpirationFilter : ActionFilterAttribute
+    public class SessionExpirationFilter : ActionFilterAttribute
     {
         private readonly int _timeoutMinutes;
 
@@ -19,24 +19,22 @@ namespace PagosMoviles.PortalWeb.Filters
             var session = context.HttpContext.Session;
             var usuario = SessionHelper.ObtenerUsuarioSesion(session);
 
-            if (usuario is null)
+            if (usuario == null)
             {
                 base.OnActionExecuting(context);
                 return;
             }
 
             var ultimaActividad = SessionHelper.ObtenerUltimaActividad(session);
+
             if (ultimaActividad.HasValue)
             {
                 var minutosInactivo = DateTime.UtcNow - ultimaActividad.Value;
+
                 if (minutosInactivo.TotalMinutes >= _timeoutMinutes)
                 {
                     SessionHelper.LimpiarSesion(session);
-                    context.HttpContext.Session.SetString(
-                        SessionKeys.SessionExpiredMessage,
-                        "La sesión ha expirado por inactividad.");
-
-                    context.Result = new RedirectToActionResult("Login", "Auth", null);
+                    context.Result = new RedirectResult("/Auth/Login?mensaje=La%20sesi%C3%B3n%20ha%20expirado%20por%20inactividad.");
                     return;
                 }
             }
@@ -44,5 +42,5 @@ namespace PagosMoviles.PortalWeb.Filters
             SessionHelper.ActualizarActividad(session);
             base.OnActionExecuting(context);
         }
-    }*/
+    }
 }

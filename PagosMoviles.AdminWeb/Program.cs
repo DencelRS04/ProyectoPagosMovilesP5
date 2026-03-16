@@ -21,6 +21,11 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+    app.MapGet("/", context =>
+    {
+        context.Response.Redirect("/Home/Index");
+        return Task.CompletedTask;
+    });
 }
 
 app.UseHttpsRedirection();

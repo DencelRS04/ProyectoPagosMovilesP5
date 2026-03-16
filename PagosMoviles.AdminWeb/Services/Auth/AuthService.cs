@@ -83,7 +83,7 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                 {
                     UsuarioId = loginResponse.UsuarioID.ToString(),
                     UsuarioNombre = loginResponse.NombreCompleto,
-                    Rol = loginResponse.Rol,
+                    RolId = loginResponse.RolId,
                     AccessToken = loginResponse.Access_Token,
                     RefreshToken = loginResponse.Refresh_Token,
                     ExpiraEn = loginResponse.Expires_In,

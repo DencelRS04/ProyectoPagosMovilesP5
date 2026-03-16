@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using PagosMoviles.Shared.Constants;
 using PagosMoviles.Shared.DTOs.Auth;
 using PagosMoviles.Shared.Models;
 
@@ -26,16 +25,6 @@ namespace PagosMoviles.PortalWeb.Services.Auth
             try
             {
                 var baseUrl = _configuration["ApiSettings:AuthBaseUrl"];
-
-                if (string.IsNullOrWhiteSpace(baseUrl))
-                {
-                    return new Tuple<bool, string, UsuarioSesionModel>(
-                        false,
-                        "No se configuró la URL del servicio de autenticación.",
-                        null
-                    );
-                }
-
                 var endpoint = baseUrl.TrimEnd('/') + "/auth/login";
 
                 var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
@@ -46,22 +35,7 @@ namespace PagosMoviles.PortalWeb.Services.Auth
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    return new Tuple<bool, string, UsuarioSesionModel>(
-                        false,
-                        "Usuario y/o contraseña incorrectos.",
-                        null
-                    );
-                }
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-
-                    return new Tuple<bool, string, UsuarioSesionModel>(
-                        false,
-                        "Error al autenticar. Código HTTP: " + ((int)response.StatusCode) + ". " + errorContent,
-                        null
-                    );
+                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Credenciales incorrectas.", null);
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -75,36 +49,24 @@ namespace PagosMoviles.PortalWeb.Services.Auth
 
                 if (loginResponse == null)
                 {
-                    return new Tuple<bool, string, UsuarioSesionModel>(
-                        false,
-                        "La respuesta del servicio de login es inválida.",
-                        null
-                    );
+                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Login inválido.", null);
                 }
 
                 var usuarioSesion = new UsuarioSesionModel
                 {
                     UsuarioId = loginResponse.UsuarioID.ToString(),
-                    UsuarioNombre = string.IsNullOrWhiteSpace(loginResponse.NombreCompleto) ? usuario : loginResponse.NombreCompleto,
-                    Rol = string.IsNullOrWhiteSpace(loginResponse.Rol) ? Roles.Admin : loginResponse.Rol,
+                    UsuarioNombre = loginResponse.NombreCompleto,
+                    RolId = loginResponse.RolId,
                     AccessToken = loginResponse.Access_Token,
                     RefreshToken = loginResponse.Refresh_Token,
                     ExpiraEn = loginResponse.Expires_In
                 };
 
-                return new Tuple<bool, string, UsuarioSesionModel>(
-                    true,
-                    string.Empty,
-                    usuarioSesion
-                );
+                return new Tuple<bool, string, UsuarioSesionModel>(true, "", usuarioSesion);
             }
-            catch (Exception ex)
+            catch
             {
-                return new Tuple<bool, string, UsuarioSesionModel>(
-                    false,
-                    "Error de conexión con el servicio de autenticación: " + ex.Message,
-                    null
-                );
+                return new Tuple<bool, string, UsuarioSesionModel>(false, "Error de autenticación.", null);
             }
         }
     }

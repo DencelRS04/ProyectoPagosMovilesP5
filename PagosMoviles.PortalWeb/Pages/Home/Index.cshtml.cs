@@ -1,15 +1,20 @@
-using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PagosMoviles.AdminWeb.Helpers;
+using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.Shared.Constants;
 
-namespace PagosMoviles.AdminWeb.Pages.Home
+namespace PagosMoviles.PortalWeb.Pages.Home
 {
     public class IndexModel : PageModel
     {
-        public string UsuarioNombre { get; set; }
+        private readonly IConfiguration _configuration;
+
+        public IndexModel(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public string UsuarioNombre { get; set; } = "";
 
         public IActionResult OnGet()
         {
@@ -17,7 +22,17 @@ namespace PagosMoviles.AdminWeb.Pages.Home
 
             if (usuario == null)
             {
-                return Redirect("/Auth/Login");
+                return Redirect("/");
+            }
+
+            int rol = usuario.RolId;
+
+            var adminUrl = _configuration["PortalSettings:AdminUrl"] ?? "https://localhost:7150";
+
+            if (rol == 5)
+            {
+                SessionHelper.LimpiarSesion(HttpContext.Session);
+                return Redirect(adminUrl + "/Index");
             }
 
             var ultimaActividad = SessionHelper.ObtenerUltimaActividad(HttpContext.Session);
@@ -32,17 +47,17 @@ namespace PagosMoviles.AdminWeb.Pages.Home
 
                     HttpContext.Session.SetString(
                         SessionKeys.SessionExpiredMessage,
-                        "La sesión expiró por inactividad."
+                        "La sesión ha expirado por inactividad."
                     );
 
-                    return Redirect("/Auth/Login");
+                    return Redirect("/");
                 }
             }
 
             SessionHelper.ActualizarActividad(HttpContext.Session);
 
             UsuarioNombre = string.IsNullOrWhiteSpace(usuario.UsuarioNombre)
-                ? "Administrador"
+                ? "Cliente"
                 : usuario.UsuarioNombre;
 
             return Page();

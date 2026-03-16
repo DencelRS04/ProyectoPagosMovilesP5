@@ -1,0 +1,18 @@
+﻿@page
+@model PagosMoviles.PortalWeb.Pages.Home.IndexModel
+@{
+    ViewData["Title"] = "Portal de Clientes";
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="content-card">
+    <h1>Bienvenido al portal de clientes</h1>
+
+    <p>
+        <strong>Cliente:</strong> @Model.UsuarioNombre
+    </p>
+
+    <p>
+        Seleccione una opción del menú para continuar.
+    </p>
+</div>

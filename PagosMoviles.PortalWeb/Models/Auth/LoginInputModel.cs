@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PagosMoviles.AdminWeb.Models.Auth
+namespace PagosMoviles.PortalWeb.Models.Auth
 {
     public class LoginInputModel
     {

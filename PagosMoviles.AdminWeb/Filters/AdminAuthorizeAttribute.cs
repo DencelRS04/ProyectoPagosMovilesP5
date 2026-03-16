@@ -12,23 +12,15 @@ namespace PagosMoviles.AdminWeb.Filters
             var session = context.HttpContext.Session;
             var usuario = SessionHelper.ObtenerUsuarioSesion(session);
 
-            if (usuario is null)
+            if (usuario == null)
             {
-                context.Result = new RedirectToActionResult("Login", "Auth", new
-                {
-                    area = "",
-                    mensaje = "Por favor inicie sesión para utilizar el sistema."
-                });
+                context.Result = new RedirectToActionResult("Login", "Auth", null);
                 return;
             }
 
-            if (!string.Equals(usuario.Rol, Roles.Admin, StringComparison.OrdinalIgnoreCase))
+            if (usuario.RolId != Roles.Admin)
             {
-                context.Result = new RedirectToActionResult("Login", "Auth", new
-                {
-                    area = "",
-                    mensaje = "No autorizado para ingresar al sitio administrativo."
-                });
+                context.Result = new RedirectToActionResult("Login", "Auth", null);
                 return;
             }
 
