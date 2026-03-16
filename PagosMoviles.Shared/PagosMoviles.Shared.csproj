@@ -42,13 +42,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Dtos\Afiliacion\AfiliacionResponseDto.cs" />
-    <Compile Include="Dtos\Afiliacion\RegisterPagoMovilDto.cs" />
-    <Compile Include="Dtos\Common\ApiResponseDto.cs" />
-    <Compile Include="Dtos\Common\ErrorResponseDto.cs" />
-    <Compile Include="Dtos\Core\ClienteDto.cs" />
-    <Compile Include="Dtos\Core\CreateClienteDto.cs" />
-    <Compile Include="Dtos\Core\UpdateClienteDto.cs" />
+    <Compile Include="DTOs\Afiliacion\AfiliacionResponseDto.cs" />
+    <Compile Include="DTOs\Afiliacion\RegisterPagoMovilDto.cs" />
+    <Compile Include="DTOs\ApiResponse.cs" />
+    <Compile Include="DTOs\Common\ApiResponseDto.cs" />
+    <Compile Include="DTOs\Common\ErrorResponseDto.cs" />
+    <Compile Include="DTOs\Core\ClienteDto.cs" />
+    <Compile Include="DTOs\Core\CreateClienteDto.cs" />
+    <Compile Include="DTOs\Core\UpdateClienteDto.cs" />
+    <Compile Include="DTOs\Pantallas\PantallaCreateDto.cs" />
+    <Compile Include="DTOs\Pantallas\PantallaDto.cs" />
+    <Compile Include="DTOs\Pantallas\UpdatePantallaDto.cs" />
+    <Compile Include="DTOs\Roles\RolCreateDto.cs" />
+    <Compile Include="DTOs\Roles\RolDto.cs" />
+    <Compile Include="DTOs\Roles\UpdateRolDto.cs" />
+    <Compile Include="DTOs\Saldo\SaldoRequestDto.cs" />
+    <Compile Include="DTOs\Saldo\SaldoResponseDto.cs" />
+    <Compile Include="DTOs\Transferencias\TransferenciaRequestDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,238 @@
+﻿@page
+@model PagosMoviles.AdminWeb.Pages.Pantallas.IndexModel
+@{
+    ViewData["Title"] = "Administración de Pantallas";
+}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 0;
+    }
+    .btn-nuevo {
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s;
+    }
+    .btn-nuevo:hover { background-color: #0b5ed7; color: white; }
+
+    .search-bar {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+    .search-bar input {
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 0.45rem 0.75rem;
+        width: 300px;
+        font-size: 0.95rem;
+    }
+    .search-bar input:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
+    .btn-buscar {
+        background: #343a40; color: white; border: none;
+        padding: 0.45rem 1rem; border-radius: 6px; font-weight: 600;
+        cursor: pointer; transition: background 0.2s;
+    }
+    .btn-buscar:hover { background: #23272b; }
+    .btn-limpiar {
+        background: white; color: #343a40; border: 1px solid #ced4da;
+        padding: 0.45rem 1rem; border-radius: 6px; font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
+        text-decoration: none;
+    }
+    .btn-limpiar:hover { background: #f8f9fa; }
+
+    .tabla-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .tabla-container table { width: 100%; border-collapse: collapse; }
+    .tabla-container thead th {
+        background: #1a1a2e; color: white;
+        padding: 0.85rem 1rem; font-weight: 600;
+        font-size: 0.9rem; text-align: left;
+    }
+    .tabla-container tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
+    .tabla-container tbody tr:hover { background: #f8f9ff; }
+    .tabla-container tbody td { padding: 0.8rem 1rem; font-size: 0.95rem; color: #333; }
+
+    .btn-editar {
+        background: #ffc107; color: #333; border: none;
+        padding: 0.3rem 0.85rem; border-radius: 5px; font-weight: 600;
+        font-size: 0.85rem; text-decoration: none; margin-right: 0.3rem;
+        transition: background 0.2s; display: inline-block;
+    }
+    .btn-editar:hover { background: #e0a800; color: #333; }
+    .btn-eliminar {
+        background: #dc3545; color: white; border: none;
+        padding: 0.3rem 0.85rem; border-radius: 5px; font-weight: 600;
+        font-size: 0.85rem; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-eliminar:hover { background: #bb2d3b; }
+
+    .alert-success {
+        background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc;
+        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .alert-danger {
+        background: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
+        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem;
+    }
+    .sin-resultados {
+        text-align: center; padding: 3rem; color: #888; font-size: 1rem;
+    }
+
+    /* Modal de confirmación */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.45); z-index: 1000;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.activo { display: flex; }
+    .modal-box {
+        background: white; border-radius: 10px;
+        padding: 2rem; max-width: 420px; width: 90%;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .modal-box h5 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .modal-box p { color: #555; margin-bottom: 1.5rem; }
+    .modal-acciones { display: flex; gap: 0.75rem; justify-content: flex-end; }
+    .btn-cancelar {
+        background: white; border: 1px solid #ced4da; color: #555;
+        padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;
+    }
+    .btn-confirmar-eliminar {
+        background: #dc3545; color: white; border: none;
+        padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;
+    }
+</style>
+
+<div class="container mt-4">
+
+    @* Mensajes de éxito/error *@
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert-success">
+            <span>✅ @TempData["Mensaje"]</span>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger">⚠️ @TempData["Error"]</div>
+    }
+    @if (Model.MensajeError != null)
+    {
+        <div class="alert-danger">⚠️ @Model.MensajeError</div>
+    }
+
+    <div class="page-header">
+        <h1 class="page-title">Administración de Pantallas</h1>
+        <a asp-page="Create" class="btn-nuevo">+ Nueva Pantalla</a>
+    </div>
+
+    @* Buscador *@
+    <form method="get" class="search-bar">
+        <input type="text" name="buscar" value="@Model.Buscar"
+               placeholder="Buscar por nombre..." />
+        <button type="submit" class="btn-buscar">Buscar</button>
+        <a asp-page="Index" class="btn-limpiar">Limpiar</a>
+    </form>
+
+    @* Tabla *@
+    <div class="tabla-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Identificador</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Ruta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Pantallas.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="sin-resultados">
+                            No se encontraron pantallas registradas.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var p in Model.Pantallas)
+                    {
+                        <tr>
+                            <td>@p.Identificador</td>
+                            <td>@p.Nombre</td>
+                            <td>@p.Descripcion</td>
+                            <td>@p.Ruta</td>
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@p.PantallaId"
+                                   class="btn-editar">Editar</a>
+                                <button type="button" class="btn-eliminar"
+                                        onclick="confirmarEliminar(@p.PantallaId, '@p.Nombre')">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* Modal de confirmación de eliminación *@
+<div class="modal-overlay" id="modalEliminar">
+    <div class="modal-box">
+        <h5>Confirmar eliminación</h5>
+        <p>¿Realmente desea eliminar la pantalla <strong id="nombrePantalla"></strong>?</p>
+        <div class="modal-acciones">
+            <button class="btn-cancelar" onclick="cerrarModal()">No</button>
+            <form method="post" asp-page-handler="Eliminar" id="formEliminar">
+                <input type="hidden" name="id" id="idEliminar" />
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-confirmar-eliminar">Sí, eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            document.getElementById('idEliminar').value = id;
+            document.getElementById('nombrePantalla').textContent = nombre;
+            document.getElementById('modalEliminar').classList.add('activo');
+        }
+        function cerrarModal() {
+            document.getElementById('modalEliminar').classList.remove('activo');
+        }
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modalEliminar').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+    </script>
+}
