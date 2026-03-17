@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.PortalWeb.Models.Desinscripcion;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,10 +11,12 @@ namespace PagosMoviles.PortalWeb.Pages.Desinscripcion
     public class IndexModel : PageModel
     {
         private readonly IHttpClientFactory _httpFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndexModel(IHttpClientFactory httpFactory)
+        public IndexModel(IHttpClientFactory httpFactory, IHttpContextAccessor httpContextAccessor)
         {
             _httpFactory = httpFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -22,14 +25,29 @@ namespace PagosMoviles.PortalWeb.Pages.Desinscripcion
         public string? MensajeExito { get; set; }
         public string? MensajeError { get; set; }
 
-        public void OnGet() { }
+        public IActionResult OnGet()
+        {
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null)
+                return Redirect("/");
+
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null)
+                return Redirect("/");
+
             var client = _httpFactory.CreateClient("InscripcionApi");
+
+            if (!string.IsNullOrWhiteSpace(usuario.AccessToken))
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
 
             var opciones = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var body = JsonSerializer.Serialize(Formulario, opciones);
@@ -41,7 +59,7 @@ namespace PagosMoviles.PortalWeb.Pages.Desinscripcion
             if (response.IsSuccessStatusCode)
             {
                 MensajeExito = "Te has desinscrito exitosamente de Pagos Móviles.";
-                Formulario = new(); // limpiar formulario
+                Formulario = new();
                 ModelState.Clear();
             }
             else

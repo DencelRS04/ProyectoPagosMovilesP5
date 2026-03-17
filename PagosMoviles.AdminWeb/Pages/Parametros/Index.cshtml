@@ -76,7 +76,7 @@
 <div class="modal fade" id="modalParametro" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="post" asp-page-handler="Guardar">
+            <form method="post" asp-page-handler="Guardar" novalidate>
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitulo">Parámetro</h5>
@@ -86,11 +86,15 @@
                     <input type="hidden" asp-for="Formulario.ParametroIdOriginal" id="fParamIdOriginal" />
 
                     <div class="mb-3">
-                        <label class="form-label">Identificador * <small class="text-muted">(mayúsculas, máx. 10 letras)</small></label>
-                        <input asp-for="Formulario.ParametroId" id="fParamId" class="form-control"
-                               placeholder="Ej: TASA"
+                        <label class="form-label">
+                            Identificador * <small class="text-muted">(mayúsculas, máx. 10 letras)</small>
+                        </label>
+                        <input asp-for="Formulario.ParametroId"
+                               id="fParamId"
+                               class="form-control"
                                style="text-transform:uppercase"
-                               oninput="this.value = this.value.toUpperCase()" />
+                               oninput="this.value = this.value.toUpperCase()"
+                               placeholder="Ej: TASA" />
                         <span asp-validation-for="Formulario.ParametroId" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
@@ -115,12 +119,10 @@
     {
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                // Restaurar título según si es edición o creación
                 var idOriginal = document.getElementById('fParamIdOriginal').value;
                 document.getElementById('modalTitulo').innerText =
                     idOriginal ? 'Editar Parámetro' : 'Nuevo Parámetro';
 
-                // Al editar, el campo ID es de solo lectura
                 if (idOriginal) {
                     document.getElementById('fParamId').readOnly = true;
                 }
