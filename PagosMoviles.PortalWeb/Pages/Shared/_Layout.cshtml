@@ -1,51 +1,65 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PagosMoviles.PortalWeb</title>
+    <title>@ViewData["Title"] - Pagos Móviles</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PagosMoviles.PortalWeb.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">PagosMoviles.PortalWeb</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <div class="app-shell">
+        <partial name="_Sidebar" />
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - PagosMoviles.PortalWeb - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        <div class="app-main">
+            <partial name="_Topbar" />
+
+            <main class="page-content">
+                @RenderBody()
+            </main>
         </div>
-    </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/session-timeout.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <style>
+        .left-panel {
+            position: fixed;
+            left: 20px;
+            top: 120px;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 999;
+        }
+
+            .left-panel button {
+                width: 100%;
+                padding: 16px;
+                font-size: 16px;
+                border: none;
+                border-radius: 10px;
+                background: #4e73df;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+            }
+
+                .left-panel button:hover {
+                    background: #2e59d9;
+                    transform: scale(1.05);
+                }
+    </style>
+
+    <div class="left-panel">
+        <button onclick="location.href='/Desinscripcion'">Desinscripción</button>
+    </div>
 </body>
 </html>

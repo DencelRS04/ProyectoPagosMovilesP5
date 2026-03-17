@@ -1,0 +1,59 @@
+﻿@page
+@model PagosMoviles.PortalWeb.Pages.Auth.LoginModel
+@{
+    ViewData["Title"] = "Ingreso de Clientes";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Ingreso de Clientes</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="~/Imagenes/logoportal.png" alt="Logo" class="login-logo" />
+                <h2>Pagos Móviles - Portal de Clientes</h2>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+            {
+                <div class="alert alert-warning">@Model.Mensaje</div>
+            }
+
+            @if (Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError))
+            {
+                <div class="alert alert-danger">@Model.Input.MensajeError</div>
+            }
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label for="Usuario">Usuario</label>
+                    <input type="text"
+                           id="Usuario"
+                           name="Input.Usuario"
+                           class="form-control"
+                           value="@(Model.Input != null ? Model.Input.Usuario : "")" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Contrasena">Contraseña</label>
+                    <input type="password"
+                           id="Contrasena"
+                           name="Input.Contrasena"
+                           class="form-control"
+                           value="" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Aceptar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

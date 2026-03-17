@@ -10,4 +10,17 @@
     <ProjectReference Include="..\PagosMoviles.Shared\PagosMoviles.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Auth\" />
+    <Folder Include="Controllers\Home\" />
+    <Folder Include="Models\CuentasCore\" />
+    <Folder Include="Models\Entidades\" />
+    <Folder Include="Models\Pantallas\" />
+    <Folder Include="Models\Parametros\" />
+    <Folder Include="Models\Reportes\" />
+    <Folder Include="Models\Roles\" />
+    <Folder Include="Models\Session\" />
+    <Folder Include="Models\Usuarios\" />
+  </ItemGroup>
+
 </Project>

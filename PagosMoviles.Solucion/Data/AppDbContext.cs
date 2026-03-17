@@ -28,6 +28,8 @@ public class AppDbContext : DbContext
 
             entity.HasIndex(x => x.Email).IsUnique();
             entity.HasIndex(x => x.Identificacion).IsUnique();
+            entity.Property(e => e.FotoPerfil).HasMaxLength(255).IsUnicode(false);
+            entity.Property(e => e.ColorAvatar).HasMaxLength(20).IsUnicode(false);
         });
 
         modelBuilder.Entity<PagoMovil>(entity =>

@@ -32,5 +32,7 @@ namespace PagosMoviles.UsuariosService.Models
 
         [Required]
         public DateTime FechaCreacion { get; set; }
+        public string FotoPerfil { get; set; } = string.Empty;
+        public string ColorAvatar { get; set; } = "#4285F4";
     }
 }

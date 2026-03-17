@@ -1,0 +1,101 @@
+﻿@page
+@model PagosMoviles.AdminWeb.Pages.Auth.LoginModel
+@{
+    ViewData["Title"] = "Login Administrador";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login Admin</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            background-color: #f4f6f9;
+        }
+
+        .login-container {
+            width: 400px;
+            margin: 120px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background: #0056b3;
+            }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="login-container">
+
+        <h2>Administrador</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Input.MensajeError))
+        {
+            <div class="error">
+                @Model.Input.MensajeError
+            </div>
+        }
+
+        <form method="post">
+
+            <div class="form-group">
+                <label>Correo</label>
+                <input asp-for="Input.Usuario" />
+                <span asp-validation-for="Input.Usuario"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input asp-for="Input.Contrasena" type="password" />
+                <span asp-validation-for="Input.Contrasena"></span>
+            </div>
+
+            <button type="submit">Ingresar</button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

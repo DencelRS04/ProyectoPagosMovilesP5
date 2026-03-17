@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.Shared.DTOs.Pantallas;
 
@@ -32,4 +32,3 @@ namespace PagosMoviles.AdminWeb.Controllers.Pantallas
         }
     }
 }
-
