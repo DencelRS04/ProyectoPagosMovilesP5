@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PagosMoviles.AdminWeb.Helpers;
 using PagosMoviles.AdminWeb.Models.Usuarios;
 using System.Net.Http.Headers;
 using System.Text;
@@ -29,7 +30,8 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
 
         private HttpClient CrearClienteConToken()
         {
-            var token = HttpContext.Session.GetString("JwtToken");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            var token = usuario?.AccessToken;
             var client = _httpFactory.CreateClient("UsuarioApi");
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
@@ -39,10 +41,9 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // TODO: Descomentar cuando Login esté implementado por el compañero
-             var token = HttpContext.Session.GetString("JwtToken");
-             if (string.IsNullOrEmpty(token))
-                 return RedirectToPage("/Login");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null || string.IsNullOrEmpty(usuario.AccessToken))
+                return Redirect("/Auth/Login");
 
             var client = CrearClienteConToken();
             var response = await client.GetAsync("user");
@@ -64,13 +65,16 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
                         .ToList();
                 }
             }
+            else
+            {
+                MensajeError = $"Error al cargar usuarios. ({(int)response.StatusCode})";
+            }
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostGuardarAsync()
         {
-            // La contraseña es obligatoria solo al crear un usuario nuevo
             bool esNuevo = !Formulario.UsuarioId.HasValue || Formulario.UsuarioId == 0;
             if (esNuevo && string.IsNullOrWhiteSpace(Formulario.Password))
                 ModelState.AddModelError("Formulario.Password", "La contraseña es obligatoria al crear un usuario.");

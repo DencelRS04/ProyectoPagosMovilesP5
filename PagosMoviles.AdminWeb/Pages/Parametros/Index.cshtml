@@ -88,7 +88,9 @@
                     <div class="mb-3">
                         <label class="form-label">Identificador * <small class="text-muted">(mayúsculas, máx. 10 letras)</small></label>
                         <input asp-for="Formulario.ParametroId" id="fParamId" class="form-control"
-                               placeholder="Ej: TASA" style="text-transform:uppercase" />
+                               placeholder="Ej: TASA"
+                               style="text-transform:uppercase"
+                               oninput="this.value = this.value.toUpperCase()" />
                         <span asp-validation-for="Formulario.ParametroId" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
@@ -109,4 +111,24 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/parametros.js"></script>
+    @if (Model.ReobrirModal)
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Restaurar título según si es edición o creación
+                var idOriginal = document.getElementById('fParamIdOriginal').value;
+                document.getElementById('modalTitulo').innerText =
+                    idOriginal ? 'Editar Parámetro' : 'Nuevo Parámetro';
+
+                // Al editar, el campo ID es de solo lectura
+                if (idOriginal) {
+                    document.getElementById('fParamId').readOnly = true;
+                }
+
+                bootstrap.Modal.getOrCreateInstance(
+                    document.getElementById('modalParametro')
+                ).show();
+            });
+        </script>
+    }
 }

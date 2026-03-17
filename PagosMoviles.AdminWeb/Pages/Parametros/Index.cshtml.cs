@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PagosMoviles.AdminWeb.Helpers;
 using PagosMoviles.AdminWeb.Models.Parametros;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace PagosMoviles.AdminWeb.Pages.Parametros
 {
@@ -26,10 +28,12 @@ namespace PagosMoviles.AdminWeb.Pages.Parametros
 
         public string? MensajeError { get; set; }
         public string? MensajeExito { get; set; }
+        public bool ReobrirModal { get; set; }
 
         private HttpClient CrearClienteConToken()
         {
-            var token = HttpContext.Session.GetString("JwtToken");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            var token = usuario?.AccessToken;
             var client = _httpFactory.CreateClient("ParametroApi");
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
@@ -58,6 +62,10 @@ namespace PagosMoviles.AdminWeb.Pages.Parametros
                         .ToList();
                 }
             }
+            else
+            {
+                MensajeError = $"Error al cargar parámetros. ({(int)response.StatusCode})";
+            }
 
             return Page();
         }
@@ -66,13 +74,29 @@ namespace PagosMoviles.AdminWeb.Pages.Parametros
         {
             bool esNuevo = string.IsNullOrEmpty(Formulario.ParametroIdOriginal);
 
-            // Al editar, el ID no se puede cambiar — omitir su validación
+            if (esNuevo && !string.IsNullOrEmpty(Formulario.ParametroId))
+            {
+                Formulario.ParametroId = Formulario.ParametroId.ToUpperInvariant();
+
+                // Limpiar el resultado del binding anterior y revalidar manualmente
+                ModelState.Remove("Formulario.ParametroId");
+                if (string.IsNullOrWhiteSpace(Formulario.ParametroId))
+                    ModelState.AddModelError("Formulario.ParametroId", "El identificador es obligatorio.");
+                else if (!Regex.IsMatch(Formulario.ParametroId, @"^[A-Z]{1,10}$"))
+                    ModelState.AddModelError("Formulario.ParametroId", "Solo letras mayúsculas, entre 1 y 10 caracteres.");
+            }
+
             if (!esNuevo)
                 ModelState.Remove("Formulario.ParametroId");
 
             if (!ModelState.IsValid)
             {
-                await OnGetAsync();
+                var errores = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                MensajeError = "Datos inválidos: " + string.Join(" | ", errores);
+                ReobrirModal = true;
+                await CargarListaAsync();
                 return Page();
             }
 
@@ -80,32 +104,45 @@ namespace PagosMoviles.AdminWeb.Pages.Parametros
             var opciones = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             HttpResponseMessage response;
 
-            if (esNuevo)
+            try
             {
-                var dto = new { parametroId = Formulario.ParametroId, valor = Formulario.Valor };
-                var content = new StringContent(JsonSerializer.Serialize(dto, opciones),
-                    Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
-                response = await client.PostAsync("parametro", content);
+                if (esNuevo)
+                {
+                    var dto = new { parametroId = Formulario.ParametroId, valor = Formulario.Valor };
+                    var content = new StringContent(JsonSerializer.Serialize(dto, opciones),
+                        Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
+                    response = await client.PostAsync("parametro", content);
+                }
+                else
+                {
+                    var dto = new { valor = Formulario.Valor };
+                    var content = new StringContent(JsonSerializer.Serialize(dto, opciones),
+                        Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
+                    response = await client.PutAsync($"parametro/{Formulario.ParametroIdOriginal}", content);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var dto = new { valor = Formulario.Valor };
-                var content = new StringContent(JsonSerializer.Serialize(dto, opciones),
-                    Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
-                response = await client.PutAsync($"parametro/{Formulario.ParametroIdOriginal}", content);
+                MensajeError = $"No se pudo conectar con el servidor: {ex.Message}";
+                ReobrirModal = true;
+                await CargarListaAsync();
+                return Page();
             }
 
             if (response.IsSuccessStatusCode)
             {
-                MensajeExito = "Parámetro guardado correctamente.";
+                MensajeExito = esNuevo
+                    ? "Parámetro creado correctamente."
+                    : "Parámetro actualizado correctamente.";
             }
             else
             {
                 var errorBody = await response.Content.ReadAsStringAsync();
-                MensajeError = $"Error al guardar el parámetro. ({(int)response.StatusCode}): {errorBody}";
+                MensajeError = $"Error al guardar el parámetro ({(int)response.StatusCode}): {errorBody}";
+                ReobrirModal = true;
             }
 
-            await OnGetAsync();
+            await CargarListaAsync();
             return Page();
         }
 
@@ -119,8 +156,29 @@ namespace PagosMoviles.AdminWeb.Pages.Parametros
             else
                 MensajeError = "No se pudo eliminar el parámetro.";
 
-            await OnGetAsync();
+            await CargarListaAsync();
             return Page();
+        }
+
+        private async Task CargarListaAsync()
+        {
+            var client = CrearClienteConToken();
+            var response = await client.GetAsync("parametro");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var resultado = JsonSerializer.Deserialize<ApiRespuesta<List<ParametroViewModel>>>(json,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                Parametros = resultado?.Datos ?? new();
+
+                if (!string.IsNullOrWhiteSpace(Busqueda))
+                {
+                    var b = Busqueda.ToUpper();
+                    Parametros = Parametros.Where(p => p.ParametroId.Contains(b)).ToList();
+                }
+            }
         }
 
         private class ApiRespuesta<T>

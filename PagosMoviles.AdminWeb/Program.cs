@@ -1,8 +1,15 @@
+using Microsoft.AspNetCore.DataProtection;
 using PagosMoviles.AdminWeb.Services;
 using PagosMoviles.AdminWeb.Services.Auth;
 using PagosMoviles.AdminWeb.Services.Perfil;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ✅ Persiste las claves de Data Protection en disco para que sobrevivan reinicios
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(
+        Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
+    .SetApplicationName("PagosMoviles.AdminWeb");
 
 builder.Services.AddRazorPages();
 
@@ -25,6 +32,7 @@ builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.Name = ".AdminWeb.Session"; //  Nombre único para evitar colisión con PortalWeb
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 

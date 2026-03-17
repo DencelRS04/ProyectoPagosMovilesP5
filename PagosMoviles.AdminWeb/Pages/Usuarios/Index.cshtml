@@ -26,7 +26,13 @@
         <a asp-page="/Usuarios/Index" class="btn btn-outline-secondary">Limpiar</a>
     </div>
     <div class="col-auto ms-auto">
-        <button type="button" class="btn btn-primary" onclick="abrirNuevo()">+ Nuevo Usuario</button>
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalUsuario"
+                onclick="prepararNuevo()">
+            + Nuevo Usuario
+        </button>
     </div>
 </form>
 
