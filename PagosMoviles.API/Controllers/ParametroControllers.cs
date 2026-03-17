@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PagosMoviles.API.Data;
 using PagosMoviles.API.DTOs;
@@ -11,6 +12,7 @@ namespace PagosMoviles.API.Controllers;
 
 [ApiController]
 [Route("parametro")]
+
 public class ParametroController : ControllerBase
 {
     private readonly PagosMovilesDbContext _context;
@@ -95,7 +97,7 @@ public class ParametroController : ControllerBase
             return Conflict(new ApiResponse
             {
                 codigo = 409,
-                descripcion = "Ya existe un parámetro con ese identificador",
+               descripcion = "Ya existe un parámetro con ese identificador",
                 datos = null
             });
         }

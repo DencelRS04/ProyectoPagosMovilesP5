@@ -1,4 +1,4 @@
-﻿namespace PagosMoviles.AdminWeb.Models.Shared
+﻿namespace PagosMoviles.Shared.Models
 {
     public class MenuItemViewModel
     {

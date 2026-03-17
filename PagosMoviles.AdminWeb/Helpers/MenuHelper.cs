@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using PagosMoviles.AdminWeb.Models.Shared;
 using PagosMoviles.Shared.Constants;
+using PagosMoviles.Shared.Models;
 
 namespace PagosMoviles.AdminWeb.Helpers
 {
@@ -17,15 +17,15 @@ namespace PagosMoviles.AdminWeb.Helpers
 
             if (usuario.RolId == Roles.Admin)
             {
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Home/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Usuarios/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Pantallas/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Roles/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Parametros/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Entidades/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/ClientesCore/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/CuentasCore/Index" });
-                menu.Add(new MenuItemViewModel { Texto = "", Url = "/Reportes/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Inicio",              Url = "/Home/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Gestión de Usuarios", Url = "/Usuarios" });
+                menu.Add(new MenuItemViewModel { Texto = "Pantallas",           Url = "/Pantallas/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Gestión de Roles",    Url = "/Roles/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Parámetros",          Url = "/Parametros" });
+                menu.Add(new MenuItemViewModel { Texto = "Entidades",           Url = "/Entidades/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Clientes Core",       Url = "/ClientesCore/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Cuentas Core",        Url = "/CuentasCore/Index" });
+                menu.Add(new MenuItemViewModel { Texto = "Reportes",            Url = "/Reportes/Index" });
             }
 
             return menu;

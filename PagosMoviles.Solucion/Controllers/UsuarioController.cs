@@ -1,3 +1,4 @@
+
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PagosMoviles.UsuariosService.Data;
@@ -10,6 +11,7 @@ namespace PagosMoviles.UsuariosService.Controllers
     [ApiController]
     [Route("user")]
     [Produces("application/json")]
+    
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _service;

@@ -7,6 +7,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddHttpClient("InscripcionApi", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["InscripcionApiUrl"] ?? "https://localhost:7143/");
+});
+
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
@@ -28,13 +33,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseSession();
 
 app.UseAuthorization();
-
 app.MapRazorPages();
 
 app.Run();

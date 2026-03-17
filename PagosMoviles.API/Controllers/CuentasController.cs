@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PagosMoviles.API.Data;
 using PagosMoviles.API.DTOs;
 using PagosMoviles.API.Services;
@@ -335,11 +336,13 @@ public class CuentasController : ControllerBase
         }
     }
 
-    // =========================================================
+    
     // SRV10 - Desinscripción de pagos móviles
     // POST /accounts/unsubscribe
     // Body: { telefono, identificacion, numeroCuenta }  (como el service original)
-    // =========================================================
+    
+
+    
     [HttpPost("unsubscribe")]
     public async Task<IActionResult> Desinscribir([FromBody] CancelarSuscripcionRequest req)
     {
