@@ -22,18 +22,18 @@
         @foreach (var entidad in Model.Entidades)
         {
             <tr>
-                <td>@entidad.Identificador</td>
-                <td>@entidad.Nombre</td>
+                <td>@entidad.CodigoEntidad</td>
+                <td>@entidad.NombreInstitucion</td>
 
                 <td>
-                    <a asp-page="Edit" asp-route-id="@entidad.Identificador"
+                    <a asp-page="Edit" asp-route-id="@entidad.CodigoEntidad"
                        class="btn btn-warning btn-sm">
                         Editar
                     </a>
 
                     <form method="post"
                           asp-page-handler="Eliminar"
-                          asp-route-id="@entidad.Identificador"
+                          asp-route-id="@entidad.CodigoEntidad"
                           style="display:inline">
 
                         <button class="btn btn-danger btn-sm"

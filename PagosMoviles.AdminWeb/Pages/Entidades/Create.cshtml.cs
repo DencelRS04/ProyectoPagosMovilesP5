@@ -23,11 +23,8 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
 
         public async Task<IActionResult> OnPost()
         {
-            var token = HttpContext.Session.GetString("token");
-
-            await _service.CrearAsync(Entidad);
-
-            return RedirectToPage("Index");
+            await _service.CrearAsync(Entidad); 
+    return RedirectToPage("Index");
         }
     }
 }

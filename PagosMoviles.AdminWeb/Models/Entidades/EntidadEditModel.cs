@@ -2,8 +2,8 @@
 {
     public class EntidadEditModel
     {
-        public int Identificador { get; set; }
-
-        public string Nombre { get; set; }
+        public int EntidadId { get; set; }
+        public string CodigoEntidad { get; set; }
+        public string NombreInstitucion { get; set; }
     }
 }

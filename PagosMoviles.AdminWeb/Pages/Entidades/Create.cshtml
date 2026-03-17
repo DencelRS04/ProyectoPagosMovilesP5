@@ -16,31 +16,41 @@
             <form method="post" id="createForm">
                 @Html.AntiForgeryToken()
 
+              
                 <div class="row">
                     <div class="col-md-8 mx-auto">
                         <div class="mb-4">
-                            <label asp-for="Entidad.Identificador" class="form-label fw-bold">
+                            <label asp-for="Entidad.CodigoEntidad"
+								   class="form-label fw-bold">
                                 <i class="fas fa-id-card me-2"></i>Identificador
                             </label>
-                            <input asp-for="Entidad.Identificador"
+
+                            <!-- ✔ correcto -->
+                            <input asp-for="Entidad.CodigoEntidad"
                                    class="form-control form-control-lg"
                                    placeholder="Ingrese el identificador único"
                                    required
                                    maxlength="50" />
-                            <span asp-validation-for="Entidad.Identificador" class="text-danger small"></span>
+
+                            <span asp-validation-for="Entidad.CodigoEntidad" class="text-danger small"></span>
+
                             <div class="form-text">El identificador debe ser único en el sistema.</div>
                         </div>
 
                         <div class="mb-4">
-                            <label asp-for="Entidad.Nombre" class="form-label fw-bold">
+                            <!-- ✔ corregido nombre real -->
+                            <label asp-for="Entidad.NombreInstitucion" class="form-label fw-bold">
                                 <i class="fas fa-building me-2"></i>Nombre
                             </label>
-                            <input asp-for="Entidad.Nombre"
+
+                            <input asp-for="Entidad.NombreInstitucion"
                                    class="form-control form-control-lg"
                                    placeholder="Ingrese el nombre de la entidad"
                                    required
                                    maxlength="100" />
-                            <span asp-validation-for="Entidad.Nombre" class="text-danger small"></span>
+
+                            <span asp-validation-for="Entidad.NombreInstitucion" class="text-danger small"></span>
+
                             <div class="form-text">Nombre completo de la entidad.</div>
                         </div>
 

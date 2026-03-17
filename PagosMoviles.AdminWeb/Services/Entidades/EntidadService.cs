@@ -16,52 +16,66 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var response = await client.GetFromJsonAsync<ApiResponse<List<EntidadViewModel>>>
-            ("gateway/admin/entidad");
+            var response = await client.GetFromJsonAsync<ApiResponse<List<EntidadViewModel>>>(
+                "gateway/admin/entidad"
+            );
 
             return response?.Datos ?? new List<EntidadViewModel>();
         }
-
         public async Task<EntidadViewModel?> ObtenerPorIdAsync(int id)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var response = await client.GetFromJsonAsync<ApiResponse<EntidadViewModel>>
-                ($"gateway/admin/entidad/{id}");
+                ($"gateway/admin/core/{id}");
 
             return response?.Datos;
         }
 
-        public async Task<(bool ok, string mensaje)> CrearAsync(EntidadViewModel model)
+        public async Task CrearAsync(EntidadCreateModel entidad)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var httpResponse = await client.PostAsJsonAsync
-                ("gateway/admin/entidad", model);
+            var model = new
+            {
+                codigoEntidad = entidad.CodigoEntidad,
+                nombreInstitucion = entidad.NombreInstitucion
+            };
 
-            var response = await httpResponse.Content
-                .ReadFromJsonAsync<ApiResponse<EntidadViewModel>>();
+            var response = await client.PostAsJsonAsync(
+                "gateway/admin/entidad",
+                model
+            );
 
-            if (!httpResponse.IsSuccessStatusCode)
-                return (false, response?.Descripcion ?? "No se pudo crear la entidad");
-
-            return (true, response?.Descripcion ?? "Entidad creada correctamente");
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al crear: {error}");
+            }
         }
 
-        public async Task<(bool ok, string mensaje)> ActualizarAsync(int id, EntidadViewModel model)
+        public async Task ActualizarAsync(string codigoEntidad, EntidadEditModel entidad)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var httpResponse = await client.PutAsJsonAsync
-                ($"gateway/admin/entidad/{id}", model);
+            var model = new EntidadViewModel
+            {
+                CodigoEntidad = entidad.CodigoEntidad,
+                NombreInstitucion = entidad.NombreInstitucion
+            };
 
-            var response = await httpResponse.Content
-                .ReadFromJsonAsync<ApiResponse<object>>();
+            var httpResponse = await client.PutAsJsonAsync(
+                $"gateway/admin/entidad/{codigoEntidad}",
+                model
+            );
 
             if (!httpResponse.IsSuccessStatusCode)
-                return (false, response?.Descripcion ?? "No se pudo actualizar la entidad");
+            {
+                var response = await httpResponse.Content
+                    .ReadFromJsonAsync<ApiResponse<EntidadViewModel>>();
 
-            return (true, response?.Descripcion ?? "Entidad actualizada correctamente");
+                throw new Exception(response?.Descripcion ?? "Error al actualizar entidad");
+            }
         }
 
         public async Task<(bool ok, string mensaje)> EliminarAsync(int id)
@@ -85,9 +99,8 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
             throw new NotImplementedException();
         }
 
-        internal async Task CrearAsync(EntidadCreateModel entidad)
-        {
-            throw new NotImplementedException();
-        }
+       
+
+       
     }
 }

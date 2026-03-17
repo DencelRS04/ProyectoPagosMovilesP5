@@ -17,11 +17,11 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
             _service = service;
         }
 
-        public void OnGet(int id)
+        public void OnGet(string id)
         {
             Entidad = new EntidadEditModel
             {
-                Identificador = id
+                CodigoEntidad = id
             };
         }
 
@@ -29,7 +29,7 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
         {
             var token = HttpContext.Session.GetString("token");
 
-            await _service.ActualizarAsync(Entidad.Identificador, Entidad);
+            await _service.ActualizarAsync(Entidad.CodigoEntidad, Entidad);
 
             return RedirectToPage("Index");
         }
