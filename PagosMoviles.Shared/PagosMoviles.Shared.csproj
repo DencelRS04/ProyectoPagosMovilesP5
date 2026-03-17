@@ -45,6 +45,9 @@
     <Compile Include="Constants\ApiRoutes.cs" />
     <Compile Include="Constants\Roles.cs" />
     <Compile Include="Constants\SessionKeys.cs" />
+    <Compile Include="DTOs\Afiliacion\AfiliacionResponseDto.cs" />
+    <Compile Include="DTOs\Afiliacion\RegisterPagoMovilDto.cs" />
+    <Compile Include="DTOs\ApiResponse.cs" />
     <Compile Include="DTOs\Auth\LoginRequestDto.cs" />
     <Compile Include="DTOs\Auth\LoginResponseDto.cs" />
     <Compile Include="DTOs\Auth\ValidateTokenDto.cs" />
@@ -53,6 +56,15 @@
     <Compile Include="DTOs\Core\ClienteDto.cs" />
     <Compile Include="DTOs\Core\CreateClienteDto.cs" />
     <Compile Include="DTOs\Core\UpdateClienteDto.cs" />
+    <Compile Include="DTOs\Pantallas\PantallaCreateDto.cs" />
+    <Compile Include="DTOs\Pantallas\PantallaDto.cs" />
+    <Compile Include="DTOs\Pantallas\UpdatePantallaDto.cs" />
+    <Compile Include="DTOs\Roles\RolCreateDto.cs" />
+    <Compile Include="DTOs\Roles\RolDto.cs" />
+    <Compile Include="DTOs\Roles\UpdateRolDto.cs" />
+    <Compile Include="DTOs\Saldo\SaldoRequestDto.cs" />
+    <Compile Include="DTOs\Saldo\SaldoResponseDto.cs" />
+    <Compile Include="DTOs\Transferencias\TransferenciaRequestDto.cs" />
     <Compile Include="DTOs\Usuarios\UsuarioPerfilDto.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
@@ -64,14 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DTOs\Afiliacion\" />
     <Folder Include="DTOs\Entidades\" />
     <Folder Include="DTOs\Movimientos\" />
-    <Folder Include="DTOs\Pantallas\" />
     <Folder Include="DTOs\Parametros\" />
-    <Folder Include="DTOs\Roles\" />
-    <Folder Include="DTOs\Saldo\" />
-    <Folder Include="DTOs\Transferencias\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

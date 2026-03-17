@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Auth\" />  
+    <Folder Include="Controllers\Auth\" />
     <Folder Include="Controllers\Home\" />
     <Folder Include="Models\CuentasCore\" />
     <Folder Include="Models\Entidades\" />

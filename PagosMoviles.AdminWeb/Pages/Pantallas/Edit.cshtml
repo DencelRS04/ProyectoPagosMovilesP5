@@ -1,0 +1,83 @@
+﻿@page "{id:int}"
+@model PagosMoviles.AdminWeb.Pages.Pantallas.EditModel
+@{
+    ViewData["Title"] = "Editar Pantalla";
+}
+
+<style>
+    .form-card {
+        background: white; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 2rem; max-width: 600px;
+    }
+    .form-title { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1.75rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .form-group input, .form-group textarea {
+        width: 100%; border: 1px solid #ced4da; border-radius: 6px;
+        padding: 0.5rem 0.75rem; font-size: 0.95rem; box-sizing: border-box;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+        outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .text-danger { color: #dc3545; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
+    .form-acciones { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+    .btn-guardar {
+        background: #0d6efd; color: white; border: none;
+        padding: 0.55rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+    .btn-guardar:hover { background: #0b5ed7; }
+    .btn-volver {
+        background: white; color: #555; border: 1px solid #ced4da;
+        padding: 0.55rem 1.25rem; border-radius: 6px; font-weight: 600; text-decoration: none;
+    }
+    .btn-volver:hover { background: #f8f9fa; }
+    .alert-danger {
+        background: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
+        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="form-card">
+        <h1 class="form-title">Editar Pantalla</h1>
+
+        @if (Model.MensajeError != null)
+        {
+            <div class="alert-danger">⚠️ @Model.MensajeError</div>
+        }
+
+        <form method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Pantalla.Identificador">Identificador</label>
+                <input asp-for="Pantalla.Identificador" />
+                <span asp-validation-for="Pantalla.Identificador" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pantalla.Nombre">Nombre</label>
+                <input asp-for="Pantalla.Nombre" />
+                <span asp-validation-for="Pantalla.Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pantalla.Descripcion">Descripción</label>
+                <textarea asp-for="Pantalla.Descripcion"></textarea>
+                <span asp-validation-for="Pantalla.Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pantalla.Ruta">Ruta de acceso</label>
+                <input asp-for="Pantalla.Ruta" />
+                <span asp-validation-for="Pantalla.Ruta" class="text-danger"></span>
+            </div>
+            <div class="form-acciones">
+                <button type="submit" class="btn-guardar">💾 Guardar cambios</button>
+                <a asp-page="Index" class="btn-volver">← Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

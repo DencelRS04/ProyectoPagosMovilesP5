@@ -81,7 +81,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
             // asegurar valores de avatar
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
-            if (usuario.RolId != Roles.Admin)
+            if (usuario.RolId != PagosMoviles.Shared.Constants.Roles.Admin)
             {
 
                 Console.WriteLine("ROL RECIBIDO: " + usuario.RolId);

@@ -1,11 +1,18 @@
 using PagosMoviles.PortalWeb.Services.Auth;
 using PagosMoviles.PortalWeb.Services.Perfil;
+using PagosMoviles.PortalWeb.Services.Saldo;
+using PagosMoviles.PortalWeb.Services.Transferencias;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient("gateway", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7143/");
+});
 
 builder.Services.AddHttpClient("InscripcionApi", client =>
 {
@@ -15,6 +22,10 @@ builder.Services.AddHttpClient("InscripcionApi", client =>
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
+builder.Services.AddScoped<ISaldoService, SaldoService>();
+builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
+
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -31,12 +42,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 app.UseSession();
-
 app.UseAuthorization();
 app.MapRazorPages();
 

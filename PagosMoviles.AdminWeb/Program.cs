@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.DataProtection;
 using PagosMoviles.AdminWeb.Services;
 using PagosMoviles.AdminWeb.Services.Auth;
 using PagosMoviles.AdminWeb.Services.Perfil;
+using PagosMoviles.AdminWeb.Services.Pantallas;
+using PagosMoviles.AdminWeb.Services.Roles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,11 @@ builder.Services.AddDataProtection()
 builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient("gateway", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7143/");
+});
 
 builder.Services.AddHttpClient("UsuarioApi", client =>
 {
@@ -28,11 +35,15 @@ builder.Services.AddHttpClient("ParametroApi", client =>
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
+builder.Services.AddScoped<IPantallasService, PantallasService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
+
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Name = ".AdminWeb.Session"; //  Nombre único para evitar colisión con PortalWeb
+    options.Cookie.Name = ".AdminWeb.Session";
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
@@ -49,7 +60,6 @@ if (!app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
