@@ -76,14 +76,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DTOs\Afiliacion\" />
     <Folder Include="DTOs\Entidades\" />
     <Folder Include="DTOs\Movimientos\" />
-    <Folder Include="DTOs\Pantallas\" />
     <Folder Include="DTOs\Parametros\" />
-    <Folder Include="DTOs\Roles\" />
-    <Folder Include="DTOs\Saldo\" />
-    <Folder Include="DTOs\Transferencias\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -42,15 +42,15 @@ namespace PagosMoviles.PortalWeb.Pages.Transferencias
 
         public IActionResult OnGet()
         {
-            // if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-            //     return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login"); // ← también cambia la ruta
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-            //     return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login"); // ← también cambia la ruta
 
             if (!ModelState.IsValid) return Page();
 

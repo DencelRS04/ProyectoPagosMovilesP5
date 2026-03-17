@@ -13,21 +13,21 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
         public EditModel(IPantallasService service) => _service = service;
 
         [BindProperty(SupportsGet = true)]
-        public int PantallaId { get; set; }
+        public int Id { get; set; }
 
         [BindProperty]
-        public PantallaEditDtoValidado Pantalla { get; set; } = new();
+        public PantallaEditDtoValidado Pantalla { get; set; } = new PantallaEditDtoValidado();
 
-        public string? MensajeError { get; set; }
+        public string MensajeError { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
 
             try
             {
-                var pantalla = await _service.ObtenerPantalla(PantallaId);
+                var pantalla = await _service.ObtenerPantalla(Id);
                 if (pantalla == null)
                 {
                     TempData["Error"] = "Pantalla no encontrada.";
@@ -52,8 +52,8 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
 
             if (!ModelState.IsValid) return Page();
 
@@ -67,7 +67,7 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
                     Ruta = Pantalla.Ruta
                 };
 
-                await _service.ActualizarPantalla(PantallaId, dto);
+                await _service.ActualizarPantalla(Id, dto);
                 TempData["Mensaje"] = "Pantalla actualizada correctamente.";
                 return RedirectToPage("Index");
             }

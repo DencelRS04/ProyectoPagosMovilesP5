@@ -18,8 +18,8 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
 
             try
             {
@@ -46,8 +46,8 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnPostEliminarAsync(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
 
             try
             {

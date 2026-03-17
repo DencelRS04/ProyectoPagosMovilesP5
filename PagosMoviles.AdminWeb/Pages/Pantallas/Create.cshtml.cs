@@ -19,15 +19,15 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
 
         public IActionResult OnGet()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("jwt_token")))
-                return RedirectToPage("/Account/Login");
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
 
             if (!ModelState.IsValid) return Page();
 

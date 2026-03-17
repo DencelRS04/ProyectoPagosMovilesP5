@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PagosMoviles.Shared.DTOs
 {
-    public class ApiResponse<T>
+    public class ApiResponseDto<T> where T : class
     {
         public int Codigo { get; set; }
         public string Descripcion { get; set; } = string.Empty;
