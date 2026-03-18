@@ -43,31 +43,77 @@ namespace PagosMoviles.PortalWeb.Pages.Desinscripcion
             if (usuario == null)
                 return Redirect("/");
 
-            var client = _httpFactory.CreateClient("InscripcionApi");
+            var client = _httpFactory.CreateClient("GatewayApi");
 
             if (!string.IsNullOrWhiteSpace(usuario.AccessToken))
+            {
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
+            }
 
-            var opciones = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var opciones = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
             var body = JsonSerializer.Serialize(Formulario, opciones);
-            var content = new StringContent(body, Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync("accounts/unsubscribe", content);
+            var response = await client.PostAsync(
+                "gateway/admin/core/accounts/unsubscribe",
+                content);
+
             var responseBody = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                MensajeExito = "Te has desinscrito exitosamente de Pagos Móviles.";
+                if (string.IsNullOrWhiteSpace(responseBody))
+                {
+                    MensajeExito = "Te has desinscrito exitosamente de Pagos Móviles.";
+                }
+                else
+                {
+                    try
+                    {
+                        var resultadoOk = JsonSerializer.Deserialize<ApiRespuesta>(
+                            responseBody,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                        MensajeExito = resultadoOk?.Descripcion ?? "Te has desinscrito exitosamente de Pagos Móviles.";
+                    }
+                    catch
+                    {
+                        MensajeExito = "Te has desinscrito exitosamente de Pagos Móviles.";
+                    }
+                }
+
+                MensajeError = null;
                 Formulario = new();
                 ModelState.Clear();
             }
             else
             {
-                var resultado = JsonSerializer.Deserialize<ApiRespuesta>(responseBody,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (string.IsNullOrWhiteSpace(responseBody))
+                {
+                    MensajeError = $"No se pudo procesar la desinscripción. HTTP {(int)response.StatusCode}.";
+                }
+                else
+                {
+                    try
+                    {
+                        var resultado = JsonSerializer.Deserialize<ApiRespuesta>(
+                            responseBody,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                MensajeError = resultado?.Descripcion ?? "No se pudo procesar la desinscripción.";
+                        MensajeError = resultado?.Descripcion ?? $"No se pudo procesar la desinscripción. HTTP {(int)response.StatusCode}.";
+                    }
+                    catch
+                    {
+                        MensajeError = responseBody;
+                    }
+                }
+
+                MensajeExito = null;
             }
 
             return Page();

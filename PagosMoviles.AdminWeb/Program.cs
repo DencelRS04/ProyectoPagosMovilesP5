@@ -4,10 +4,10 @@ using PagosMoviles.AdminWeb.Services.Auth;
 using PagosMoviles.AdminWeb.Services.Perfil;
 using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.AdminWeb.Services.Roles;
+using PagosMoviles.AdminWeb.Services.ClientesCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Persiste las claves de Data Protection en disco para que sobrevivan reinicios
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(
         Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
@@ -17,19 +17,20 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("gateway", client =>
+builder.Services.AddHttpClient("GatewayApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7143/");
-});
+    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
 
-builder.Services.AddHttpClient("UsuarioApi", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["UsuarioApiUrl"] ?? "https://localhost:7154/");
-});
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
 
-builder.Services.AddHttpClient("ParametroApi", client =>
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
-    client.BaseAddress = new Uri(builder.Configuration["ParametroApiUrl"] ?? "https://localhost:7143/");
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
 builder.Services.AddHttpClient<IAuthService, AuthService>();
@@ -37,8 +38,10 @@ builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
 builder.Services.AddScoped<IPantallasService, PantallasService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
+builder.Services.AddScoped<ClientesCoreService>();
 
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;

@@ -1,26 +1,34 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PagosMoviles.AdminWeb.Models.ClientesCore
+namespace PagosMoviles.CoreBancarioService.Models
 {
-    public class ClienteViewModel
+    [Table("Cliente")]
+    public class Cliente
     {
+        [Key]
         public int ClienteId { get; set; }
 
-        [Required(ErrorMessage = "La identificación es requerida")]
+        [Required]
+        [MaxLength(20)]
         public string Identificacion { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El tipo de identificación es requerido")]
+        [Required]
+        [MaxLength(30)]
         public string TipoIdentificacion { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El nombre completo es requerido")]
+        [Required]
+        [MaxLength(120)]
         public string NombreCompleto { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "La fecha de nacimiento es requerida")]
         public DateTime FechaNacimiento { get; set; }
 
-        [Required(ErrorMessage = "El teléfono es requerido")]
+        [Required]
+        [MaxLength(20)]
         public string Telefono { get; set; } = string.Empty;
 
         public bool Activo { get; set; } = true;
+
+        public ICollection<Cuenta>? Cuentas { get; set; }
     }
 }

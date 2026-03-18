@@ -7,10 +7,16 @@ using PagosMoviles.CoreBancarioService.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers + filtro global de token remoto
-builder.Services.AddControllers(options =>
-{
-    options.Filters.AddService<CoreGatewayBearerGuardFilter>();
-})
+///builder.Services.AddControllers(options =>
+///{
+///    options.Filters.AddService<CoreGatewayBearerGuardFilter>();
+///})
+///.ConfigureApiBehaviorOptions(options =>
+///{
+///    options.SuppressModelStateInvalidFilter = true;
+///});
+
+builder.Services.AddControllers()
 .ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -80,6 +86,7 @@ builder.Services.AddHttpClient("ApiGateway", (sp, client) =>
 // Servicios propios
 builder.Services.AddScoped<CoreCuentaService>();
 builder.Services.AddScoped<CoreTransaccionService>();
+builder.Services.AddScoped<CoreClienteService>();
 
 // Seguridad remota
 builder.Services.AddScoped<CoreGatewayTokenProbe>();

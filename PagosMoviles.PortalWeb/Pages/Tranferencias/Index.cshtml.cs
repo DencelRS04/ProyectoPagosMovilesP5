@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.PortalWeb.Services.Transferencias;
 using PagosMoviles.Shared.DTOs.Transferencias;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace PagosMoviles.PortalWeb.Pages.Transferencias
 {
@@ -17,6 +19,8 @@ namespace PagosMoviles.PortalWeb.Pages.Transferencias
         public string TelefonoOrigen { get; set; } = string.Empty;
 
         [BindProperty]
+        [Required(ErrorMessage = "El nombre origen es obligatorio.")]
+        [MaxLength(100, ErrorMessage = "El nombre origen no puede superar 100 caracteres.")]
         public string NombreOrigen { get; set; } = string.Empty;
 
         [BindProperty]
@@ -43,26 +47,36 @@ namespace PagosMoviles.PortalWeb.Pages.Transferencias
         public IActionResult OnGet()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login"); // ← también cambia la ruta
+                return RedirectToPage("/Auth/Login");
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login"); // ← también cambia la ruta
+                return RedirectToPage("/Auth/Login");
 
-            if (!ModelState.IsValid) return Page();
+            TelefonoOrigen = (TelefonoOrigen ?? string.Empty).Trim();
+            NombreOrigen = (NombreOrigen ?? string.Empty).Trim();
+            TelefonoDestino = (TelefonoDestino ?? string.Empty).Trim();
+            EntidadDestino = (EntidadDestino ?? string.Empty).Trim();
+            Descripcion = (Descripcion ?? string.Empty).Trim();
+
+            if (!Regex.IsMatch(TelefonoOrigen, @"^(?:2|4|5|6|7|8)\d{7}$"))
+                ModelState.AddModelError(nameof(TelefonoOrigen), "El teléfono origen debe tener 8 dígitos válidos.");
+
+            if (!Regex.IsMatch(TelefonoDestino, @"^(?:2|4|5|6|7|8)\d{7}$"))
+                ModelState.AddModelError(nameof(TelefonoDestino), "El teléfono destino debe tener 8 dígitos válidos.");
+
+            if (!ModelState.IsValid)
+                return Page();
 
             try
             {
-                // NombreOrigen viene del formulario — el cliente lo ingresa
-                // En una implementación completa se obtendría del core bancario
-                if (string.IsNullOrWhiteSpace(NombreOrigen))
-                    NombreOrigen = "Cliente";
-
                 var dto = new TransferenciaRequestDto
                 {
+                    EntidadOrigen = "BNCR",
                     TelefonoOrigen = TelefonoOrigen,
                     NombreOrigen = NombreOrigen,
                     TelefonoDestino = TelefonoDestino,
@@ -73,23 +87,32 @@ namespace PagosMoviles.PortalWeb.Pages.Transferencias
 
                 Resultado = await _service.RealizarTransferencia(dto);
             }
-            catch (HttpRequestException ex) when
-                (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            catch (HttpRequestException ex)
             {
-                // return RedirectToPage("/Account/Login");
-                MensajeError = "No autorizado.";
+                MensajeError = ExtraerMensajeError(ex.Message) ?? ex.Message;
             }
-            catch (HttpRequestException ex) when
-                (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            catch (Exception ex)
             {
-                MensajeError = "Datos inválidos. Verifique el teléfono origen esté afiliado a pagos móviles.";
-            }
-            catch
-            {
-                MensajeError = "No se pudo realizar la transferencia. Intente de nuevo.";
+                MensajeError = $"Error inesperado: {ex.Message}";
             }
 
             return Page();
+        }
+
+        private string? ExtraerMensajeError(string raw)
+        {
+            try
+            {
+                var error = JsonSerializer.Deserialize<TransferenciaResponseDto>(
+                    raw,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return error?.Descripcion;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

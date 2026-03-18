@@ -1,3 +1,101 @@
 {
-
+  "ReverseProxy": {
+    "Routes": {
+      "accounts-balance-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/accounts/balance"
+        },
+        "Transforms": [
+          { "PathSet": "/accounts/balance" }
+        ]
+      },
+      "accounts-transactions-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/accounts/transactions"
+        },
+        "Transforms": [
+          { "PathSet": "/accounts/transactions" }
+        ]
+      },
+      "transactions-process-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/api/transactions/process"
+        },
+        "Transforms": [
+          { "PathSet": "/api/transactions/process" }
+        ]
+      },
+      "accounts-unsubscribe-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/accounts/unsubscribe"
+        },
+        "Transforms": [
+          { "PathSet": "/accounts/unsubscribe" }
+        ]
+      },
+      "auth-login-route": {
+        "ClusterId": "api-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/login"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "auth-validate-route": {
+        "ClusterId": "api-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/validate"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "auth-register-route": {
+        "ClusterId": "usuarios-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/register"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "afiliacion-register-route": {
+        "ClusterId": "usuarios-auth-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/afiliacion/register"
+        },
+        "Transforms": [
+          { "PathSet": "/auth/register" }
+        ]
+      }
+    },
+    "Clusters": {
+      "core-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:7143/"
+          }
+        }
+      },
+      "api-auth-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:7143/"
+          }
+        }
+      },
+      "usuarios-auth-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:7154/"
+          }
+        }
+      }
+    }
+  }
 }

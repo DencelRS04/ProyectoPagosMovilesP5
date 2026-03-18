@@ -1,12 +1,12 @@
 @page
 @model PagosMoviles.PortalWeb.Pages.Desinscripcion.IndexModel
 @{
+    Layout = "/Pages/Shared/_Layout.cshtml";
     ViewData["Title"] = "Desinscripción de Pagos Móviles";
 }
 
 <div class="row justify-content-center">
     <div class="col-md-6">
-
         <h2 class="mb-4">Desinscripción de Pagos Móviles</h2>
         <p class="text-muted mb-4">
             Ingresa los datos de tu cuenta para desasociarla del servicio de Pagos Móviles.
@@ -31,22 +31,19 @@
 
             <div class="mb-3">
                 <label class="form-label">Identificación *</label>
-                <input asp-for="Formulario.Identificacion" class="form-control"
-                       placeholder="Ej: 123456789" />
+                <input asp-for="Formulario.Identificacion" class="form-control" placeholder="Ej: 123456789" />
                 <span asp-validation-for="Formulario.Identificacion" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Número de Cuenta *</label>
-                <input asp-for="Formulario.NumeroCuenta" class="form-control"
-                       placeholder="Ej: CR12345" />
+                <input asp-for="Formulario.NumeroCuenta" class="form-control" placeholder="Ej: CR12345" />
                 <span asp-validation-for="Formulario.NumeroCuenta" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Número de Teléfono * <small class="text-muted">(8 dígitos, CR)</small></label>
-                <input asp-for="Formulario.Telefono" class="form-control"
-                       placeholder="Ej: 88001234" />
+                <input asp-for="Formulario.Telefono" class="form-control" placeholder="Ej: 88001234" />
                 <span asp-validation-for="Formulario.Telefono" class="text-danger"></span>
             </div>
 
@@ -57,7 +54,6 @@
                 </button>
             </div>
         </form>
-
     </div>
 </div>
 

@@ -4,8 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pagos Móviles</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/layout.css" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/afiliacion.css" asp-append-version="true" />
 </head>
 <body>
     <div class="app-shell">
@@ -20,6 +22,13 @@
         </div>
     </div>
 
+    <div class="left-panel">
+        <button onclick="location.href='/Afiliacion'">Afiliación</button>
+        <button onclick="location.href='/Desinscripcion'">Desinscripción</button>
+        <button onclick="location.href='/Saldo'">Consulta de Saldo</button>
+        <button onclick="location.href='/Tranferencias'">Transferencias</button>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/session-timeout.js" asp-append-version="true"></script>
@@ -27,41 +36,35 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <style>
-        .left-panel {
-            position: fixed;
-            left: 20px;
-            top: 120px;
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            z-index: 999;
-        }
-
-            .left-panel button {
-                width: 100%;
-                padding: 16px;
-                font-size: 16px;
-                border: none;
-                border-radius: 10px;
-                background: #4e73df;
-                color: white;
-                font-weight: 600;
-                cursor: pointer;
-                transition: 0.2s;
-                box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+            .left-panel {
+                position: fixed;
+                left: 20px;
+                top: 120px;
+                width: 250px;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                z-index: 999;
             }
 
-                .left-panel button:hover {
-                    background: #2e59d9;
-                    transform: scale(1.05);
+                .left-panel button {
+                    width: 100%;
+                    padding: 16px;
+                    font-size: 16px;
+                    border: none;
+                    border-radius: 10px;
+                    background: #4e73df;
+                    color: white;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: 0.2s;
+                    box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
                 }
-    </style>
 
-    <div class="left-panel">
-        <button onclick="location.href='/Desinscripcion'">Desinscripción</button>
-        <button onclick="location.href='/Saldo'">Consulta de Saldo</button>
-        <button onclick="location.href='/Tranferencias'">Transferencias</button>
-    </div>
+                    .left-panel button:hover {
+                        background: #2e59d9;
+                        transform: scale(1.05);
+                    }
+    </style>
 </body>
 </html>

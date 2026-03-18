@@ -1,0 +1,129 @@
+﻿.afiliacion-wrapper {
+    padding: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.afiliacion-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+    .afiliacion-header h2 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        color: #2b2f42;
+    }
+
+    .afiliacion-header p {
+        margin: 4px 0 0 0;
+        color: #6c757d;
+        font-size: 15px;
+    }
+
+.header-bar {
+    width: 6px;
+    height: 60px;
+    background: #4e73df;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.afiliacion-card {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+}
+
+.afiliacion-card-title {
+    background: #f8f9fc;
+    padding: 16px 20px;
+    font-weight: 700;
+    font-size: 18px;
+    color: #4e73df;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.afiliacion-form {
+    padding: 24px;
+}
+
+    .afiliacion-form .form-label {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 8px;
+    }
+
+    .afiliacion-form .form-control {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: #fff;
+    }
+
+        .afiliacion-form .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.12);
+        }
+
+    .afiliacion-form .text-danger {
+        font-size: 13px;
+        margin-top: 4px;
+        display: block;
+    }
+
+.afiliacion-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+    .afiliacion-actions .btn {
+        min-width: 170px;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 600;
+    }
+
+.afiliacion-alert {
+    border-radius: 10px;
+    margin-bottom: 18px;
+}
+
+    .afiliacion-alert ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+@media (max-width: 900px) {
+    .afiliacion-wrapper {
+        padding: 20px;
+    }
+
+    .afiliacion-header {
+        align-items: flex-start;
+    }
+
+        .afiliacion-header h2 {
+            font-size: 26px;
+        }
+
+    .afiliacion-actions {
+        flex-direction: column;
+    }
+
+        .afiliacion-actions .btn {
+            width: 100%;
+        }
+}

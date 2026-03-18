@@ -26,16 +26,30 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
         {
             try
             {
-                var baseUrl = _configuration["ApiSettings:UsuarioBaseUrl"];
+                var baseUrl = _configuration["GatewayApi:BaseUrl"];
+
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    return new PerfilResponseDto
+                    {
+                        Exito = false,
+                        ErrorDetalle = "No se encontró la configuración GatewayApi:BaseUrl en appsettings.json."
+                    };
+                }
+
                 var endpoint = baseUrl.TrimEnd('/') + "/user/" + usuarioId;
 
                 var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
 
-                var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(_httpContextAccessor.HttpContext.Session);
-                if (usuarioSesion != null && !string.IsNullOrWhiteSpace(usuarioSesion.AccessToken))
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext != null)
                 {
-                    request.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", usuarioSesion.AccessToken);
+                    var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(httpContext.Session);
+                    if (usuarioSesion != null && !string.IsNullOrWhiteSpace(usuarioSesion.AccessToken))
+                    {
+                        request.Headers.Authorization =
+                            new AuthenticationHeaderValue("Bearer", usuarioSesion.AccessToken);
+                    }
                 }
 
                 var response = await _httpClient.SendAsync(request);
@@ -75,7 +89,9 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
                     Telefono = wrapper.Datos.Telefono ?? string.Empty,
                     Email = wrapper.Datos.Email ?? string.Empty,
                     FotoPerfil = ConstruirUrlFoto(wrapper.Datos.FotoPerfil),
-                    ColorAvatar = string.IsNullOrWhiteSpace(wrapper.Datos.ColorAvatar) ? "#4285F4" : wrapper.Datos.ColorAvatar
+                    ColorAvatar = string.IsNullOrWhiteSpace(wrapper.Datos.ColorAvatar)
+                        ? "#4285F4"
+                        : wrapper.Datos.ColorAvatar
                 };
             }
             catch (Exception ex)
@@ -92,7 +108,11 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
         {
             try
             {
-                var baseUrl = _configuration["ApiSettings:UsuarioBaseUrl"];
+                var baseUrl = _configuration["GatewayApi:BaseUrl"];
+
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                    return false;
+
                 var endpoint = baseUrl.TrimEnd('/') + "/user/actualizar-perfil";
 
                 using var content = new MultipartFormDataContent();
@@ -111,14 +131,20 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
                     content.Add(streamContent, "Imagen", model.Imagen.FileName);
                 }
 
-                var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
-                request.Content = content;
-
-                var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(_httpContextAccessor.HttpContext.Session);
-                if (usuarioSesion != null && !string.IsNullOrWhiteSpace(usuarioSesion.AccessToken))
+                var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
                 {
-                    request.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", usuarioSesion.AccessToken);
+                    Content = content
+                };
+
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext != null)
+                {
+                    var usuarioSesion = SessionHelper.ObtenerUsuarioSesion(httpContext.Session);
+                    if (usuarioSesion != null && !string.IsNullOrWhiteSpace(usuarioSesion.AccessToken))
+                    {
+                        request.Headers.Authorization =
+                            new AuthenticationHeaderValue("Bearer", usuarioSesion.AccessToken);
+                    }
                 }
 
                 var response = await _httpClient.SendAsync(request);
@@ -141,7 +167,7 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
                 return rutaFoto;
             }
 
-            var baseUrl = _configuration["ApiSettings:UsuarioBaseUrl"] ?? string.Empty;
+            var baseUrl = _configuration["GatewayApi:BaseUrl"] ?? string.Empty;
             return baseUrl.TrimEnd('/') + "/" + rutaFoto.TrimStart('/');
         }
     }

@@ -6,6 +6,7 @@ using PagosMoviles.UsuariosService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Controllers + filtro global
 builder.Services.AddControllers(o =>
 {
     o.Filters.AddService<GatewayBearerGuardFilter>();
@@ -14,7 +15,11 @@ builder.Services.AddControllers(o =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PagosMoviles.UsuarioService", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PagosMoviles.UsuarioService",
+        Version = "v1"
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -31,7 +36,11 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
             },
             Array.Empty<string>()
         }
@@ -42,8 +51,10 @@ var cn = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(cn))
     throw new InvalidOperationException("Falta ConnectionStrings:DefaultConnection en appsettings.json");
 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(cn));
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(cn));
 
+// HttpClient hacia Gateway
 builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -61,9 +72,26 @@ builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
+// Typed client para Core
+builder.Services.AddHttpClient<CoreClientService>((sp, client) =>
+{
+    var cfg = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = cfg["CoreApi:BaseUrl"];
+
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta CoreApi:BaseUrl en appsettings.json");
+
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AfiliacionService>();
-builder.Services.AddScoped<CoreClientService>();
 builder.Services.AddScoped<BitacoraClient>();
 
 builder.Services.AddScoped<GatewayTokenProbe>();
@@ -80,4 +108,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapControllers();
+
 app.Run();

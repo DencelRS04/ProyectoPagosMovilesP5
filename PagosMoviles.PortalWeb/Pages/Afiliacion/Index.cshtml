@@ -1,0 +1,66 @@
+﻿@page
+@model PagosMoviles.PortalWeb.Pages.Afiliacion.IndexModel
+@{
+    Layout = "/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Afiliación";
+}
+
+<div class="afiliacion-wrapper">
+    <div class="afiliacion-header">
+        <div class="header-bar"></div>
+        <div>
+            <h2>Mantenimiento de Afiliación</h2>
+            <p>Complete la información para inscribirse en Pagos Móviles</p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+    {
+        <div class="alert alert-success afiliacion-alert">
+            @Model.Mensaje
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger afiliacion-alert"></div>
+
+    <div class="afiliacion-card">
+        <div class="afiliacion-card-title">
+            Formulario de Afiliación
+        </div>
+
+        <form method="post" class="afiliacion-form">
+            <div class="mb-3">
+                <label asp-for="Afiliacion.Identificacion" class="form-label">Identificación</label>
+                <input asp-for="Afiliacion.Identificacion" class="form-control" id="identificacion" />
+                <span asp-validation-for="Afiliacion.Identificacion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Afiliacion.NumeroCuenta" class="form-label">Número de cuenta</label>
+                <input asp-for="Afiliacion.NumeroCuenta" class="form-control" id="numeroCuenta" />
+                <span asp-validation-for="Afiliacion.NumeroCuenta" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Afiliacion.Telefono" class="form-label">Teléfono</label>
+                <input asp-for="Afiliacion.Telefono" class="form-control" id="telefono" />
+                <span asp-validation-for="Afiliacion.Telefono" class="text-danger"></span>
+            </div>
+
+            <div class="afiliacion-actions">
+                <button type="submit" asp-page-handler="ValidarCliente" class="btn btn-outline-primary">
+                    Validar cliente
+                </button>
+
+                <button type="submit" asp-page-handler="Registrar" class="btn btn-primary">
+                    Guardar afiliación
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/afiliacion.js"></script>
+}

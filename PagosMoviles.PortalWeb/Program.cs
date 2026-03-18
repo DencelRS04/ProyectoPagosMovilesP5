@@ -2,21 +2,27 @@ using PagosMoviles.PortalWeb.Services.Auth;
 using PagosMoviles.PortalWeb.Services.Perfil;
 using PagosMoviles.PortalWeb.Services.Saldo;
 using PagosMoviles.PortalWeb.Services.Transferencias;
+using PagosMoviles.PortalWeb.Services.Afiliacion;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("gateway", client =>
+builder.Services.AddHttpClient("GatewayApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7143/");
-});
+    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
 
-builder.Services.AddHttpClient("InscripcionApi", client =>
+    if (string.IsNullOrWhiteSpace(baseUrl))
+        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
+
+    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
 {
-    client.BaseAddress = new Uri(builder.Configuration["InscripcionApiUrl"] ?? "https://localhost:7143/");
+    ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
 builder.Services.AddHttpClient<IAuthService, AuthService>();
@@ -24,6 +30,7 @@ builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
 builder.Services.AddScoped<ISaldoService, SaldoService>();
 builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
+builder.Services.AddScoped<AfiliacionService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

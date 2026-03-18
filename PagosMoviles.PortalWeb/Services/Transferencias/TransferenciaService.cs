@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using PagosMoviles.Shared.DTOs;
+using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.Shared.DTOs.Transferencias;
-using PagosMoviles.Shared.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -21,39 +20,49 @@ namespace PagosMoviles.PortalWeb.Services.Transferencias
 
         private HttpClient ClienteAutenticado()
         {
-            var client = _factory.CreateClient("gateway");
+            var client = _factory.CreateClient("GatewayApi");
 
-            var json = _ctx.HttpContext?.Session.GetString("USUARIO_SESION");
-            string token = null;
+            var usuario = SessionHelper.ObtenerUsuarioSesion(_ctx.HttpContext!.Session);
 
-            if (!string.IsNullOrEmpty(json))
+            if (usuario != null && !string.IsNullOrWhiteSpace(usuario.AccessToken))
             {
-                try
-                {
-                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
-                    token = usuario?.AccessToken;
-                }
-                catch { }
-            }
-
-            if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                    new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
+            }
 
             return client;
         }
 
         public async Task<TransferenciaResponseDto> RealizarTransferencia(TransferenciaRequestDto dto)
         {
-            var response = await ClienteAutenticado()
-                .PostAsJsonAsync("api/Transactions/route", dto);
-            response.EnsureSuccessStatusCode();
-            var wrapper = await response.Content
-                .ReadFromJsonAsync<ApiResponseDto<TransferenciaResponseDto>>();
-            return wrapper?.Datos ?? new TransferenciaResponseDto
+            var client = ClienteAutenticado();
+
+            Console.WriteLine("JSON enviado:");
+            Console.WriteLine(JsonSerializer.Serialize(dto));
+
+            var response = await client.PostAsJsonAsync(
+                "gateway/admin/core/api/transactions/process",
+                dto);
+
+            var raw = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Status: {(int)response.StatusCode}");
+            Console.WriteLine($"Respuesta: {raw}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(raw, null, response.StatusCode);
+
+            var result = JsonSerializer.Deserialize<TransferenciaResponseDto>(
+                raw,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            return result ?? new TransferenciaResponseDto
             {
-                Codigo = 200,
-                Descripcion = "Transacción aplicada"
+                Codigo = (int)response.StatusCode,
+                Descripcion = "Operación completada"
             };
         }
     }
