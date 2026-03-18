@@ -7,6 +7,7 @@ using PagosMoviles.API.Models;
 namespace PagosMoviles.API.Services;
 
 public class TransactionLogic : ITransactionLogic
+
 {
     private readonly PagosMovilesDbContext _context;
     private readonly IConfiguration _config;
@@ -23,6 +24,37 @@ public class TransactionLogic : ITransactionLogic
         _config = config;
         _httpClient = httpClient;
         _bitacora = bitacora;
+    }
+    public async Task<BusinessLogicResponseDto> ObtenerPorFecha(DateTime fecha)
+    {
+        try
+        {
+            var transacciones = await _context.TransaccionesMoviles
+                .Where(t => t.Fecha.Date == fecha.Date)
+                .Select(t => new
+                {
+                    t.Fecha,
+                    t.TelefonoOrigen,
+                    t.TelefonoDestino,
+                    t.Monto
+                })
+                .ToListAsync();
+
+            return new BusinessLogicResponseDto
+            {
+                StatusCode = 200,
+                Message = "OK",
+                ResponseObject = transacciones
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BusinessLogicResponseDto
+            {
+                StatusCode = 500,
+                Message = $"Error: {ex.Message}"
+            };
+        }
     }
 
     public async Task<BusinessLogicResponseDto> ProcessTransaction(TransactionRequestDto transaction)

@@ -1,19 +1,19 @@
-﻿using PagosMoviles.AdminWeb.Models.Entidades;
+﻿using System.Text.Json.Serialization;
 
 namespace PagosMoviles.AdminWeb.Models.Transacciones
 {
-    public class TransacionViewModel
+    public class TransaccionViewModel
     {
-        public List<TransaccionViewModel> Transacciones { get; set; } = new();
-        //                                     ↑
-        //                              Se llama "Transacciones"
+        [JsonPropertyName("fecha")]
         public DateTime Fecha { get; set; }
 
-        public string TelefonoOrigen { get; set; }
+        [JsonPropertyName("telefonoOrigen")]
+        public string TelefonoOrigen { get; set; } = string.Empty;
 
-        public string TelefonoDestino { get; set; }
+        [JsonPropertyName("telefonoDestino")]
+        public string TelefonoDestino { get; set; } = string.Empty;
 
+        [JsonPropertyName("monto")]
         public decimal Monto { get; set; }
-    
     }
 }
