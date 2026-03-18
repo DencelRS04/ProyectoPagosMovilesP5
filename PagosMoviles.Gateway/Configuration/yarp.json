@@ -1,22 +1,76 @@
 {
   "ReverseProxy": {
     "Routes": {
-      "core-route": {
+      "accounts-balance-route": {
         "ClusterId": "core-cluster",
         "Match": {
-          "Path": "/gateway/admin/core/{**catch-all}"
+          "Path": "/gateway/admin/core/accounts/balance"
         },
         "Transforms": [
-          { "PathRemovePrefix": "/gateway/admin" }
+          { "PathSet": "/accounts/balance" }
         ]
       },
-      "auth-route": {
-        "ClusterId": "auth-cluster",
+      "accounts-transactions-route": {
+        "ClusterId": "core-cluster",
         "Match": {
-          "Path": "/gateway/auth/{**catch-all}"
+          "Path": "/gateway/admin/core/accounts/transactions"
+        },
+        "Transforms": [
+          { "PathSet": "/accounts/transactions" }
+        ]
+      },
+      "transactions-process-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/api/transactions/process"
+        },
+        "Transforms": [
+          { "PathSet": "/api/transactions/process" }
+        ]
+      },
+      "accounts-unsubscribe-route": {
+        "ClusterId": "core-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/accounts/unsubscribe"
+        },
+        "Transforms": [
+          { "PathSet": "/accounts/unsubscribe" }
+        ]
+      },
+      "auth-login-route": {
+        "ClusterId": "api-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/login"
         },
         "Transforms": [
           { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "auth-validate-route": {
+        "ClusterId": "api-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/validate"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "auth-register-route": {
+        "ClusterId": "usuarios-auth-cluster",
+        "Match": {
+          "Path": "/gateway/auth/register"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway" }
+        ]
+      },
+      "afiliacion-register-route": {
+        "ClusterId": "usuarios-auth-cluster",
+        "Match": {
+          "Path": "/gateway/admin/core/afiliacion/register"
+        },
+        "Transforms": [
+          { "PathSet": "/auth/register" }
         ]
       }
     },
@@ -24,11 +78,18 @@
       "core-cluster": {
         "Destinations": {
           "destination1": {
-            "Address": "https://localhost:7191/"
+            "Address": "https://localhost:7143/"
           }
         }
       },
-      "auth-cluster": {
+      "api-auth-cluster": {
+        "Destinations": {
+          "destination1": {
+            "Address": "https://localhost:7143/"
+          }
+        }
+      },
+      "usuarios-auth-cluster": {
         "Destinations": {
           "destination1": {
             "Address": "https://localhost:7154/"

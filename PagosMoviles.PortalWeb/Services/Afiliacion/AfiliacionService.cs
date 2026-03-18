@@ -53,7 +53,10 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
                 telefono = model.Telefono
             };
 
-            var httpResponse = await client.PostAsJsonAsync("gateway/auth/register", payload);
+            var httpResponse = await client.PostAsJsonAsync(
+                "gateway/admin/core/afiliacion/register",
+                payload);
+
             var rawContent = await httpResponse.Content.ReadAsStringAsync();
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -63,19 +66,60 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
 
                 try
                 {
-                    var errorResponse = JsonSerializer.Deserialize<ApiResponse<object>>(
+                    var apiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(
                         rawContent,
                         new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
                         });
 
-                    return (false, errorResponse?.Descripcion ?? rawContent);
+                    if (apiResponse != null && !string.IsNullOrWhiteSpace(apiResponse.Descripcion))
+                        return (false, apiResponse.Descripcion);
                 }
                 catch
                 {
-                    return (false, rawContent);
                 }
+
+                try
+                {
+                    var validation = JsonSerializer.Deserialize<ValidationErrorResponse>(
+                        rawContent,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                    if (validation != null)
+                    {
+                        var mensajes = new List<string>();
+
+                        if (!string.IsNullOrWhiteSpace(validation.Title))
+                            mensajes.Add(validation.Title);
+
+                        if (validation.Errors != null)
+                        {
+                            foreach (var error in validation.Errors)
+                            {
+                                if (error.Value != null)
+                                {
+                                    foreach (var detalle in error.Value)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(detalle))
+                                            mensajes.Add(detalle);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (mensajes.Count > 0)
+                            return (false, string.Join(" ", mensajes));
+                    }
+                }
+                catch
+                {
+                }
+
+                return (false, rawContent);
             }
 
             if (string.IsNullOrWhiteSpace(rawContent))
@@ -101,6 +145,13 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
         private class ClienteExisteResponse
         {
             public bool Existe { get; set; }
+        }
+
+        private class ValidationErrorResponse
+        {
+            public string? Title { get; set; }
+            public int Status { get; set; }
+            public Dictionary<string, string[]>? Errors { get; set; }
         }
     }
 }

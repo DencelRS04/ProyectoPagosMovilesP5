@@ -1,69 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PagosMoviles.PortalWeb.Models.Afiliacion;
-using PagosMoviles.PortalWeb.Services.Afiliacion;
 
 namespace PagosMoviles.AdminWeb.Pages.Roles
 {
     public class DeleteModel : PageModel
     {
-        private readonly AfiliacionService _service;
-
-        public IndexModel(AfiliacionService service)
-        {
-            _service = service;
-        }
-
-        [BindProperty]
-        public AfiliacionViewModel Afiliacion { get; set; } = new();
-
-        [TempData]
-        public string? Mensaje { get; set; }
-
         public void OnGet()
         {
-        }
-
-        public async Task<IActionResult> OnPostValidarClienteAsync()
-        {
-            if (string.IsNullOrWhiteSpace(Afiliacion.Identificacion))
-            {
-                ModelState.AddModelError("Afiliacion.Identificacion", "La identificación es requerida");
-                return Page();
-            }
-
-            Afiliacion.ClienteExiste = await _service.ClienteExisteAsync(Afiliacion.Identificacion);
-
-            if (!Afiliacion.ClienteExiste)
-            {
-                ModelState.AddModelError(string.Empty, "El cliente no existe en el core bancario");
-            }
-
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostRegistrarAsync()
-        {
-            if (!ModelState.IsValid)
-                return Page();
-
-            var existe = await _service.ClienteExisteAsync(Afiliacion.Identificacion);
-            if (!existe)
-            {
-                ModelState.AddModelError(string.Empty, "El cliente no existe en el core bancario");
-                return Page();
-            }
-
-            var resultado = await _service.RegistrarAsync(Afiliacion);
-
-            if (!resultado.ok)
-            {
-                ModelState.AddModelError(string.Empty, resultado.mensaje);
-                return Page();
-            }
-
-            Mensaje = resultado.mensaje;
-            return RedirectToPage();
         }
     }
 }

@@ -24,8 +24,8 @@ namespace PagosMoviles.PortalWeb.Services.Auth
         {
             try
             {
-                var baseUrl = _configuration["ApiSettings:AuthBaseUrl"];
-                var endpoint = baseUrl.TrimEnd('/') + "/auth/login";
+                var baseUrl = _configuration["GatewayApi:BaseUrl"];
+                var endpoint = baseUrl.TrimEnd('/') + "/gateway/auth/login";
 
                 var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
                 request.Headers.Add("usuario", usuario);

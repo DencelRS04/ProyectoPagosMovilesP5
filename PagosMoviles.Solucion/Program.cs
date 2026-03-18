@@ -6,18 +6,11 @@ using PagosMoviles.UsuariosService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-=======
 // Controllers + filtro global
->>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
 builder.Services.AddControllers(o =>
 {
     o.Filters.AddService<GatewayBearerGuardFilter>();
 });
-
-// Si quieres poder probar /auth/register sin token,
-// comenta temporalmente el filtro de arriba y usa:
-// builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -61,10 +54,7 @@ if (string.IsNullOrWhiteSpace(cn))
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(cn));
 
-<<<<<<< HEAD
-=======
-// HttpClient hacia PagosMoviles.API / Gateway
->>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
+// HttpClient hacia Gateway
 builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -82,9 +72,7 @@ builder.Services.AddHttpClient("GatewayApi", (sp, client) =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-<<<<<<< HEAD
-=======
-// Typed client para consultar Core
+// Typed client para Core
 builder.Services.AddHttpClient<CoreClientService>((sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -102,8 +90,6 @@ builder.Services.AddHttpClient<CoreClientService>((sp, client) =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-// DI
->>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AfiliacionService>();
 builder.Services.AddScoped<BitacoraClient>();
@@ -122,4 +108,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapControllers();
+
 app.Run();

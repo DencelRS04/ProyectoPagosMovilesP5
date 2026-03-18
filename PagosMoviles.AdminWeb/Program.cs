@@ -8,7 +8,6 @@ using PagosMoviles.AdminWeb.Services.ClientesCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Persiste las claves de Data Protection en disco para que sobrevivan reinicios
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(
         Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys")))
@@ -17,21 +16,6 @@ builder.Services.AddDataProtection()
 builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddHttpClient("gateway", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7143/");
-});
-
-builder.Services.AddHttpClient("UsuarioApi", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["UsuarioApiUrl"] ?? "https://localhost:7154/");
-});
-
-builder.Services.AddHttpClient("ParametroApi", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ParametroApiUrl"] ?? "https://localhost:7143/");
-});
 
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
@@ -57,6 +41,7 @@ builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<ClientesCoreService>();
 
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;

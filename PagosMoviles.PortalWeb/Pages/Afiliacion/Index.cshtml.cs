@@ -72,10 +72,7 @@ namespace PagosMoviles.PortalWeb.Pages.Afiliacion
                 return Page();
             }
 
-            Mensaje = resultado.mensaje;
-            ModelState.Clear();
-            Afiliacion = new AfiliacionViewModel();
-
+            TempData["Mensaje"] = resultado.mensaje;
             return RedirectToPage();
         }
     }

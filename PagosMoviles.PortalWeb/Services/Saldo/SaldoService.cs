@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.Shared.DTOs;
 using PagosMoviles.Shared.DTOs.Saldo;
 using PagosMoviles.Shared.Models;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace PagosMoviles.PortalWeb.Services.Saldo
 {
@@ -21,24 +21,15 @@ namespace PagosMoviles.PortalWeb.Services.Saldo
 
         private HttpClient ClienteAutenticado()
         {
-            var client = _factory.CreateClient("gateway");
+            var client = _factory.CreateClient("GatewayApi");
 
-            var json = _ctx.HttpContext?.Session.GetString("USUARIO_SESION");
-            string token = null;
+            var usuario = SessionHelper.ObtenerUsuarioSesion(_ctx.HttpContext!.Session);
 
-            if (!string.IsNullOrEmpty(json))
+            if (usuario != null && !string.IsNullOrWhiteSpace(usuario.AccessToken))
             {
-                try
-                {
-                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
-                    token = usuario?.AccessToken;
-                }
-                catch { }
-            }
-
-            if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                    new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
+            }
 
             return client;
         }
@@ -51,10 +42,14 @@ namespace PagosMoviles.PortalWeb.Services.Saldo
                 Identificacion = identificacion
             };
 
-            var response = await ClienteAutenticado().PostAsJsonAsync("accounts/balance", request);
+            var response = await ClienteAutenticado()
+                .PostAsJsonAsync("gateway/admin/core/accounts/balance", request);
+
             response.EnsureSuccessStatusCode();
+
             var wrapper = await response.Content
                 .ReadFromJsonAsync<ApiResponseDto<SaldoResponseDto>>();
+
             return wrapper?.Datos ?? new SaldoResponseDto();
         }
     }

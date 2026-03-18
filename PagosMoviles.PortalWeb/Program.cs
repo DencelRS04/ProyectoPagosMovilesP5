@@ -1,44 +1,14 @@
-<<<<<<< HEAD
 using PagosMoviles.PortalWeb.Services.Auth;
 using PagosMoviles.PortalWeb.Services.Perfil;
 using PagosMoviles.PortalWeb.Services.Saldo;
 using PagosMoviles.PortalWeb.Services.Transferencias;
-=======
 using PagosMoviles.PortalWeb.Services.Afiliacion;
->>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-
-<<<<<<< HEAD
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("gateway", client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7143/");
-});
-
-builder.Services.AddHttpClient("InscripcionApi", client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["InscripcionApiUrl"] ?? "https://localhost:7143/");
-});
-
-builder.Services.AddHttpClient<IAuthService, AuthService>();
-builder.Services.AddHttpClient<IPerfilService, PerfilService>();
-
-builder.Services.AddScoped<ISaldoService, SaldoService>();
-builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
-
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-    options.IdleTimeout = TimeSpan.FromMinutes(
-        builder.Configuration.GetValue<int>("SessionSettings:TimeoutMinutes", 5));
-});
-=======
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
     var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
@@ -55,8 +25,21 @@ builder.Services.AddHttpClient("GatewayApi", client =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
+builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IPerfilService, PerfilService>();
+
+builder.Services.AddScoped<ISaldoService, SaldoService>();
+builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
 builder.Services.AddScoped<AfiliacionService>();
->>>>>>> 5edba4e (Avance Portal web y afiliacion + Gateway)
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(
+        builder.Configuration.GetValue<int>("SessionSettings:TimeoutMinutes", 5));
+});
 
 var app = builder.Build();
 

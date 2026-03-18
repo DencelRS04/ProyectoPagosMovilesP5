@@ -24,7 +24,7 @@ namespace PagosMoviles.AdminWeb.Services.Auth
         {
             try
             {
-                var baseUrl = _configuration["ApiSettings:AuthBaseUrl"];
+                var baseUrl = _configuration["GatewayApi:BaseUrl"];
 
                 if (string.IsNullOrWhiteSpace(baseUrl))
                 {
@@ -35,7 +35,7 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                     );
                 }
 
-                var endpoint = baseUrl.TrimEnd('/') + "/auth/login";
+                var endpoint = baseUrl.TrimEnd('/') + "/gateway/auth/login";
 
                 var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
                 request.Headers.Add("usuario", usuario);
@@ -54,9 +54,11 @@ namespace PagosMoviles.AdminWeb.Services.Auth
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    var detalle = await response.Content.ReadAsStringAsync();
+
                     return new Tuple<bool, string, UsuarioSesionModel>(
                         false,
-                        "Usuario y/o contraseña incorrectos.",
+                        $"Error HTTP {(int)response.StatusCode}: {detalle}",
                         null
                     );
                 }
@@ -97,11 +99,11 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                     usuarioSesion
                 );
             }
-            catch
+            catch (Exception ex)
             {
                 return new Tuple<bool, string, UsuarioSesionModel>(
                     false,
-                    "Usuario y/o contraseña incorrectos.",
+                    ex.Message,
                     null
                 );
             }
