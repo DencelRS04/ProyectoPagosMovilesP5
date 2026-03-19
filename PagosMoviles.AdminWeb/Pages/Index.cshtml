@@ -10,75 +10,314 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inicio - Pagos Móviles</title>
-    <link rel="stylesheet" href="~/css/landing-admin.css" asp-append-version="true" />
+    <title>DAYJA BANK</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 45px;
+        }
+
+        .brand-name {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .login-btn {
+            padding: 10px 25px;
+            border: 1px solid white;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            background: transparent;
+            transition: 0.3s;
+        }
+
+            .login-btn:hover {
+                background: white;
+                color: black;
+            }
+
+        /* SLIDER */
+        .slider {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .slides {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            animation: slide 18s infinite;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide1 {
+            background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216');
+        }
+
+        .slide2 {
+            background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d');
+        }
+
+        .slide3 {
+            background-image: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3');
+        }
+
+        @@keyframes slide {
+            0% {
+                margin-left: 0%;
+            }
+
+            30% {
+                margin-left: 0%;
+            }
+
+            35% {
+                margin-left: -100%;
+            }
+
+            65% {
+                margin-left: -100%;
+            }
+
+            70% {
+                margin-left: -200%;
+            }
+
+            100% {
+                margin-left: -200%;
+            }
+        }
+
+        /* OVERLAY */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 1.5rem;
+        }
+
+        /* MODAL LOGIN */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .modal-backdrop.show {
+                display: flex;
+            }
+
+        .login-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 350px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-logo {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .login-header-box {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+            .form-group label {
+                font-weight: 600;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 10px;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+            }
+
+        .btn-accept {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #0f3b82;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .btn-accept:hover {
+                background: #1451b8;
+            }
+
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .msg-error {
+            background: #fdecea;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .msg-warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="landing-bg">
-        <div class="landing-overlay"></div>
 
-        <header class="landing-header">
-            <div class="brand">
-                <img src="~/Imagenes/logoadmin.png" alt="Logo" class="brand-logo" />
-                <span class="brand-name">Pagos Móviles</span>
-            </div>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="brand">
+            <img src="~/Imagenes/logoadmin.png" class="brand-logo" />
+            <span class="brand-name">DAYJA BANK</span>
+        </div>
 
-            <button class="login-trigger" type="button" onclick="openLoginModal()">
-                <span class="login-icon">👤</span>
-                <span>Login</span>
-            </button>
-        </header>
-
-        <main class="landing-content">
-            <div class="hero-card">
-                <h1>Bienvenido a Pagos Móviles</h1>
-                <p>
-                    Plataforma administrativa del sistema. Ingrese con sus credenciales
-                    para acceder a las opciones correspondientes.
-                </p>
-            </div>
-        </main>
+        <button class="login-btn" onclick="openLoginModal()">Iniciar Sesión</button>
     </div>
 
+    <!-- SLIDER -->
+    <div class="slider">
+        <div class="slides">
+            <div class="slide slide1"></div>
+            <div class="slide slide2"></div>
+            <div class="slide slide3"></div>
+        </div>
+
+        <div class="overlay">
+            <div class="content">
+                <h1>Bienvenido a DAYJA BANK</h1>
+                <p>Su banco de confianza, seguridad y respaldo financiero</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
     <div id="loginModal" class="modal-backdrop">
         <div class="login-modal">
-            <button class="close-btn" type="button" onclick="closeLoginModal()">×</button>
+            <button class="close-btn" onclick="closeLoginModal()">×</button>
 
             <div class="login-header-box">
-                <img src="~/Imagenes/logoadmin.png" alt="Logo" class="login-logo" />
+                <img src="~/Imagenes/logoadmin.png" class="login-logo" />
                 <h2>Ingreso al sistema</h2>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
             {
-                <div class="msg-box msg-warning">@Model.Mensaje</div>
+                <div class="msg-warning">@Model.Mensaje</div>
             }
 
             @if (Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError))
             {
-                <div class="msg-box msg-error">@Model.Input.MensajeError</div>
+                <div class="msg-error">@Model.Input.MensajeError</div>
             }
 
             <form method="post">
                 @Html.AntiForgeryToken()
 
                 <div class="form-group">
-                    <label for="Usuario">Usuario</label>
-                    <input type="text"
-                           id="Usuario"
-                           name="Input.Usuario"
-                           value="@(Model.Input != null ? Model.Input.Usuario : "")" />
+                    <label>Usuario</label>
+                    <input type="text" name="Input.Usuario" value="@(Model.Input?.Usuario ?? "")" />
                 </div>
 
                 <div class="form-group">
-                    <label for="Contrasena">Contraseña</label>
-                    <input type="password"
-                           id="Contrasena"
-                           name="Input.Contrasena"
-                           value="@(Model.Input != null ? Model.Input.Contrasena : "")" />
+                    <label>Contraseña</label>
+                    <input type="password" name="Input.Contrasena" />
                 </div>
 
-                <button type="submit" class="btn-accept">Aceptar</button>
+                <button type="submit" class="btn-accept">Ingresar</button>
             </form>
         </div>
     </div>
@@ -94,8 +333,9 @@
 
         @if ((Model.Input != null && !string.IsNullOrWhiteSpace(Model.Input.MensajeError)) || !string.IsNullOrWhiteSpace(Model.Mensaje))
         {
-                    <text>openLoginModal();</text>
+                <text>openLoginModal();</text>
         }
     </script>
+
 </body>
 </html>

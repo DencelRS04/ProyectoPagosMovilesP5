@@ -1,35 +1,37 @@
-﻿let tiempoInactividad;
-const LIMITE_INACTIVIDAD = 5 * 60 * 1000; // 5 minutos
+﻿const timeoutMs = 5 * 60 * 1000;
+let lastActivity = Date.now();
+let expired = false;
 
-function reiniciarTemporizador() {
-
-    clearTimeout(tiempoInactividad);
-
-    tiempoInactividad = setTimeout(function () {
-
-        fetch('/SessionExpired', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(() => {
-                window.location.href = "/";
-            })
-            .catch(() => {
-                window.location.href = "/";
-            });
-
-    }, LIMITE_INACTIVIDAD);
+function markActivity() {
+    if (!expired) {
+        lastActivity = Date.now();
+    }
 }
 
-function iniciarControlSesion() {
+function expireSession() {
+    if (expired) return;
+    expired = true;
 
-    document.addEventListener("keydown", reiniciarTemporizador);
-    document.addEventListener("click", reiniciarTemporizador);
-    document.addEventListener("scroll", reiniciarTemporizador);
-
-    reiniciarTemporizador();
+    fetch('/Auth/Login?handler=SetSessionExpired', {
+        method: 'POST'
+    })
+        .finally(() => {
+            alert("La sesión expiró por inactividad.");
+            window.location.href = "/";
+        });
 }
 
-window.addEventListener("load", iniciarControlSesion);
+// Registrar actividad del usuario
+window.addEventListener("load", markActivity);
+window.addEventListener("keydown", markActivity);
+window.addEventListener("click", markActivity);
+window.addEventListener("scroll", markActivity);
+
+// Verificar inactividad cada segundo
+setInterval(function () {
+    const inactiveTime = Date.now() - lastActivity;
+
+    if (inactiveTime >= timeoutMs) {
+        expireSession();
+    }
+}, 1000);

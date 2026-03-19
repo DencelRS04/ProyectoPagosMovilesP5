@@ -11,7 +11,9 @@ namespace PagosMoviles.PortalWeb.Pages
     {
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
+
         private static int intentosFallidos = 0;
+
         public IndexModel(IAuthService authService, IConfiguration configuration)
         {
             _authService = authService;
@@ -27,6 +29,7 @@ namespace PagosMoviles.PortalWeb.Pages
         {
             Input = new LoginInputModel();
 
+            // 🔥 MENSAJE DE SESIÓN EXPIRADA
             var mensajeExpirado = HttpContext.Session.GetString(SessionKeys.SessionExpiredMessage);
 
             if (!string.IsNullOrWhiteSpace(mensajeExpirado))
@@ -47,16 +50,23 @@ namespace PagosMoviles.PortalWeb.Pages
             if (string.IsNullOrWhiteSpace(Input.Usuario) || string.IsNullOrWhiteSpace(Input.Contrasena))
             {
                 Input.MensajeError = "Usuario y/o contraseña incorrectos.";
-                Input.Contrasena = "";
                 Input.Usuario = string.Empty;
                 Input.Contrasena = string.Empty;
                 return Page();
             }
 
+            // 🔥 DETECTAR CAMBIO DE USUARIO
+            var usuarioAnterior = HttpContext.Session.GetString("UsuarioIntento");
+
+            if (usuarioAnterior != Input.Usuario)
+            {
+                intentosFallidos = 0;
+                HttpContext.Session.SetString("UsuarioIntento", Input.Usuario);
+            }
+
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
             var mensajeServicio = (result.Item2 ?? "").ToLower();
 
-            // 🔴 usuario no registrado
             // 🔴 USUARIO NO EXISTE
             if (result.Item3 == null)
             {
@@ -68,7 +78,7 @@ namespace PagosMoviles.PortalWeb.Pages
 
             if (!result.Item1)
             {
-                // 🔴 SI YA ESTÁ BLOQUEADO EN LA BD
+                // 🔴 BLOQUEADO EN BD
                 if (mensajeServicio.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
@@ -79,27 +89,29 @@ namespace PagosMoviles.PortalWeb.Pages
 
                 intentosFallidos++;
 
-                if (intentosFallidos == 3)
+                if (intentosFallidos >= 3)
                 {
                     Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
                 }
                 else
                 {
-                    Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                    Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentosFallidos} de 3.";
                 }
 
                 Input.Contrasena = string.Empty;
                 return Page();
             }
+
             var usuario = result.Item3;
 
-            // asegurar valores de avatar
+            // 🔥 LOGIN OK → RESET TOTAL
+            intentosFallidos = 0;
+            HttpContext.Session.Remove("UsuarioIntento");
+
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
 
-            // si entra correctamente reiniciamos intentos
-            intentosFallidos = 0;
-            int rol = result.Item3.RolId;
+            int rol = usuario.RolId;
 
             var adminUrl = _configuration["PortalSettings:AdminUrl"] ?? "https://localhost:7150";
 
@@ -109,9 +121,16 @@ namespace PagosMoviles.PortalWeb.Pages
             }
 
             SessionHelper.LimpiarSesion(HttpContext.Session);
-            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, result.Item3);
+            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, usuario);
 
             return Redirect("/Home/Index");
+        }
+
+        // 🔥 ESTE MÉTODO ES CLAVE PARA EL JS
+        public IActionResult OnPostSetSessionExpired()
+        {
+            HttpContext.Session.SetString(SessionKeys.SessionExpiredMessage, "La sesión expiró por inactividad.");
+            return new EmptyResult();
         }
 
         public IActionResult OnPostLogout()

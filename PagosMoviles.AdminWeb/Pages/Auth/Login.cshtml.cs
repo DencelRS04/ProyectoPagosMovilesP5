@@ -12,7 +12,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
     public class LoginModel : PageModel
     {
         private readonly IAuthService _authService;
-        private static int intentosFallidos = 0;
+
         public LoginModel(IAuthService authService)
         {
             _authService = authService;
@@ -25,10 +25,10 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
 
         public void OnGet()
         {
-            if (HttpContext.Session.GetString("UsuarioId") != null)
-            {
-                Response.Redirect("/Home/Index");
-            }
+            Input = new LoginInputModel();
+
+            var mensajeExpirado = HttpContext.Session.GetString("SessionExpiredMessage");
+
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -41,59 +41,59 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
 
             int intentos = HttpContext.Session.GetInt32("IntentosLogin") ?? 0;
 
-            if (intentos >= MAX_INTENTOS)
-            {
-                Input.MensajeError = "Usuario bloqueado por demasiados intentos fallidos.";
-                return Page();
-            }
-
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
 
-            if (!result.Item1)
+            if (result == null || !result.Item1 || result.Item3 == null)
             {
-                var mensajeServicio = (result.Item2 ?? "").ToLower();
+                var mensaje = (result?.Item2 ?? "").ToLower();
 
-                // 🔴 usuario ya bloqueado
-                if (mensajeServicio.Contains("bloqueado"))
+                // 🔴 SI VIENE BLOQUEADO DESDE BD
+                if (mensaje.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
                     return Page();
                 }
 
-                intentosFallidos++;
+                intentos++;
+                HttpContext.Session.SetInt32("IntentosLogin", intentos);
 
-                if (intentosFallidos == 3)
+                if (intentos >= 3)
                 {
                     Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
                 }
                 else
                 {
-                    Input.MensajeError = "Usuario y/o contraseña incorrectos.";
+                    Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentos} de 3.";
                 }
 
                 return Page();
             }
-            // si entra correctamente reiniciamos intentos
-            intentosFallidos = 0;
+
+            // ✅ LOGIN OK → RESET
+            HttpContext.Session.SetInt32("IntentosLogin", 0);
 
             var usuario = result.Item3;
 
-            // asegurar valores de avatar
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
-            if (usuario.RolId != PagosMoviles.Shared.Constants.Roles.Admin)
-            {
 
-                Console.WriteLine("ROL RECIBIDO: " + usuario.RolId);
+            // 🔥 ADMIN = 5
+            if (usuario.RolId != 5)
+            {
                 Input.MensajeError = "No tiene permisos para acceder al portal administrativo.";
                 return Page();
             }
 
-            HttpContext.Session.SetInt32("IntentosLogin", 0);
-
             SessionHelper.GuardarUsuarioSesion(HttpContext.Session, usuario);
 
             return Redirect("/Home/Index");
+        }
+
+        // 🔥 MENSAJE DE SESIÓN EXPIRADA
+        public IActionResult OnPostSetSessionExpired()
+        {
+            HttpContext.Session.SetString(SessionKeys.SessionExpiredMessage, "La sesión expiró por inactividad.");
+            return new EmptyResult();
         }
 
         public IActionResult OnPostLogout()

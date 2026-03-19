@@ -5,14 +5,114 @@
     Layout = "/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="content-card">
-    <h1>Bienvenido al portal de clientes</h1>
+<style>
+    .container {
+        margin-left: 260px;
+        padding: 60px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+    }
 
-    <p>
-        <strong>Cliente:</strong> @Model.UsuarioNombre
-    </p>
+    body {
+        background: linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.9)), url('https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+    }
 
-    <p>
-        Seleccione una opción del menú para continuar.
-    </p>
+    .card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(18px);
+        border-radius: 25px;
+        padding: 50px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+        max-width: 1000px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h1 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .username {
+        font-size: 2rem;
+        color: #60a5fa;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    .box {
+        background: rgba(255,255,255,0.08);
+        border-radius: 15px;
+        padding: 20px 25px;
+        margin-bottom: 20px;
+        border-left: 4px solid #3b82f6;
+        transition: 0.3s;
+    }
+
+        .box:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.12);
+        }
+
+        .box p {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #e5e7eb;
+        }
+
+    .highlight {
+        color: #93c5fd;
+        font-weight: 600;
+    }
+
+    .tagline {
+        margin-top: 25px;
+        font-size: 1.2rem;
+        font-style: italic;
+        color: #cbd5f5;
+        text-align: center;
+    }
+
+    .footer {
+        margin-top: 35px;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+
+        <h1>Bienvenido al portal de clientes</h1>
+
+        <!-- AQUÍ YA USAS TU VARIABLE REAL -->
+        <div class="username">@Model.UsuarioNombre</div>
+
+        <div class="box">
+            <p>Nos alegra tenerte aquí. Este es tu espacio, donde cada decisión financiera cobra valor y cada paso está respaldado por seguridad y confianza.</p>
+        </div>
+
+        <div class="box">
+            <p>En <span class="highlight">DAYJA BANK</span>, no solo gestionas tu dinero… construyes un futuro sólido con herramientas diseñadas para ti.</p>
+        </div>
+
+        <div class="box">
+            <p>Aquí ocurren cosas maravillosas: oportunidades, crecimiento y control total de tus finanzas en un entorno moderno y seguro.</p>
+        </div>
+
+        <div class="box">
+            <p>Seleccione una opción en el menú para continuar y descubre todo lo que tenemos preparado para ti.</p>
+        </div>
+
+        <div class="tagline">
+            DAYJA BANK — su banco de confianza, impulsando su presente y asegurando su futuro.
+        </div>
+
+        <div class="footer">
+            © 2026 DAYJA BANK - Todos los derechos reservados
+        </div>
+
+    </div>
 </div>
