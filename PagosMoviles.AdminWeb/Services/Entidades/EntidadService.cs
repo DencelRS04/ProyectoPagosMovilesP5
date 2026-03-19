@@ -21,9 +21,9 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
             return response?.Datos ?? new List<EntidadViewModel>();
         }
 
-   
 
-        public async Task CrearAsync(EntidadCreateModel entidad)
+
+        public async Task<(bool ok, string mensaje)> CrearAsync(EntidadCreateModel entidad)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
             var model = new
@@ -32,11 +32,15 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
                 nombreInstitucion = entidad.NombreInstitucion
             };
             var response = await client.PostAsJsonAsync("gateway/admin/entidad", model);
+
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error al crear: {error}");
+                var error = await response.Content
+                    .ReadFromJsonAsync<ApiResponse<object>>();
+                return (false, error?.Descripcion ?? "Error al crear entidad");
             }
+
+            return (true, "Entidad creada correctamente");
         }
 
         // ✅ Solo un ActualizarAsync, sin duplicado

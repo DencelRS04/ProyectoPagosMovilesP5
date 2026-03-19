@@ -23,16 +23,23 @@ namespace PagosMoviles.PortalWeb.Pages.Movimientos
         {
             if (!string.IsNullOrEmpty(Telefono))
             {
+                if (Telefono.Length > 8)
+                {
+                    ErrorMensaje = "El número de teléfono no puede tener más de 8 dígitos.";
+                    return;
+                }
+
                 try
                 {
                     Movimientos = await _service.ObtenerUltimosMovimientos(Telefono);
-                    // ✅ Log temporal
-                    Console.WriteLine($"[DEBUG] Movimientos count: {Movimientos?.Count ?? -1}");
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    ErrorMensaje = "Sesión expirada. Por favor inicie sesión nuevamente.";
                 }
                 catch (Exception ex)
                 {
-                    ErrorMensaje = ex.Message;
-                    Console.WriteLine($"[DEBUG ERROR] {ex.Message}");
+                    ErrorMensaje = $"Error al consultar movimientos: {ex.Message}";
                 }
             }
         }
