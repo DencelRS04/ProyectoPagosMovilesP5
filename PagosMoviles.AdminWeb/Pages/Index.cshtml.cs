@@ -41,6 +41,7 @@ namespace PagosMoviles.AdminWeb.Pages
             }
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
+
             if (!result.Item1)
             {
                 var mensajeServicio = (result.Item2 ?? "").ToLower();
@@ -70,10 +71,8 @@ namespace PagosMoviles.AdminWeb.Pages
             }
 
             var usuario = result.Item3;
-
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
-
             intentosFallidos = 0;
 
             if (result.Item3.RolId != ADMIN_ROL)
@@ -86,6 +85,8 @@ namespace PagosMoviles.AdminWeb.Pages
 
             SessionHelper.LimpiarSesion(HttpContext.Session);
             SessionHelper.GuardarUsuarioSesion(HttpContext.Session, result.Item3);
+            // ✅ Guardar token con la clave que usa BearerTokenHandler
+            HttpContext.Session.SetString("AccessToken", result.Item3.AccessToken ?? "");
 
             return Redirect("/Home/Index");
         }

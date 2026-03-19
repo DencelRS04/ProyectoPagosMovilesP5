@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PagosMoviles.API.Data;
 using PagosMoviles.API.DTOs;
@@ -8,22 +8,53 @@ using System.Text;
 namespace PagosMoviles.API.Services;
 
 public class TransactionLogic : ITransactionLogic
+
 {
     private readonly PagosMovilesDbContext _context;
     private readonly IConfiguration _config;
     private readonly HttpClient _httpClient;
     private readonly BitacoraService _bitacora;
 
+    // 1. AgregÃ¡ el campo y el parÃ¡metro al constructor
+    private readonly PagosMovilesRepository _repository;
+
     public TransactionLogic(
         PagosMovilesDbContext context,
         IConfiguration config,
         HttpClient httpClient,
-        BitacoraService bitacora)
+        BitacoraService bitacora,
+        PagosMovilesRepository repository) // ðŸ‘ˆ agregÃ¡ esto
     {
         _context = context;
         _config = config;
         _httpClient = httpClient;
         _bitacora = bitacora;
+        _repository = repository; // ðŸ‘ˆ y esto
+    }
+
+    // 2. ReemplazÃ¡ solo el mÃ©todo ObtenerPorFecha
+    public async Task<BusinessLogicResponseDto> ObtenerPorFecha(DateTime fecha)
+    {
+        try
+        {
+            var transacciones = await _repository.GetTransaccionesDiariasAsync(fecha);
+            var totales = await _repository.GetTotalesTransaccionesDiariasAsync(fecha);
+
+            return new BusinessLogicResponseDto
+            {
+                StatusCode = 200,
+                Message = "OK",
+                ResponseObject = transacciones // ðŸ‘ˆ solo la lista, sin el objeto wrapper
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BusinessLogicResponseDto
+            {
+                StatusCode = 500,
+                Message = $"Error: {ex.Message}"
+            };
+        }
     }
 
     public async Task<BusinessLogicResponseDto> ProcessTransaction(TransactionRequestDto transaction)
@@ -100,7 +131,7 @@ public class TransactionLogic : ITransactionLogic
                 return new BusinessLogicResponseDto
                 {
                     StatusCode = 400,
-                    Message = "Cliente origen no asociado a pagos móviles"
+                    Message = "Cliente origen no asociado a pagos mÃ³viles"
                 };
             }
 
@@ -114,7 +145,7 @@ public class TransactionLogic : ITransactionLogic
                     destinoInterno,
                     transaction.Monto);
 
-                await _bitacora.Registrar("SISTEMA", "SRV12: Transacción interna", transaction, internalResponse);
+                await _bitacora.Registrar("SISTEMA", "SRV12: TransacciÃ³n interna", transaction, internalResponse);
                 return internalResponse;
             }
 
@@ -158,7 +189,7 @@ public class TransactionLogic : ITransactionLogic
             };
 
             var externalResponse = await SendTransaction(sendRequest);
-            await _bitacora.Registrar("SISTEMA", "SRV12: Transacción externa", sendRequest, externalResponse);
+            await _bitacora.Registrar("SISTEMA", "SRV12: TransacciÃ³n externa", sendRequest, externalResponse);
 
             return externalResponse;
         }
@@ -187,7 +218,7 @@ public class TransactionLogic : ITransactionLogic
                 return new BusinessLogicResponseDto
                 {
                     StatusCode = 500,
-                    Message = "No está configurada la URL del Core Bancario"
+                    Message = "No estÃ¡ configurada la URL del Core Bancario"
                 };
             }
 
@@ -204,24 +235,24 @@ public class TransactionLogic : ITransactionLogic
 
             Console.WriteLine("URL Core:");
             Console.WriteLine(url);
-            Console.WriteLine("JSON débito enviado al Core:");
+            Console.WriteLine("JSON dÃ©bito enviado al Core:");
             Console.WriteLine(debitoJson);
 
             var debitoResp = await _httpClient.PostAsync(url, debitoContent);
             var debitoBody = await debitoResp.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"Status Core Débito: {(int)debitoResp.StatusCode}");
-            Console.WriteLine($"Respuesta Core Débito: {debitoBody}");
+            Console.WriteLine($"Status Core DÃ©bito: {(int)debitoResp.StatusCode}");
+            Console.WriteLine($"Respuesta Core DÃ©bito: {debitoBody}");
 
             if (!debitoResp.IsSuccessStatusCode)
             {
-                await _bitacora.Registrar("SISTEMA", $"SRV12 CORE DÉBITO ERROR: {debitoBody}", debitoRequest, null);
+                await _bitacora.Registrar("SISTEMA", $"SRV12 CORE DÃ‰BITO ERROR: {debitoBody}", debitoRequest, null);
 
                 return new BusinessLogicResponseDto
                 {
                     StatusCode = (int)debitoResp.StatusCode,
                     Message = string.IsNullOrWhiteSpace(debitoBody)
-                        ? "Error aplicando débito en core"
+                        ? "Error aplicando dÃ©bito en core"
                         : debitoBody
                 };
             }
@@ -237,24 +268,24 @@ public class TransactionLogic : ITransactionLogic
             var creditoJson = JsonConvert.SerializeObject(creditoRequest);
             var creditoContent = new StringContent(creditoJson, Encoding.UTF8, "application/json");
 
-            Console.WriteLine("JSON crédito enviado al Core:");
+            Console.WriteLine("JSON crÃ©dito enviado al Core:");
             Console.WriteLine(creditoJson);
 
             var creditoResp = await _httpClient.PostAsync(url, creditoContent);
             var creditoBody = await creditoResp.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"Status Core Crédito: {(int)creditoResp.StatusCode}");
-            Console.WriteLine($"Respuesta Core Crédito: {creditoBody}");
+            Console.WriteLine($"Status Core CrÃ©dito: {(int)creditoResp.StatusCode}");
+            Console.WriteLine($"Respuesta Core CrÃ©dito: {creditoBody}");
 
             if (!creditoResp.IsSuccessStatusCode)
             {
-                await _bitacora.Registrar("SISTEMA", $"SRV12 CORE CRÉDITO ERROR: {creditoBody}", creditoRequest, null);
+                await _bitacora.Registrar("SISTEMA", $"SRV12 CORE CRÃ‰DITO ERROR: {creditoBody}", creditoRequest, null);
 
                 return new BusinessLogicResponseDto
                 {
                     StatusCode = (int)creditoResp.StatusCode,
                     Message = string.IsNullOrWhiteSpace(creditoBody)
-                        ? "Débito aplicado, pero falló el crédito en core"
+                        ? "DÃ©bito aplicado, pero fallÃ³ el crÃ©dito en core"
                         : creditoBody
                 };
             }
@@ -262,11 +293,11 @@ public class TransactionLogic : ITransactionLogic
             return new BusinessLogicResponseDto
             {
                 StatusCode = 200,
-                Message = "Transacción aplicada",
+                Message = "TransacciÃ³n aplicada",
                 ResponseObject = new TransactionResponseDto
                 {
                     Codigo = 200,
-                    Descripcion = "Transacción aplicada"
+                    Descripcion = "TransacciÃ³n aplicada"
                 }
             };
         }
@@ -327,7 +358,7 @@ public class TransactionLogic : ITransactionLogic
             dto ??= new TransactionResponseDto
             {
                 Codigo = (int)resp.StatusCode,
-                Descripcion = string.IsNullOrWhiteSpace(body) ? "Respuesta externa no válida" : body
+                Descripcion = string.IsNullOrWhiteSpace(body) ? "Respuesta externa no vÃ¡lida" : body
             };
 
             dto.Codigo = (int)resp.StatusCode;

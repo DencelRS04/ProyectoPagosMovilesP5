@@ -1,20 +1,23 @@
-using PagosMoviles.API.DTOs;
+Ôªøusing PagosMoviles.API.DTOs;
 
 namespace PagosMoviles.API.Services;
 
 /// <summary>
-/// Interfaz para la lÛgica de negocio de transacciones
+/// Interfaz para la l√≥gica de negocio de transacciones
 /// </summary>
 public interface ITransactionLogic
 {
-    /// SRV7: Recibe y procesa una transacciÛn
+    /// SRV7: Recibe y procesa una transacci√≥n
     /// Endpoint: POST /api/transactions/process
     Task<BusinessLogicResponseDto> ProcessTransaction(TransactionRequestDto transaction);
-    /// SRV12: Resuelve la ruta de una transacciÛn (interna o externa)
+    /// SRV12: Resuelve la ruta de una transacci√≥n (interna o externa)
     /// Endpoint: POST /api/transactions/route
-
     Task<BusinessLogicResponseDto> RouteTransaction(TransactionRouteDto transaction);
-    /// SRV8: EnvÌa una transacciÛn a una entidad externa
+    /// SRV8: Env√≠a una transacci√≥n a una entidad externa
     /// Endpoint: POST /api/transactions/send
     Task<BusinessLogicResponseDto> SendTransaction(TransactionSendDto transaction);
+
+    /// Obtiene transacciones por fecha para el reporte diario
+    /// Endpoint: GET /api/transactions/por-fecha
+    Task<BusinessLogicResponseDto> ObtenerPorFecha(DateTime fecha); // ‚Üê agregar
 }
