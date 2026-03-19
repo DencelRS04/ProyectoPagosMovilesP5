@@ -94,8 +94,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
+app.UseSession();        // ✅ Session antes de Authorization
 app.UseAuthorization();
 app.MapRazorPages();
-
 app.Run();

@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Net.Http.Headers;
 using PagosMoviles.AdminWeb.Models.Entidades;
 using PagosMoviles.AdminWeb.Models.Transacciones;
 
@@ -14,19 +13,12 @@ namespace PagosMoviles.AdminWeb.Services.Reporte
             _http = http;
         }
 
-        public async Task<List<TransaccionViewModel>> ObtenerPorFecha(DateTime fecha, string? token)
+        public async Task<List<TransaccionViewModel>> ObtenerPorFecha(DateTime fecha)
         {
             var client = _http.CreateClient("GatewayApi");
-
-            // ✅ Agregar token si existe
-            if (!string.IsNullOrEmpty(token))
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
-
             var response = await client.GetFromJsonAsync<ApiResponse<List<TransaccionViewModel>>>(
                 $"gateway/admin/transactions/por-fecha?fecha={fecha:yyyy-MM-dd}"
             );
-
             return response?.Datos ?? new List<TransaccionViewModel>();
         }
     }

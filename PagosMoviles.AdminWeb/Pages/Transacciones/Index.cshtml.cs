@@ -22,9 +22,7 @@ namespace PagosMoviles.AdminWeb.Pages.Transacciones
             Fecha = fecha;
             if (fecha.HasValue)
             {
-                // ✅ Obtener token de la sesión y pasarlo al servicio
-                var token = HttpContext.Session.GetString("token");
-                Transacciones = await _reporte.ObtenerPorFecha(fecha.Value, token);
+                Transacciones = await _reporte.ObtenerPorFecha(fecha.Value);
             }
         }
     }

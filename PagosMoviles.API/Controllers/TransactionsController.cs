@@ -49,9 +49,21 @@ public class TransactionsController : ControllerBase
         });
     }
     [HttpGet("por-fecha")]
-    public async Task<IActionResult> ObtenerPorFecha([FromQuery] DateTime fecha)
+    public async Task<IActionResult> ObtenerPorFecha([FromQuery] string fecha)
     {
-        var response = await _logic.ObtenerPorFecha(fecha);
+        if (!DateTime.TryParseExact(fecha, "yyyy-MM-dd",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out DateTime fechaParsed))
+        {
+            return BadRequest(new ApiResponse
+            {
+                codigo = 400,
+                descripcion = "Formato de fecha inválido. Use yyyy-MM-dd"
+            });
+        }
+
+        var response = await _logic.ObtenerPorFecha(fechaParsed);
         return StatusCode(response.StatusCode, new ApiResponse
         {
             codigo = response.StatusCode,

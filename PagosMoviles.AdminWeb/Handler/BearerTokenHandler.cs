@@ -17,17 +17,32 @@ namespace PagosMoviles.AdminWeb.Handlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                var token = httpContext.Session.GetString("AccessToken");
-                if (!string.IsNullOrEmpty(token))
+            
+        
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext != null)
                 {
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-            }
+                    var token = httpContext.Session.GetString("AccessToken");
+                    Console.WriteLine($"[DEBUG HANDLER] Token: '{token}'");
+                    Console.WriteLine($"[DEBUG HANDLER] Request: '{request.RequestUri}'");
 
-            return await base.SendAsync(request, cancellationToken);
-        }
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        Console.WriteLine($"[DEBUG HANDLER] Authorization agregado");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[DEBUG HANDLER] Token vacío");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG HANDLER] HttpContext null");
+                }
+
+                return await base.SendAsync(request, cancellationToken);
+            }
+        
     }
 }

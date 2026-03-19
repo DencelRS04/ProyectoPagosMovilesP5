@@ -22,7 +22,10 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
             var entidadVm = await _service.ObtenerPorIdAsync(id);
 
             if (entidadVm == null)
+            {
+                TempData["Error"] = $"ID incorrecto: no existe una entidad con el ID {id}.";
                 return RedirectToPage("Index");
+            }
 
             Entidad = new EntidadEditModel
             {

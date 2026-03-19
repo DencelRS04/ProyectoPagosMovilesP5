@@ -12,7 +12,6 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
         [BindProperty]
         public EntidadCreateModel Entidad { get; set; }
 
-        // ✅ Para mostrar el error en la página
         public string? ErrorMensaje { get; set; }
 
         public CreateModel(EntidadService service)
@@ -31,7 +30,6 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
 
             if (!ok)
             {
-                // ✅ Mostrar el mensaje de error en la página sin crash
                 ErrorMensaje = mensaje;
                 return Page();
             }

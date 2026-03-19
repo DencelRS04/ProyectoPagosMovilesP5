@@ -15,13 +15,14 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
         public async Task<List<EntidadViewModel>> ListarAsync()
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
+            Console.WriteLine($"[DEBUG SERVICE] BaseAddress: '{client.BaseAddress}'");
+            Console.WriteLine($"[DEBUG SERVICE] Auth header: '{client.DefaultRequestHeaders.Authorization}'");
+
             var response = await client.GetFromJsonAsync<ApiResponse<List<EntidadViewModel>>>(
                 "gateway/admin/entidad"
             );
             return response?.Datos ?? new List<EntidadViewModel>();
         }
-
-
 
         public async Task<(bool ok, string mensaje)> CrearAsync(EntidadCreateModel entidad)
         {
@@ -32,30 +33,24 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
                 nombreInstitucion = entidad.NombreInstitucion
             };
             var response = await client.PostAsJsonAsync("gateway/admin/entidad", model);
-
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content
                     .ReadFromJsonAsync<ApiResponse<object>>();
                 return (false, error?.Descripcion ?? "Error al crear entidad");
             }
-
             return (true, "Entidad creada correctamente");
         }
 
-        // ✅ Solo un ActualizarAsync, sin duplicado
-        // ✅ Nuevo método para obtener por CodigoEntidad
-        // ✅ Corregir URL de ObtenerPorIdAsync (estaba apuntando a /core/ por error)
         public async Task<EntidadViewModel?> ObtenerPorIdAsync(int id)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
             var response = await client.GetFromJsonAsync<ApiResponse<EntidadViewModel>>(
-                $"gateway/admin/entidad/{id}"  // ✅ era /core/{id}, ahora /entidad/{id}
+                $"gateway/admin/entidad/{id}"
             );
             return response?.Datos;
         }
 
-        // ✅ ActualizarAsync recibe int en lugar de string
         public async Task ActualizarAsync(int entidadId, EntidadEditModel entidad)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
@@ -65,7 +60,7 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
                 nombreInstitucion = entidad.NombreInstitucion
             };
             var httpResponse = await client.PutAsJsonAsync(
-                $"gateway/admin/entidad/{entidadId}",  // ✅ int en la URL
+                $"gateway/admin/entidad/{entidadId}",
                 model
             );
             if (!httpResponse.IsSuccessStatusCode)
