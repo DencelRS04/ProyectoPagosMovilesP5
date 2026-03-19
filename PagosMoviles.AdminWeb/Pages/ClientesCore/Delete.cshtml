@@ -1,4 +1,17 @@
-﻿@page
+﻿@page "{id:int}"
 @model PagosMoviles.AdminWeb.Pages.ClientesCore.DeleteModel
-@{
-}
+
+<h2>Desactivar Cliente</h2>
+
+<div class="alert alert-warning">
+    ¿Seguro que deseas desactivar este cliente?
+</div>
+
+<div class="mb-2"><strong>ID:</strong> @Model.Cliente.ClienteId</div>
+<div class="mb-2"><strong>Identificación:</strong> @Model.Cliente.Identificacion</div>
+<div class="mb-2"><strong>Nombre:</strong> @Model.Cliente.NombreCompleto</div>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Desactivar</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancelar</a>
+</form>

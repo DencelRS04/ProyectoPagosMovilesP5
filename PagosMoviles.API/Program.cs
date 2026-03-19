@@ -7,13 +7,20 @@ using PagosMoviles.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers + Filtro global
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<TokenValidationFilter>();
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 // DbContext (EF)
 builder.Services.AddDbContext<PagosMovilesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Servicios internos
-
 builder.Services.AddScoped<BitacoraService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<JwtService>();
@@ -25,8 +32,6 @@ builder.Services.AddScoped<ITransactionLogic, TransactionLogic>();
 builder.Services.AddScoped<PagosMovilesRepository>();
 
 // "Puente" ConnectionStrings para Dapper Repo
-// Repo usa: PagosMovilesDb y CoreBancarioDb
-// appsettings tiene: DefaultConnection y CoreConnection
 builder.Configuration["ConnectionStrings:PagosMovilesDb"] ??=
     builder.Configuration.GetConnectionString("DefaultConnection");
 

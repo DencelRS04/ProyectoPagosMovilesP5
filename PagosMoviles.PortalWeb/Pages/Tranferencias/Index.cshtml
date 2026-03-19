@@ -1,0 +1,128 @@
+﻿@page
+@model PagosMoviles.PortalWeb.Pages.Transferencias.IndexModel
+@{
+    ViewData["Title"] = "Transferencia de Pagos Móviles";
+}
+
+<style>
+    .page-title { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1.5rem; }
+    .transferencia-card {
+        background: white; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 2rem; max-width: 540px; margin-bottom: 1.5rem;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .form-group input, .form-group select {
+        width: 100%; border: 1px solid #ced4da; border-radius: 6px;
+        padding: 0.5rem 0.75rem; font-size: 0.95rem; box-sizing: border-box;
+        background: white;
+    }
+    .form-group input:focus, .form-group select:focus {
+        outline: none; border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+    }
+    .text-danger { color: #dc3545; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
+    .text-muted { color: #888; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
+    .btn-transferir {
+        background: #0d6efd; color: white; border: none;
+        padding: 0.6rem 1.75rem; border-radius: 6px; font-weight: 600;
+        font-size: 0.95rem; cursor: pointer; width: 100%; margin-top: 0.5rem;
+        transition: background 0.2s;
+    }
+    .btn-transferir:hover { background: #0b5ed7; }
+    .resultado-exito {
+        background: white; border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        padding: 2rem; max-width: 540px;
+        border-left: 5px solid #198754;
+    }
+    .resultado-exito .icono { font-size: 2rem; margin-bottom: 0.5rem; }
+    .resultado-exito h3 { font-size: 1.2rem; font-weight: 700; color: #198754; margin-bottom: 0.5rem; }
+    .resultado-exito p { color: #555; font-size: 0.95rem; margin: 0; }
+    .alert-danger {
+        background: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
+        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; max-width: 540px;
+    }
+    .separador { border: none; border-top: 1px solid #f0f0f0; margin: 1.5rem 0; }
+    .seccion-titulo {
+        font-size: 0.82rem; font-weight: 600; color: #888;
+        text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="page-title">Transferencia de Pagos Móviles</h1>
+
+    @if (Model.MensajeError != null)
+    {
+        <div class="alert-danger">⚠️ @Model.MensajeError</div>
+    }
+
+    @if (Model.Resultado != null && Model.Resultado.Codigo == 200)
+    {
+        <div class="resultado-exito">
+            <div class="icono">✅</div>
+            <h3>Transferencia exitosa</h3>
+            <p>@Model.Resultado.Descripcion</p>
+        </div>
+    }
+    else
+    {
+        <div class="transferencia-card">
+            <form method="post">
+
+                <p class="seccion-titulo">Datos de origen</p>
+
+                <div class="form-group">
+                    <label asp-for="TelefonoOrigen">Teléfono origen</label>
+                    <input asp-for="TelefonoOrigen" placeholder="Ej: 88888888" maxlength="20" />
+                    <span asp-validation-for="TelefonoOrigen" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NombreOrigen">Nombre origen</label>
+                    <input asp-for="NombreOrigen" placeholder="Ej: Juan Perez" />
+                    <span asp-validation-for="NombreOrigen" class="text-danger"></span>
+                </div>
+
+                <hr class="separador" />
+                <p class="seccion-titulo">Datos de destino</p>
+
+                <div class="form-group">
+                    <label asp-for="TelefonoDestino">Teléfono destino</label>
+                    <input asp-for="TelefonoDestino" placeholder="Ej: 77777777" maxlength="20" />
+                    <span asp-validation-for="TelefonoDestino" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EntidadDestino">Entidad destino</label>
+                    <input asp-for="EntidadDestino" placeholder="Ej: OTRO_BANCO001" />
+                    <span asp-validation-for="EntidadDestino" class="text-danger"></span>
+                </div>
+
+                <hr class="separador" />
+                <p class="seccion-titulo">Detalles de la transferencia</p>
+
+                <div class="form-group">
+                    <label asp-for="Monto">Monto (₡)</label>
+                    <input asp-for="Monto" type="number" placeholder="Ej: 5000"
+                           min="1" max="100000" step="0.01" />
+                    <span asp-validation-for="Monto" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Descripcion">Descripción</label>
+                    <input asp-for="Descripcion" placeholder="Máximo 25 caracteres" maxlength="25" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn-transferir">💸 Realizar transferencia</button>
+            </form>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

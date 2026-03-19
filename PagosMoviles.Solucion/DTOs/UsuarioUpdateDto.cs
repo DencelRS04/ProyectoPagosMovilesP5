@@ -14,5 +14,9 @@ namespace PagosMoviles.UsuariosService.DTOs
 
         [Required]
         public int RolId { get; set; }
+
+        public int IntentosFallidos { get; set; }
+
+        public bool Bloqueado { get; set; }
     }
 }

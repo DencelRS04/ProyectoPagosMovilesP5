@@ -1,4 +1,41 @@
 ﻿@page
 @model PagosMoviles.AdminWeb.Pages.ClientesCore.IndexModel
-@{
-}
+
+<h2>Clientes Core</h2>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">Nuevo Cliente</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Identificación</th>
+            <th>Tipo</th>
+            <th>Nombre</th>
+            <th>Fecha Nacimiento</th>
+            <th>Teléfono</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Clientes)
+        {
+            <tr>
+                <td>@item.ClienteId</td>
+                <td>@item.Identificacion</td>
+                <td>@item.TipoIdentificacion</td>
+                <td>@item.NombreCompleto</td>
+                <td>@item.FechaNacimiento.ToString("yyyy-MM-dd")</td>
+                <td>@item.Telefono</td>
+                <td>@(item.Activo ? "Sí" : "No")</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@item.ClienteId" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-page="Delete" asp-route-id="@item.ClienteId" class="btn btn-danger btn-sm">Desactivar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

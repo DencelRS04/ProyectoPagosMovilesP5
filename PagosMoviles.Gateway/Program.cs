@@ -1,11 +1,13 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("Configuration/yarp.json", optional: false, reloadOnChange: true);
+
+builder.Services
+    .AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 // Add services
 builder.Services.AddControllers();
-builder.Services.AddReverseProxy()  // ← Esto es clave
-       .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -19,10 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 🔹 No Authorization por ahora
-// app.UseAuthorization();
-
 app.MapControllers();
-app.MapReverseProxy();  // ← Funciona solo si AddReverseProxy está agregado
+app.MapReverseProxy();
 
 app.Run();
