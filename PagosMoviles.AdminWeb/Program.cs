@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using PagosMoviles.AdminWeb.Services;
 using PagosMoviles.AdminWeb.Services.Auth;
 using PagosMoviles.AdminWeb.Services.Perfil;
@@ -19,42 +19,43 @@ builder.Services.AddDataProtection()
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 
-// Todos los clientes apuntan al Gateway
+// Gateway config
 var gatewayBaseUrl = builder.Configuration["GatewayApi:BaseUrl"];
 if (string.IsNullOrWhiteSpace(gatewayBaseUrl))
     throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
 
-var gatewayHandler = new Func<HttpClientHandler>(() => new HttpClientHandler
+var handler = new HttpClientHandler
 {
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-});
+};
 
-// Registra el DelegatingHandler que añade el Bearer token
-builder.Services.AddTransient<BearerTokenHandler>();
-
-// Cliente principal
+// HttpClients
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
-    client.BaseAddress = new Uri(gatewayBaseUrl.Trim().TrimEnd('/') + "/");
+    client.BaseAddress = new Uri(gatewayBaseUrl.TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromSeconds(15);
-})
-.ConfigurePrimaryHttpMessageHandler(gatewayHandler)
-.AddHttpMessageHandler<BearerTokenHandler>();
+}).ConfigurePrimaryHttpMessageHandler(() => handler);
 
-// Alias usados por RolesService, PantallasService, Parametros y Usuarios pages
 foreach (var nombre in new[] { "gateway", "ParametroApi", "UsuarioApi" })
 {
     builder.Services.AddHttpClient(nombre, client =>
     {
-        client.BaseAddress = new Uri(gatewayBaseUrl.Trim().TrimEnd('/') + "/");
+        client.BaseAddress = new Uri(gatewayBaseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(15);
-    })
-    .ConfigurePrimaryHttpMessageHandler(gatewayHandler)
-    .AddHttpMessageHandler<BearerTokenHandler>();
+    }).ConfigurePrimaryHttpMessageHandler(() => handler);
 }
 
-builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IAuthService, AuthService>((provider, client) =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var baseUrl = config["GatewayApi:BaseUrl"];
+
+    client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(() => handler);
+
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 
 builder.Services.AddScoped<IPantallasService, PantallasService>();
@@ -70,8 +71,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".AdminWeb.Session";
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
 });
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -85,16 +85,35 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
+
     app.MapGet("/", context =>
     {
-        context.Response.Redirect("/Home/Index");
+        context.Response.Redirect("/");
         return Task.CompletedTask;
     });
 }
 
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();        // ✅ Session antes de Authorization
+
+// 🔥 PRIMERO session
+app.UseSession();
+
+// 🔥 DESPUÉS el middleware
+app.Use(async (context, next) =>
+{
+    var usuarioAntes = context.Session.GetString("UsuarioId");
+
+    await next();
+
+    var usuarioDespues = context.Session.GetString("UsuarioId");
+
+    if (!string.IsNullOrEmpty(usuarioAntes) && string.IsNullOrEmpty(usuarioDespues))
+    {
+        context.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
+    }
+});
+
 app.UseAuthorization();
 app.MapRazorPages();
 app.Run();

@@ -1,35 +1,28 @@
-﻿let tiempoInactividad;
-const LIMITE_INACTIVIDAD = 5 * 60 * 1000; // 5 minutos
+﻿const timeoutMs = 5 * 60 * 1000;
 
-function reiniciarTemporizador() {
+let timer;
 
-    clearTimeout(tiempoInactividad);
+// 🔥 REINICIA EL CONTADOR
+function resetTimer() {
+    clearTimeout(timer);
 
-    tiempoInactividad = setTimeout(function () {
+    timer = setTimeout(() => {
 
-        fetch('/SessionExpired', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        // 🔥 LLAMA AL BACKEND PARA GUARDAR MENSAJE
+        fetch('/Auth/Login?handler=SetSessionExpired', {
+            method: 'POST'
         })
-            .then(() => {
-                window.location.href = "/";
-            })
-            .catch(() => {
+            .finally(() => {
+                alert("La sesión expiró por inactividad.");
                 window.location.href = "/";
             });
 
-    }, LIMITE_INACTIVIDAD);
+    }, timeoutMs);
 }
 
-function iniciarControlSesion() {
-
-    document.addEventListener("keydown", reiniciarTemporizador);
-    document.addEventListener("click", reiniciarTemporizador);
-    document.addEventListener("scroll", reiniciarTemporizador);
-
-    reiniciarTemporizador();
-}
-
-window.addEventListener("load", iniciarControlSesion);
+// 🔥 EVENTOS DE ACTIVIDAD
+window.onload = resetTimer;
+document.onmousemove = resetTimer;
+document.onkeydown = resetTimer;
+document.onclick = resetTimer;
+document.onscroll = resetTimer;

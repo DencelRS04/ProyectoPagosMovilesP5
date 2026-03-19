@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PagosMoviles.Shared.DTOs.Auth;
 using PagosMoviles.Shared.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace PagosMoviles.AdminWeb.Services.Auth
 {
@@ -13,14 +13,13 @@ namespace PagosMoviles.AdminWeb.Services.Auth
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public AuthService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;
-            _httpContextAccessor = httpContextAccessor;
         }
+
 
         public async Task<Tuple<bool, string, UsuarioSesionModel>> LoginAsync(string usuario, string contrasena)
         {
@@ -28,6 +27,7 @@ namespace PagosMoviles.AdminWeb.Services.Auth
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, "gateway/auth/login");
 
+                // 🔥 LIMPIO Y SIN DUPLICADOS
                 request.Headers.Remove("usuario");
                 request.Headers.Remove("password");
 
@@ -35,11 +35,17 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                 request.Headers.Add("password", contrasena);
 
                 var response = await _httpClient.SendAsync(request);
+
                 var json = await response.Content.ReadAsStringAsync();
 
+                // 🔴 ERROR DESDE API
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new Tuple<bool, string, UsuarioSesionModel>(false, json, null);
+                    return new Tuple<bool, string, UsuarioSesionModel>(
+                        false,
+                        json,
+                        null
+                    );
                 }
 
                 var options = new JsonSerializerOptions
@@ -51,7 +57,11 @@ namespace PagosMoviles.AdminWeb.Services.Auth
 
                 if (loginResponse == null)
                 {
-                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Respuesta inválida del servidor.", null);
+                    return new Tuple<bool, string, UsuarioSesionModel>(
+                        false,
+                        "Respuesta inválida del servidor.",
+                        null
+                    );
                 }
 
                 var usuarioSesion = new UsuarioSesionModel
@@ -68,30 +78,21 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                         : loginResponse.ColorAvatar
                 };
 
-                // 🔥 RESET TOTAL DE INTENTOS
-                var session = _httpContextAccessor.HttpContext?.Session;
-
-                if (session != null)
-                {
-                    var keys = session.Keys;
-
-                    foreach (var key in keys)
-                    {
-                        if (key.StartsWith("Intentos_"))
-                        {
-                            session.Remove(key);
-                        }
-                    }
-
-                    session.Remove("UsuarioIntento");
-                }
-
-                return new Tuple<bool, string, UsuarioSesionModel>(true, "", usuarioSesion);
+                return new Tuple<bool, string, UsuarioSesionModel>(
+                    true,
+                    "",
+                    usuarioSesion
+                );
             }
             catch (Exception ex)
             {
-                return new Tuple<bool, string, UsuarioSesionModel>(false, ex.Message, null);
+                return new Tuple<bool, string, UsuarioSesionModel>(
+                    false,
+                    ex.Message,
+                    null
+                );
             }
         }
+    
     }
 }

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PagosMoviles.Shared.Models;
-using PagosMoviles.AdminWeb.Models.Usuarios;
 
-namespace PagosMoviles.PortalWeb.Services.Auth
+namespace PagosMoviles.AdminWeb.Services.Auth
 {
     public interface IAuthService
     {
         Task<Tuple<bool, string, UsuarioSesionModel>> LoginAsync(string usuario, string contrasena);
-
-        // 🔥 REGISTRO
-        Task<Tuple<bool, string>> RegisterAsync(UsuarioFormModel model);
     }
 }

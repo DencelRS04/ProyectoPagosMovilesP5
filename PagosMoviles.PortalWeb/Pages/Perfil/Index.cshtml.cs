@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
 using PagosMoviles.PortalWeb.Helpers;
-using PagosMoviles.PortalWeb.Models.Perfil;
 using PagosMoviles.PortalWeb.Services.Perfil;
+using PagosMoviles.PortalWeb.Models.Perfil;
 
 namespace PagosMoviles.PortalWeb.Pages.Perfil
 {

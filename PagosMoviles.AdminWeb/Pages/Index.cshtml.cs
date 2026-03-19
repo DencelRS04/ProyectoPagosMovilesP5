@@ -10,7 +10,6 @@ namespace PagosMoviles.AdminWeb.Pages
     {
         private readonly IAuthService _authService;
         private const int ADMIN_ROL = 5;
-        private static int intentosFallidos = 0;
 
         public IndexModel(IAuthService authService)
         {
@@ -25,6 +24,14 @@ namespace PagosMoviles.AdminWeb.Pages
         public void OnGet()
         {
             Input = new LoginInputModel();
+
+            var mensajeExpirado = HttpContext.Session.GetString("SessionExpiredMessage");
+
+            if (!string.IsNullOrWhiteSpace(mensajeExpirado))
+            {
+                Mensaje = mensajeExpirado;
+                HttpContext.Session.Remove("SessionExpiredMessage");
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -35,8 +42,28 @@ namespace PagosMoviles.AdminWeb.Pages
             if (string.IsNullOrWhiteSpace(Input.Usuario) || string.IsNullOrWhiteSpace(Input.Contrasena))
             {
                 Input.MensajeError = "Usuario y/o contraseña incorrectos.";
-                Input.Usuario = string.Empty;
-                Input.Contrasena = string.Empty;
+                return Page();
+            }
+
+            // 🔥 DETECTAR CAMBIO DE USUARIO
+            var usuarioAnterior = HttpContext.Session.GetString("UsuarioIntento");
+
+            if (usuarioAnterior != Input.Usuario)
+            {
+                if (!string.IsNullOrEmpty(usuarioAnterior))
+                {
+                    HttpContext.Session.Remove($"Intentos_{usuarioAnterior}");
+                }
+
+                HttpContext.Session.SetString("UsuarioIntento", Input.Usuario);
+            }
+
+            var claveIntentos = $"Intentos_{Input.Usuario}";
+            int intentos = HttpContext.Session.GetInt32(claveIntentos) ?? 0;
+
+            if (intentos >= 3)
+            {
+                Input.MensajeError = "El usuario se encuentra bloqueado.";
                 return Page();
             }
 
@@ -49,52 +76,66 @@ namespace PagosMoviles.AdminWeb.Pages
                 if (mensajeServicio.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
-                    Input.Usuario = string.Empty;
-                    Input.Contrasena = string.Empty;
                     return Page();
                 }
 
-                intentosFallidos++;
+                intentos++;
+                HttpContext.Session.SetInt32(claveIntentos, intentos);
 
-                if (intentosFallidos >= 3)
+                if (intentos >= 3)
                 {
                     Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
-                    Input.Usuario = string.Empty;
-                    Input.Contrasena = string.Empty;
-                    return Page();
+                }
+                else
+                {
+                    Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentos} de 3.";
                 }
 
-                Input.MensajeError = "Usuario y/o contraseña incorrectos.";
-                Input.Usuario = string.Empty;
-                Input.Contrasena = string.Empty;
                 return Page();
             }
 
             var usuario = result.Item3;
+
+            // 🔥 RESET GLOBAL DE INTENTOS (AQUÍ ESTÁ EL CAMBIO)
+            var keys = new List<string>();
+
+            foreach (var item in HttpContext.Session.Keys)
+            {
+                if (item.StartsWith("Intentos_"))
+                {
+                    keys.Add(item);
+                }
+            }
+
+            foreach (var key in keys)
+            {
+                HttpContext.Session.Remove(key);
+            }
+
+            HttpContext.Session.Remove("UsuarioIntento");
+
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
-            intentosFallidos = 0;
 
-            if (result.Item3.RolId != ADMIN_ROL)
+            if (usuario.RolId != ADMIN_ROL)
             {
                 Input.MensajeError = "No tiene permisos para acceder al portal administrativo.";
-                Input.Usuario = string.Empty;
-                Input.Contrasena = string.Empty;
                 return Page();
             }
 
             SessionHelper.LimpiarSesion(HttpContext.Session);
-            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, result.Item3);
-            // ✅ Guardar token con la clave que usa BearerTokenHandler
-            HttpContext.Session.SetString("AccessToken", result.Item3.AccessToken ?? "");
+            SessionHelper.GuardarUsuarioSesion(HttpContext.Session, usuario);
 
             return Redirect("/Home/Index");
         }
 
-        public IActionResult OnPostLogout()
+        public IActionResult OnPostSetSessionExpired()
         {
-            SessionHelper.LimpiarSesion(HttpContext.Session);
-            return Redirect("/");
+            HttpContext.Session.Remove("UsuarioId");
+
+            HttpContext.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
+
+            return new EmptyResult();
         }
     }
 }

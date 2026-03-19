@@ -43,7 +43,7 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
         {
             var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
             if (usuario == null || string.IsNullOrEmpty(usuario.AccessToken))
-                return Redirect("/Auth/Login");
+                return Redirect("/");
 
             var client = CrearClienteConToken();
             var response = await client.GetAsync("user");
