@@ -1,5 +1,5 @@
 ﻿@page
-@model IndexModel
+@model PagosMoviles.PortalWeb.Pages.Movimientos.IndexModel
 @{
     ViewData["Title"] = "Consultar Últimos Movimientos";
 }
@@ -11,7 +11,6 @@
                 <div class="card-header bg-primary text-white">
                     <h3 class="h5 mb-0">Consultar Últimos 5 Movimientos</h3>
                 </div>
-
                 <div class="card-body">
                     <form method="get">
                         <div class="mb-3">
@@ -21,10 +20,10 @@
                                    id="telefono"
                                    name="telefono"
                                    value="@Model.Telefono"
-                                   placeholder="Ej: 8095551234"
-                                   maxlength="10"
+                                   placeholder="Ej: 88889999"
+                                   maxlength="8"
                                    required />
-                            <div class="form-text">Ingrese el número de teléfono a consultar (10 dígitos)</div>
+                            <div class="form-text">Ingrese el número de teléfono (8 dígitos).</div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">
@@ -36,13 +35,28 @@
         </div>
     </div>
 
+    @* Mensaje de error *@
+    @if (!string.IsNullOrEmpty(Model.ErrorMensaje))
+    {
+        <div class="row mt-4 justify-content-center">
+            <div class="col-md-6">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>@Model.ErrorMensaje
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Resultados *@
     @if (!string.IsNullOrEmpty(Model.Telefono))
     {
         <div class="row mt-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header bg-light">
-                        <h4 class="h6 mb-0">Resultados para: @Model.Telefono</h4>
+                        <h4 class="h6 mb-0">
+                            Resultados para: @Model.Telefono
+                        </h4>
                     </div>
 
                     @if (Model.Movimientos != null && Model.Movimientos.Any())
@@ -52,8 +66,7 @@
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
-                                        <th>Teléfono Origen</th>
-                                        <th>Teléfono Destino</th>
+                                        <th>Tipo</th>
                                         <th class="text-end">Monto</th>
                                     </tr>
                                 </thead>
@@ -62,16 +75,26 @@
                                     {
                                         <tr>
                                             <td>@m.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                                            <td>@m.TelefonoOrigen</td>
-                                            <td>@m.TelefonoDestino</td>
-                                            <td class="text-end">@m.Monto.ToString("C")</td>
+                                            <td>
+                                                @if (m.TipoMovimiento == "CREDITO")
+                                                {
+                                                    <span class="badge bg-success">CRÉDITO</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">DÉBITO</span>
+                                                }
+                                            </td>
+                                            <td class="text-end fw-bold">
+                                                @m.Monto.ToString("C")
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     }
-                    else
+                    else if (string.IsNullOrEmpty(Model.ErrorMensaje))
                     {
                         <div class="card-body">
                             <div class="alert alert-info mb-0">

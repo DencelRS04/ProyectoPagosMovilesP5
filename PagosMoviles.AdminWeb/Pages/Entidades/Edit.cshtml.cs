@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.AdminWeb.Models.Entidades;
 using PagosMoviles.AdminWeb.Services.Entidades;
@@ -17,20 +17,35 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
             _service = service;
         }
 
-        public void OnGet(string id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
+            var entidadVm = await _service.ObtenerPorIdAsync(id);
+
+            if (entidadVm == null)
+                return RedirectToPage("Index");
+
             Entidad = new EntidadEditModel
             {
-                CodigoEntidad = id
+                EntidadId = entidadVm.EntidadId,
+                CodigoEntidad = entidadVm.CodigoEntidad,
+                NombreInstitucion = entidadVm.NombreInstitucion
             };
+
+            return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            var token = HttpContext.Session.GetString("token");
+            if (!ModelState.IsValid)
+                return Page();
 
-            await _service.ActualizarAsync(Entidad.CodigoEntidad, Entidad);
+            if (Entidad?.EntidadId == 0)
+            {
+                ModelState.AddModelError("", "El ID de entidad no fue recibido.");
+                return Page();
+            }
 
+            await _service.ActualizarAsync(Entidad.EntidadId, Entidad);
             return RedirectToPage("Index");
         }
     }

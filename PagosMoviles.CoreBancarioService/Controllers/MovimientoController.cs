@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PagosMoviles.CoreBancarioService.DTOs;
 using PagosMoviles.CoreBancarioService.Security;
 using PagosMoviles.CoreBancarioService.Services;
@@ -23,6 +24,8 @@ namespace PagosMoviles.CoreBancarioService.Controllers
         // POST /core/movimientos/ultimos
         // =========================
         [HttpPost("ultimos")]
+        [AllowAnonymous]  // ✅ Agregar esta línea
+
         public async Task<IActionResult> Ultimos([FromBody] ConsultaCuentaDto dto)
         {
             var token = GetBearerToken();
@@ -86,6 +89,8 @@ namespace PagosMoviles.CoreBancarioService.Controllers
         // POST /core/movimientos/aplicar
         // =========================
         [HttpPost("aplicar")]
+        [AllowAnonymous]  // agregue esta linea
+
         public async Task<IActionResult> Aplicar([FromBody] AplicarTransaccionDto dto)
         {
             var token = GetBearerToken();

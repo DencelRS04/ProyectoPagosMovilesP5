@@ -36,9 +36,9 @@
             },
             "api-route": {
                 "ClusterId": "api-cluster",
-                "Match": { "Path": "/gateway/admin/api/{**catch-all}" },
+                "Match": { "Path": "/gateway/api/{**catch-all}" },
                 "Transforms": [
-                    { "PathRemovePrefix": "/gateway/admin/api" },
+                    { "PathRemovePrefix": "/gateway" },
                     {
                         "RequestHeader": "Authorization",
                         "Set": "{OriginalHeader:Authorization}"
@@ -48,6 +48,24 @@
             "transaccion-route": {
                 "ClusterId": "pagosmovil-cluster",
                 "Match": { "Path": "/gateway/admin/transactions/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" },
+                    {
+                        "RequestHeader": "Authorization",
+                        "Set": "{OriginalHeader:Authorization}"
+                    }
+                ]
+            },
+            "movimiento-route": {
+                "ClusterId": "core-cluster",
+                "Match": { "Path": "/gateway/admin/core/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" }
+                ]
+            },
+            "accounts-route": {
+                "ClusterId": "pagosmovil-cluster",
+                "Match": { "Path": "/gateway/admin/accounts/{**catch-all}" },
                 "Transforms": [
                     { "PathRemovePrefix": "/gateway/admin" },
                     {

@@ -37,16 +37,13 @@ public class CoreSrvClient
     private HttpRequestMessage BuildPost(string path, object body, string? bearerToken)
     {
         var req = new HttpRequestMessage(HttpMethod.Post, path);
-
         if (!string.IsNullOrWhiteSpace(bearerToken))
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
-
         req.Content = new StringContent(
             JsonSerializer.Serialize(body, _json),
             Encoding.UTF8,
             "application/json"
         );
-
         return req;
     }
 
@@ -54,14 +51,25 @@ public class CoreSrvClient
         new() { Success = false, Message = msg, Data = default };
 
     // SRV16 Core: POST /core/movimientos/ultimos
+    // ✅ Agregar esta clase para mapear la respuesta real del Core
+    public class CoreApiResponse<T>
+    {
+        public int Codigo { get; set; }
+        public string Descripcion { get; set; } = "";
+        public T? Datos { get; set; }
+    }
+
+    // SRV16 Core: POST /core/movimientos/ultimos
     public async Task<ApiResponse<List<MovimientoCoreDto>>?> UltimosMovimientosAsync(
         string identificacion,
         string numeroCuenta,
         string? bearerToken = null)
     {
+        var identificacionLimpia = identificacion.Replace("-", "").Trim();
+
         var dto = new ConsultaCuentaDto
         {
-            Identificacion = identificacion,
+            Identificacion = identificacionLimpia,
             NumeroCuenta = numeroCuenta
         };
 
@@ -71,7 +79,6 @@ public class CoreSrvClient
 
         if (!resp.IsSuccessStatusCode)
         {
-            // Devuelve el body del Core para ver el error real
             return Fail<List<MovimientoCoreDto>>(
                 $"Core Bancario respondió HTTP {(int)resp.StatusCode}: {body}"
             );
@@ -79,8 +86,19 @@ public class CoreSrvClient
 
         try
         {
-            var r = JsonSerializer.Deserialize<ApiResponse<List<MovimientoCoreDto>>>(body, _json);
-            return r ?? Fail<List<MovimientoCoreDto>>("Respuesta no válida del Core (JSON nulo).");
+            // ✅ Deserializar con el formato real del Core
+            var coreResp = JsonSerializer.Deserialize<CoreApiResponse<List<MovimientoCoreDto>>>(body, _json);
+
+            if (coreResp == null)
+                return Fail<List<MovimientoCoreDto>>("Respuesta no válida del Core (JSON nulo).");
+
+            // ✅ Mapear al formato ApiResponse que usa el controlador
+            return new ApiResponse<List<MovimientoCoreDto>>
+            {
+                Success = coreResp.Codigo == 200,
+                Message = coreResp.Descripcion,
+                Data = coreResp.Datos
+            };
         }
         catch
         {

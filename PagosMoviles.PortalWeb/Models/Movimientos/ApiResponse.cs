@@ -1,11 +1,14 @@
-﻿namespace PagosMoviles.PortalWeb.Models.Movimientos
+﻿using System.Text.Json.Serialization;
+
+namespace PagosMoviles.PortalWeb.Models
 {
     public class ApiResponse<T>
     {
-        public bool Success { get; set; }
+        public int Codigo { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
 
-        public string Message { get; set; }
-
-        public T Data { get; set; }
+        // ✅ Mapear "datos" del JSON a "Data" en C#
+        [JsonPropertyName("datos")]
+        public T? Data { get; set; }
     }
 }

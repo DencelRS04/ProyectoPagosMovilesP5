@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.PortalWeb.Models.Movimientos;
 
@@ -9,26 +9,30 @@ namespace PagosMoviles.PortalWeb.Pages.Movimientos
         private readonly MovimientoService _service;
 
         public List<MovimientosViewModels> Movimientos { get; set; } = new();
+        public string? ErrorMensaje { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string Telefono { get; set; }
+        public string Telefono { get; set; } = string.Empty;
 
         public IndexModel(MovimientoService service)
         {
             _service = service;
         }
 
-        public async Task OnGet()
+        public async Task OnGetAsync()
         {
             if (!string.IsNullOrEmpty(Telefono))
             {
-                // Llamada al servicio SRV11 según lo requerido
-                Movimientos = await _service.ObtenerUltimosMovimientos(Telefono);
-
-                // Asegurar que solo se muestren los últimos 5
-                if (Movimientos != null && Movimientos.Count > 5)
+                try
                 {
-                    Movimientos = Movimientos.Take(5).ToList();
+                    Movimientos = await _service.ObtenerUltimosMovimientos(Telefono);
+                    // âœ… Log temporal
+                    Console.WriteLine($"[DEBUG] Movimientos count: {Movimientos?.Count ?? -1}");
+                }
+                catch (Exception ex)
+                {
+                    ErrorMensaje = ex.Message;
+                    Console.WriteLine($"[DEBUG ERROR] {ex.Message}");
                 }
             }
         }

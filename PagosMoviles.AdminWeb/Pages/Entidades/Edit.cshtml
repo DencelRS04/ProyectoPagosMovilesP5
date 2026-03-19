@@ -22,6 +22,7 @@
         <div class="card-body">
             <form method="post" id="editForm">
                 @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Entidad.EntidadId" />       ← ✅ nuevo
                 <input type="hidden" asp-for="Entidad.CodigoEntidad" />
 
                 <div class="row">

@@ -1,11 +1,11 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
-// Program.cs (PagosMoviles.PortalWeb) - fragmento a añadir/ajustar
+
+// ✅ Una sola vez, con BaseAddress correcta
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7130/"); // URL de tu Gateway
+    client.BaseAddress = new Uri("https://localhost:7130/");
     client.Timeout = TimeSpan.FromSeconds(15);
 })
 .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -14,17 +14,11 @@ builder.Services.AddHttpClient("GatewayApi", client =>
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-// Registrar el servicio que usa IHttpClientFactory
+// ✅ Una sola vez
 builder.Services.AddScoped<MovimientoService>();
-
-builder.Services.AddScoped<MovimientoService>();
-builder.Services.AddRazorPages();
-builder.Services.AddHttpClient("GatewayApi");
-builder.Services.AddScoped<MovimientoService>();// ✅ AQUÍ
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -33,11 +27,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapRazorPages();
-
 app.Run();
