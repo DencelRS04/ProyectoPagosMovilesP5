@@ -1,0 +1,349 @@
+﻿@page "{id:int}"
+@model PagosMoviles.AdminWeb.Pages.Entidades.EditModel
+@{
+    ViewData["Title"] = "Editar Entidad";
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="Index">Entidades</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Entidad #@Model.Entidad.CodigoEntidad</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow">
+        <div class="card-header bg-warning text-white">
+            <h3 class="mb-0">
+                <i class="fas fa-edit me-2"></i>Editar Entidad
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <form method="post" id="editForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Entidad.EntidadId" />       ← ✅ nuevo
+                <input type="hidden" asp-for="Entidad.CodigoEntidad" />
+
+                <div class="row">
+                    <div class="col-md-8 mx-auto">
+                        <!-- Identificador (solo lectura) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-id-card me-2"></i>Identificador
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light" id="identificador-addon">
+                                    <i class="fas fa-hashtag"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control form-control-lg bg-light"
+                                       value="@Model.Entidad.CodigoEntidad"
+                                       readonly
+                                       disabled
+                                       aria-describedby="identificador-addon" />
+                            </div>
+                            <div class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                El identificador no puede ser modificado.
+                            </div>
+                        </div>
+
+                        <!-- Nombre -->
+                        <div class="mb-4">
+                            <label asp-for="Entidad.NombreInstitucion" class="form-label fw-bold">
+                                <i class="fas fa-building me-2"></i>Nombre
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Entidad.NombreInstitucion"
+                                   class="form-control form-control-lg"
+                                   placeholder="Ingrese el nombre de la entidad"
+                                   required
+                                   maxlength="100" />
+                            <span asp-validation-for="Entidad.NombreInstitucion" class="text-danger small"></span>
+                            <div class="form-text">Nombre completo de la entidad.</div>
+                        </div>
+
+                        <!-- Metadatos adicionales (opcional) -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-clock me-2"></i>Información de la entidad
+                                </h6>
+                                <div class="row mt-3">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block">Fecha de creación</small>
+                                        <strong>@DateTime.Now.AddDays(-30).ToString("dd/MM/yyyy")</strong>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block">Última modificación</small>
+                                        <strong>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-page="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg" id="btnSubmit">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer bg-light">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    <small class="text-muted">
+                        Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                    </small>
+                </div>
+                <div>
+                    <small class="text-muted">
+                        <i class="fas fa-history me-1"></i>
+                        Última actualización: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de advertencia (opcional) -->
+    <div class="alert alert-warning mt-4 shadow-sm">
+        <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle fa-2x"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5 class="alert-heading mb-1">¡Importante!</h5>
+                <p class="mb-0">Los cambios realizados afectarán a todas las operaciones relacionadas con esta entidad.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+            background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+                border-color: #ffc107;
+            }
+
+            .form-control:read-only, .form-control:disabled {
+                background-color: #f8f9fa;
+                cursor: not-allowed;
+            }
+
+        .input-group-text {
+            border-radius: 10px 0 0 10px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+
+        .btn-warning {
+            color: #212529;
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+            .btn-warning:hover {
+                color: #212529;
+                background-color: #ffca2c;
+                border-color: #ffc720;
+            }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .form-text {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .breadcrumb-item a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+            .breadcrumb-item a:hover {
+                text-decoration: underline;
+            }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Estilo para el identificador de solo lectura */
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        .input-group {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editForm');
+            const submitBtn = document.getElementById('btnSubmit');
+            const originalNombre = document.getElementById('@Html.IdFor(m => m.Entidad.NombreInstitucion)').value;
+
+            // Prevenir múltiples envíos
+            form.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Guardando...';
+            });
+
+            // Validación personalizada
+            const inputs = document.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('invalid', function(e) {
+                    e.preventDefault();
+                    this.classList.add('is-invalid');
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.validity.valid) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            // Capitalizar nombre
+            const nombre = document.getElementById('@Html.IdFor(m => m.Entidad.NombreInstitucion)');
+            if (nombre) {
+                nombre.addEventListener('input', function() {
+                    let words = this.value.toLowerCase().split(' ');
+                    for (let i = 0; i < words.length; i++) {
+                        if (words[i].length > 0) {
+                            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+                        }
+                    }
+                    this.value = words.join(' ');
+                });
+            }
+
+            // Detectar cambios en el formulario
+            let formChanged = false;
+
+            nombre.addEventListener('input', function() {
+                formChanged = (this.value !== originalNombre);
+            });
+
+            // Confirmación antes de salir sin guardar
+            window.addEventListener('beforeunload', function(e) {
+                if (formChanged && !submitBtn.disabled) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            // Confirmación para cancelar
+            const cancelBtn = document.querySelector('a[asp-page="Index"]');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function(e) {
+                    if (formChanged) {
+                        e.preventDefault();
+                        if (confirm('¿Estás seguro de que deseas cancelar? Los cambios no guardados se perderán.')) {
+                            window.location.href = this.href;
+                        }
+                    }
+                });
+            }
+
+            // Mostrar notificación de éxito (simulada para demo)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('saved') === 'true') {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+                alertDiv.style.zIndex = '9999';
+                alertDiv.innerHTML = `
+                    <i class="fas fa-check-circle me-2"></i>
+                    Cambios guardados exitosamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 5000);
+            }
+        });
+    </script>
+}

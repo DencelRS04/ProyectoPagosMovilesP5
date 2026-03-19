@@ -6,9 +6,7 @@ using PagosMoviles.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =========================
 // Controllers + Filtro global
-// =========================
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<TokenValidationFilter>();
@@ -18,16 +16,11 @@ builder.Services.AddControllers(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-
-// =========================
 // DbContext (EF)
-// =========================
 builder.Services.AddDbContext<PagosMovilesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// =========================
 // Servicios internos
-// =========================
 builder.Services.AddScoped<BitacoraService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<JwtService>();
@@ -38,21 +31,15 @@ builder.Services.AddScoped<ITransactionLogic, TransactionLogic>();
 // Repo Dapper (SRV10/11/13/17)
 builder.Services.AddScoped<PagosMovilesRepository>();
 
-// =========================
 // "Puente" ConnectionStrings para Dapper Repo
-// Repo usa: PagosMovilesDb y CoreBancarioDb
-// appsettings tiene: DefaultConnection y CoreConnection
-// =========================
 builder.Configuration["ConnectionStrings:PagosMovilesDb"] ??=
     builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Configuration["ConnectionStrings:CoreBancarioDb"] ??=
     builder.Configuration.GetConnectionString("CoreConnection");
 
-// =========================
 // HttpClients
-// =========================
-builder.Services.AddHttpClient(); // genérico
+builder.Services.AddHttpClient();
 
 builder.Services.AddHttpClient<CoreSrvClient>((sp, client) =>
 {
@@ -85,9 +72,7 @@ builder.Services.AddHttpClient<CoreSrvClient>((sp, client) =>
     };
 });
 
-// =========================
 // Swagger + Bearer
-// =========================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -121,9 +106,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// =========================
 // Developer Exception Page + middleware de error JSON (solo dev)
-// =========================
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

@@ -5,7 +5,7 @@ using PagosMoviles.API.Services;
 namespace PagosMoviles.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("transactions")]  // ← antes era [Route("api/[controller]")]
 [Tags("Transacciones")]
 public class TransactionsController : ControllerBase
 {
@@ -41,6 +41,29 @@ public class TransactionsController : ControllerBase
 
         var response = await _logic.ProcessTransaction(transaction);
 
+        return StatusCode(response.StatusCode, new ApiResponse
+        {
+            codigo = response.StatusCode,
+            descripcion = response.Message,
+            datos = response.ResponseObject
+        });
+    }
+    [HttpGet("por-fecha")]
+    public async Task<IActionResult> ObtenerPorFecha([FromQuery] string fecha)
+    {
+        if (!DateTime.TryParseExact(fecha, "yyyy-MM-dd",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out DateTime fechaParsed))
+        {
+            return BadRequest(new ApiResponse
+            {
+                codigo = 400,
+                descripcion = "Formato de fecha inválido. Use yyyy-MM-dd"
+            });
+        }
+
+        var response = await _logic.ObtenerPorFecha(fechaParsed);
         return StatusCode(response.StatusCode, new ApiResponse
         {
             codigo = response.StatusCode,

@@ -5,6 +5,9 @@ using PagosMoviles.AdminWeb.Services.Perfil;
 using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.AdminWeb.Services.Roles;
 using PagosMoviles.AdminWeb.Services.ClientesCore;
+using PagosMoviles.AdminWeb.Services.Entidades;
+using PagosMoviles.AdminWeb.Services.Reporte;
+using PagosMoviles.AdminWeb.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +61,8 @@ builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 builder.Services.AddScoped<IPantallasService, PantallasService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<ClientesCoreService>();
+builder.Services.AddScoped<EntidadService>();
+builder.Services.AddScoped<ReporteService>();
 
 builder.Services.AddDistributedMemoryCache();
 
@@ -67,6 +72,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".AdminWeb.Session";
     options.IdleTimeout = TimeSpan.FromMinutes(5);
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
 });
 
 var app = builder.Build();
@@ -106,5 +116,4 @@ app.Use(async (context, next) =>
 
 app.UseAuthorization();
 app.MapRazorPages();
-
 app.Run();

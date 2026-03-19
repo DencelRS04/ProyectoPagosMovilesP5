@@ -1,119 +1,163 @@
 {
-  "ReverseProxy": {
-    "Routes": {
-      "accounts-balance-route": {
-        "ClusterId": "core-cluster",
-        "Match": { "Path": "/gateway/admin/core/accounts/balance" },
-        "Transforms": [ { "PathSet": "/accounts/balance" } ]
-      },
-      "accounts-transactions-route": {
-        "ClusterId": "core-cluster",
-        "Match": { "Path": "/gateway/admin/core/accounts/transactions" },
-        "Transforms": [ { "PathSet": "/accounts/transactions" } ]
-      },
-      "transactions-process-route": {
-        "ClusterId": "core-cluster",
-        "Match": { "Path": "/gateway/admin/core/api/transactions/process" },
-        "Transforms": [ { "PathSet": "/api/transactions/process" } ]
-      },
-      "accounts-unsubscribe-route": {
-        "ClusterId": "core-cluster",
-        "Match": { "Path": "/gateway/admin/core/accounts/unsubscribe" },
-        "Transforms": [ { "PathSet": "/accounts/unsubscribe" } ]
-      },
-      "auth-login-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/gateway/auth/login" },
-        "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
-      },
-      "auth-validate-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/gateway/auth/validate" },
-        "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
-      },
-      "auth-validate-internal-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/auth/validate" }
-      },
-      "auth-register-route": {
-        "ClusterId": "usuarios-auth-cluster",
-        "Match": { "Path": "/gateway/auth/register" },
-        "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
-      },
-      "afiliacion-register-route": {
-        "ClusterId": "usuarios-auth-cluster",
-        "Match": { "Path": "/gateway/admin/core/afiliacion/register" },
-        "Transforms": [ { "PathSet": "/auth/register" } ]
-      },
-      "parametro-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/parametro" }
-      },
-      "parametro-id-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/parametro/{**catch-all}" }
-      },
-      "rol-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/rol" }
-      },
-      "rol-id-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/rol/{**catch-all}" }
-      },
-      "pantalla-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/pantalla" }
-      },
-      "pantalla-id-route": {
-        "ClusterId": "api-auth-cluster",
-        "Match": { "Path": "/pantalla/{**catch-all}" }
-      },
-      "user-route": {
-        "ClusterId": "usuarios-auth-cluster",
-        "Match": { "Path": "/user" }
-      },
-      "user-id-route": {
-        "ClusterId": "usuarios-auth-cluster",
-        "Match": { "Path": "/user/{**catch-all}" }
-      },
-      "core-client-route": {
-        "ClusterId": "core-bancario-cluster",
-        "Match": { "Path": "/gateway/admin/core/client" },
-        "Transforms": [ { "PathSet": "/core/client" } ]
-      },
-      "core-client-id-route": {
-        "ClusterId": "core-bancario-cluster",
-        "Match": { "Path": "/gateway/admin/core/client/{**catch-all}" },
-        "Transforms": [ { "PathPattern": "/core/client/{**catch-all}" } ]
-      },
-      "core-client-exists-route": {
-        "ClusterId": "core-bancario-cluster",
-        "Match": { "Path": "/gateway/admin/core/client-exists" },
-        "Transforms": [ { "PathSet": "/core/client-exists" } ]
-      }
-    },
-    "Clusters": {
-      "core-cluster": {
-        "Destinations": {
-          "destination1": { "Address": "https://localhost:7143/" }
+    "ReverseProxy": {
+        "Routes": {
+            "accounts-balance-route": {
+                "ClusterId": "core-cluster",
+                "Match": { "Path": "/gateway/admin/core/accounts/balance" },
+                "Transforms": [ { "PathSet": "/accounts/balance" } ]
+            },
+            "accounts-transactions-route": {
+                "ClusterId": "core-cluster",
+                "Match": { "Path": "/gateway/admin/core/accounts/transactions" },
+                "Transforms": [ { "PathSet": "/accounts/transactions" } ]
+            },
+            "transactions-process-route": {
+                "ClusterId": "core-cluster",
+                "Match": { "Path": "/gateway/admin/core/api/transactions/process" },
+                "Transforms": [ { "PathSet": "/api/transactions/process" } ]
+            },
+            "accounts-unsubscribe-route": {
+                "ClusterId": "core-cluster",
+                "Match": { "Path": "/gateway/admin/core/accounts/unsubscribe" },
+                "Transforms": [ { "PathSet": "/accounts/unsubscribe" } ]
+            },
+            "auth-login-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/gateway/auth/login" },
+                "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
+            },
+            "auth-validate-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/gateway/auth/validate" },
+                "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
+            },
+            "auth-validate-internal-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/auth/validate" }
+            },
+            "auth-register-route": {
+                "ClusterId": "usuarios-auth-cluster",
+                "Match": { "Path": "/gateway/auth/register" },
+                "Transforms": [ { "PathRemovePrefix": "/gateway" } ]
+            },
+            "afiliacion-register-route": {
+                "ClusterId": "usuarios-auth-cluster",
+                "Match": { "Path": "/gateway/admin/core/afiliacion/register" },
+                "Transforms": [ { "PathSet": "/auth/register" } ]
+            },
+            "parametro-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/parametro" }
+            },
+            "parametro-id-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/parametro/{**catch-all}" }
+            },
+            "rol-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/rol" }
+            },
+            "rol-id-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/rol/{**catch-all}" }
+            },
+            "pantalla-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/pantalla" }
+            },
+            "pantalla-id-route": {
+                "ClusterId": "api-auth-cluster",
+                "Match": { "Path": "/pantalla/{**catch-all}" }
+            },
+            "user-route": {
+                "ClusterId": "usuarios-auth-cluster",
+                "Match": { "Path": "/user" }
+            },
+            "user-id-route": {
+                "ClusterId": "usuarios-auth-cluster",
+                "Match": { "Path": "/user/{**catch-all}" }
+            },
+            "core-client-route": {
+                "ClusterId": "core-bancario-cluster",
+                "Match": { "Path": "/gateway/admin/core/client" },
+                "Transforms": [ { "PathSet": "/core/client" } ]
+            },
+            "core-client-id-route": {
+                "ClusterId": "core-bancario-cluster",
+                "Match": { "Path": "/gateway/admin/core/client/{**catch-all}" },
+                "Transforms": [ { "PathPattern": "/core/client/{**catch-all}" } ]
+            },
+            "core-client-exists-route": {
+                "ClusterId": "core-bancario-cluster",
+                "Match": { "Path": "/gateway/admin/core/client-exists" },
+                "Transforms": [ { "PathSet": "/core/client-exists" } ]
+            },
+
+            "accounts-route": {
+                "ClusterId": "pagosmovil-cluster",
+                "Match": { "Path": "/gateway/admin/accounts/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" },
+                    {
+                        "RequestHeader": "Authorization",
+                        "Set": "{OriginalHeader:Authorization}"
+                    }
+                ]
+            },
+            "core-route": {
+                "ClusterId": "core-bancario-cluster",
+                "Match": { "Path": "/gateway/admin/core/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" },
+                    {
+                        "RequestHeader": "Authorization",
+                        "Set": "{OriginalHeader:Authorization}"
+                    }
+                ]
+            },
+            "entidad-route": {
+                "ClusterId": "pagosmovil-cluster",
+                "Match": { "Path": "/gateway/admin/entidad/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" },
+                    { "RequestHeadersCopy": "true" }
+                ]
+            },
+            "transaccion-route": {
+                "ClusterId": "pagosmovil-cluster",
+                "Match": { "Path": "/gateway/admin/transactions/{**catch-all}" },
+                "Transforms": [
+                    { "PathRemovePrefix": "/gateway/admin" },
+                    { "RequestHeadersCopy": "true" }
+                ]
+            }
+        },
+        "Clusters": {
+            "core-cluster": {
+                "Destinations": {
+                    "destination1": { "Address": "https://localhost:7143/" }
+                }
+            },
+            "api-auth-cluster": {
+                "Destinations": {
+                    "destination1": { "Address": "https://localhost:7143/" }
+                }
+            },
+            "usuarios-auth-cluster": {
+                "Destinations": {
+                    "destination1": { "Address": "https://localhost:7154/" }
+                }
+            },
+            "pagosmovil-cluster": {
+                "Destinations": {
+                    "destination1": { "Address": "https://localhost:7143/" }
+                }
+            },
+            "core-bancario-cluster": {
+                "Destinations": {
+                    "destination1": { "Address": "https://localhost:7191/" }
+                }
+            }
         }
-      },
-      "api-auth-cluster": {
-        "Destinations": {
-          "destination1": { "Address": "https://localhost:7143/" }
-        }
-      },
-      "usuarios-auth-cluster": {
-        "Destinations": {
-          "destination1": { "Address": "https://localhost:7154/" }
-        }
-      },
-      "core-bancario-cluster": {
-        "Destinations": {
-          "destination1": { "Address": "https://localhost:7191/" }
-        }
-      }
     }
-  }
 }
