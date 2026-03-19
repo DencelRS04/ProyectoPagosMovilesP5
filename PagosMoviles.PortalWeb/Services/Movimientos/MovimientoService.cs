@@ -15,13 +15,15 @@ public class MovimientoService
     {
         var client = _http.CreateClient("GatewayApi");
 
-        if (client.BaseAddress == null)
-            throw new InvalidOperationException("HttpClient 'GatewayApi' no tiene BaseAddress configurada.");
+        // 👇 Agregá esto
+        Console.WriteLine($"[MOVIMIENTO] BaseAddress: {client.BaseAddress}");
+        Console.WriteLine($"[MOVIMIENTO] Auth header: {client.DefaultRequestHeaders.Authorization}");
 
-        // ✅ GET con solo teléfono
         var httpResponse = await client.GetAsync(
             $"gateway/admin/accounts/transactions/{Uri.EscapeDataString(telefono)}"
         );
+
+        Console.WriteLine($"[MOVIMIENTO] Status: {httpResponse.StatusCode}");
 
         if (httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             throw new UnauthorizedAccessException("401 Unauthorized: token ausente o expirado.");
@@ -42,5 +44,6 @@ public class MovimientoService
 
         return apiResponse?.Data?.Movimientos ?? new List<MovimientosViewModels>();
 
-    }
+    } 
+
 }

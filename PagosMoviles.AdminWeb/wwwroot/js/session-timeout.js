@@ -9,7 +9,7 @@ function resetTimer() {
     timer = setTimeout(() => {
 
         // 🔥 LLAMA AL BACKEND PARA GUARDAR MENSAJE
-        fetch('/Auth/Login?handler=SetSessionExpired', {
+        fetch('/Index?handler=SetSessionExpired', {
             method: 'POST'
         })
             .finally(() => {

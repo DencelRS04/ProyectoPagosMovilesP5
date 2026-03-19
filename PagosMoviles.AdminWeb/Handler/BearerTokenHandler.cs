@@ -1,8 +1,8 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using PagosMoviles.Shared.Constants;
+using PagosMoviles.Shared.Models;
 
 namespace PagosMoviles.AdminWeb.Handlers
 {
@@ -15,34 +15,26 @@ namespace PagosMoviles.AdminWeb.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            
-        
-                var httpContext = _httpContextAccessor.HttpContext;
-                if (httpContext != null)
-                {
-                    var token = httpContext.Session.GetString("AccessToken");
-                    Console.WriteLine($"[DEBUG HANDLER] Token: '{token}'");
-                    Console.WriteLine($"[DEBUG HANDLER] Request: '{request.RequestUri}'");
+            var session = _httpContextAccessor.HttpContext?.Session;
 
-                    if (!string.IsNullOrEmpty(token))
+            if (session != null)
+            {
+                var json = session.GetString(SessionKeys.UsuarioSesion);
+                if (!string.IsNullOrWhiteSpace(json))
+                {
+                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
+                    if (!string.IsNullOrWhiteSpace(usuario?.AccessToken))
                     {
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        Console.WriteLine($"[DEBUG HANDLER] Authorization agregado");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"[DEBUG HANDLER] Token vacío");
+                        request.Headers.Authorization =
+                            new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
                     }
                 }
-                else
-                {
-                    Console.WriteLine($"[DEBUG HANDLER] HttpContext null");
-                }
-
-                return await base.SendAsync(request, cancellationToken);
             }
-        
+
+            return await base.SendAsync(request, cancellationToken);
+        }
     }
 }

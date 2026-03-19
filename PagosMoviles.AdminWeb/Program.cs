@@ -19,23 +19,27 @@ builder.Services.AddDataProtection()
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 
-// Gateway config
 var gatewayBaseUrl = builder.Configuration["GatewayApi:BaseUrl"];
 if (string.IsNullOrWhiteSpace(gatewayBaseUrl))
     throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
 
-var handler = new HttpClientHandler
+var gatewayHandler = new Func<HttpClientHandler>(() => new HttpClientHandler
 {
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-};
+});
 
-// HttpClients
+// 👇 Registrá el BearerTokenHandler
+builder.Services.AddTransient<BearerTokenHandler>();
+
+// Cliente principal con token
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
     client.BaseAddress = new Uri(gatewayBaseUrl.TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromSeconds(15);
-}).ConfigurePrimaryHttpMessageHandler(() => handler);
+})
+.ConfigurePrimaryHttpMessageHandler(gatewayHandler)
+.AddHttpMessageHandler<BearerTokenHandler>(); // 👈
 
 foreach (var nombre in new[] { "gateway", "ParametroApi", "UsuarioApi" })
 {
@@ -43,21 +47,21 @@ foreach (var nombre in new[] { "gateway", "ParametroApi", "UsuarioApi" })
     {
         client.BaseAddress = new Uri(gatewayBaseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(15);
-    }).ConfigurePrimaryHttpMessageHandler(() => handler);
+    })
+    .ConfigurePrimaryHttpMessageHandler(gatewayHandler)
+    .AddHttpMessageHandler<BearerTokenHandler>(); // 👈
 }
 
 builder.Services.AddHttpClient<IAuthService, AuthService>((provider, client) =>
 {
     var config = provider.GetRequiredService<IConfiguration>();
     var baseUrl = config["GatewayApi:BaseUrl"];
-
     client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromSeconds(15);
 })
-.ConfigurePrimaryHttpMessageHandler(() => handler);
+.ConfigurePrimaryHttpMessageHandler(gatewayHandler);
 
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
-
 builder.Services.AddScoped<IPantallasService, PantallasService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<ClientesCoreService>();
@@ -65,7 +69,6 @@ builder.Services.AddScoped<EntidadService>();
 builder.Services.AddScoped<ReporteService>();
 
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -85,35 +88,11 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
-
-    app.MapGet("/", context =>
-    {
-        context.Response.Redirect("/");
-        return Task.CompletedTask;
-    });
 }
 
 app.UseStaticFiles();
 app.UseRouting();
-
-// 🔥 PRIMERO session
 app.UseSession();
-
-// 🔥 DESPUÉS el middleware
-app.Use(async (context, next) =>
-{
-    var usuarioAntes = context.Session.GetString("UsuarioId");
-
-    await next();
-
-    var usuarioDespues = context.Session.GetString("UsuarioId");
-
-    if (!string.IsNullOrEmpty(usuarioAntes) && string.IsNullOrEmpty(usuarioDespues))
-    {
-        context.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
-    }
-});
-
 app.UseAuthorization();
 app.MapRazorPages();
 app.Run();
