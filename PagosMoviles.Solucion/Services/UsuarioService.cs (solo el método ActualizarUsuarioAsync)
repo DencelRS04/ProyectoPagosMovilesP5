@@ -1,0 +1,19 @@
+        public async Task<ApiResponse<Usuario>> ActualizarUsuarioAsync(int id, UsuarioUpdateDto dto)
+        {
+            if (dto == null)
+                return ApiResponse<Usuario>.Fail("Datos incorrectos.");
+
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.UsuarioId == id);
+            if (usuario == null)
+                return ApiResponse<Usuario>.Fail("Usuario no encontrado.");
+
+            usuario.NombreCompleto = dto.NombreCompleto?.Trim() ?? usuario.NombreCompleto;
+            usuario.Telefono = dto.Telefono?.Trim() ?? usuario.Telefono;
+            usuario.RolId = dto.RolId;
+            usuario.IntentosFallidos = dto.IntentosFallidos;
+            usuario.Bloqueado = dto.Bloqueado;
+
+            await _context.SaveChangesAsync();
+
+            return ApiResponse<Usuario>.Ok(usuario, "Usuario actualizado correctamente.");
+        }

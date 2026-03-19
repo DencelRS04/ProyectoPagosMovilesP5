@@ -1,0 +1,160 @@
+@page
+@model PagosMoviles.AdminWeb.Pages.Usuarios.IndexModel
+@{
+    ViewData["Title"] = "Administración de Usuarios";
+}
+
+<h2 class="mb-3">Administración de Usuarios</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success">@Model.MensajeExito</div>
+}
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">@Model.MensajeError</div>
+}
+
+@* Buscador *@
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="Busqueda" value="@Model.Busqueda"
+               class="form-control" placeholder="Buscar por nombre o identificación..." />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">Buscar</button>
+        <a asp-page="/Usuarios/Index" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+    <div class="col-auto ms-auto">
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalUsuario"
+                onclick="prepararNuevo()">
+            + Nuevo Usuario
+        </button>
+    </div>
+</form>
+
+@* Tabla de usuarios *@
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Identificación</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.Usuarios)
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(u,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                });
+            <tr>
+                <td>@u.NombreCompleto</td>
+                <td>@u.Email</td>
+                <td>@u.Identificacion</td>
+                <td>@(u.RolId == 1 ? "Admin" : "Usuario")</td>
+                <td>
+                    <button class="btn btn-sm btn-warning"
+                            data-usuario='@Html.Raw(json)'
+                            onclick="abrirEditar(this)">
+                        Editar
+                    </button>
+                    <form method="post" asp-page-handler="Eliminar" style="display:inline"
+                          onsubmit="return confirm('¿Seguro que desea eliminar este usuario?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@u.UsuarioId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        @if (!Model.Usuarios.Any())
+        {
+            <tr><td colspan="5" class="text-center text-muted">No se encontraron usuarios.</td></tr>
+        }
+    </tbody>
+</table>
+
+@* Modal Crear / Editar *@
+<div class="modal fade" id="modalUsuario" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Guardar">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo">Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Formulario.UsuarioId" id="fUserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo *</label>
+                        <input asp-for="Formulario.NombreCompleto" class="form-control" />
+                        <span asp-validation-for="Formulario.NombreCompleto" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input asp-for="Formulario.Email" type="email" class="form-control" />
+                        <span asp-validation-for="Formulario.Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Identificación *</label>
+                        <input asp-for="Formulario.Identificacion" class="form-control" />
+                        <span asp-validation-for="Formulario.Identificacion" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono * <small class="text-muted">(8 dígitos)</small></label>
+                        <input asp-for="Formulario.Telefono" class="form-control" placeholder="12345678" />
+                        <span asp-validation-for="Formulario.Telefono" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña <small class="text-muted">(obligatoria al crear, mín. 6 caracteres)</small></label>
+                        <input asp-for="Formulario.Password" type="password" class="form-control" />
+                        <span asp-validation-for="Formulario.Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <select asp-for="Formulario.RolId" class="form-select">
+                            <option value="1">Admin</option>
+                            <option value="2">Usuario</option>
+                        </select>
+                    </div>
+
+                    @* Campos solo visibles al editar *@
+                    <div id="editOnlyFields" style="display:none;">
+                        <hr />
+                        <div class="mb-3">
+                            <label class="form-label">Estado de cuenta</label>
+                            <select asp-for="Formulario.Bloqueado" id="fBloqueado" class="form-select">
+                                <option value="false">No Bloqueado</option>
+                                <option value="true">Bloqueado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Intentos Fallidos</label>
+                            <input asp-for="Formulario.IntentosFallidos" id="fIntentosFallidos"
+                                   type="number" min="0" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/usuarios.js" asp-append-version="true"></script>
+}

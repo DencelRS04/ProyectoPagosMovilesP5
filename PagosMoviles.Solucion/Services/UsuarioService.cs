@@ -15,6 +15,71 @@ namespace PagosMoviles.UsuariosService.Services
             _context = context;
         }
 
+        public async Task<ServiceResponse<List<UsuarioDto>>> ObtenerTodosAsync()
+        {
+            var usuarios = await _context.Usuarios
+                .Select(u => new UsuarioDto
+                {
+                    UsuarioId = u.UsuarioId,
+                    Email = u.Email,
+                    TipoIdentificacion = u.TipoIdentificacion,
+                    Identificacion = u.Identificacion,
+                    NombreCompleto = u.NombreCompleto,
+                    Telefono = u.Telefono,
+                    RolId = u.RolId,
+                    PasswordHash = u.PasswordHash,
+                    FechaCreacion = u.FechaCreacion,
+                    FotoPerfil = u.FotoPerfil,
+                    ColorAvatar = string.IsNullOrWhiteSpace(u.ColorAvatar) ? "#4285F4" : u.ColorAvatar
+                })
+                .ToListAsync();
+
+            return new ServiceResponse<List<UsuarioDto>>
+            {
+                Success = true,
+                Message = "Consulta exitosa.",
+                Data = usuarios
+            };
+        }
+
+        public async Task<ServiceResponse<UsuarioDto>> ObtenerPorIdAsync(int id)
+        {
+            var usuario = await _context.Usuarios
+                .Where(u => u.UsuarioId == id)
+                .Select(u => new UsuarioDto
+                {
+                    UsuarioId = u.UsuarioId,
+                    Email = u.Email,
+                    TipoIdentificacion = u.TipoIdentificacion,
+                    Identificacion = u.Identificacion,
+                    NombreCompleto = u.NombreCompleto,
+                    Telefono = u.Telefono,
+                    RolId = u.RolId,
+                    PasswordHash = u.PasswordHash,
+                    FechaCreacion = u.FechaCreacion,
+                    FotoPerfil = u.FotoPerfil,
+                    ColorAvatar = string.IsNullOrWhiteSpace(u.ColorAvatar) ? "#4285F4" : u.ColorAvatar
+                })
+                .FirstOrDefaultAsync();
+
+            if (usuario == null)
+            {
+                return new ServiceResponse<UsuarioDto>
+                {
+                    Success = false,
+                    Message = "Usuario no encontrado.",
+                    Data = null
+                };
+            }
+
+            return new ServiceResponse<UsuarioDto>
+            {
+                Success = true,
+                Message = "Consulta exitosa.",
+                Data = usuario
+            };
+        }
+
         public async Task<ApiResponse<Usuario>> CrearUsuarioAsync(UsuarioCreateDto dto)
         {
             if (dto == null)
@@ -53,7 +118,9 @@ namespace PagosMoviles.UsuariosService.Services
                 Telefono = telefono,
                 RolId = dto.RolId,
                 PasswordHash = PasswordHasher.Hash(dto.Password),
-                FechaCreacion = DateTime.Now
+                FechaCreacion = DateTime.Now,
+                FotoPerfil = string.Empty,
+                ColorAvatar = "#4285F4"
             };
 
             _context.Usuarios.Add(usuario);
@@ -74,6 +141,8 @@ namespace PagosMoviles.UsuariosService.Services
             usuario.NombreCompleto = dto.NombreCompleto?.Trim() ?? usuario.NombreCompleto;
             usuario.Telefono = dto.Telefono?.Trim() ?? usuario.Telefono;
             usuario.RolId = dto.RolId;
+            usuario.IntentosFallidos = dto.IntentosFallidos;
+            usuario.Bloqueado = dto.Bloqueado;
 
             await _context.SaveChangesAsync();
 
@@ -90,25 +159,6 @@ namespace PagosMoviles.UsuariosService.Services
             await _context.SaveChangesAsync();
 
             return ApiResponse<string>.Ok("Eliminado", "Usuario eliminado correctamente.");
-        }
-
-        public async Task<ApiResponse<List<Usuario>>> ObtenerTodosAsync()
-        {
-            var lista = await _context.Usuarios
-                .AsNoTracking()
-                .OrderBy(u => u.UsuarioId)
-                .ToListAsync();
-
-            return ApiResponse<List<Usuario>>.Ok(lista);
-        }
-
-        public async Task<ApiResponse<Usuario>> ObtenerPorIdAsync(int id)
-        {
-            var usuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.UsuarioId == id);
-            if (usuario == null)
-                return ApiResponse<Usuario>.Fail("Usuario no encontrado.");
-
-            return ApiResponse<Usuario>.Ok(usuario);
         }
     }
 }
