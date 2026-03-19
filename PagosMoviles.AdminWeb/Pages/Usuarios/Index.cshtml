@@ -127,6 +127,23 @@
                             <option value="2">Usuario</option>
                         </select>
                     </div>
+
+                    @* Campos solo visibles al editar *@
+                    <div id="editOnlyFields" style="display:none;">
+                        <hr />
+                        <div class="mb-3">
+                            <label class="form-label">Estado de cuenta</label>
+                            <select asp-for="Formulario.Bloqueado" id="fBloqueado" class="form-select">
+                                <option value="false">No Bloqueado</option>
+                                <option value="true">Bloqueado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Intentos Fallidos</label>
+                            <input asp-for="Formulario.IntentosFallidos" id="fIntentosFallidos"
+                                   type="number" min="0" class="form-control" />
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -139,5 +156,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/usuarios.js"></script>
+    <script src="~/js/usuarios.js" asp-append-version="true"></script>
 }

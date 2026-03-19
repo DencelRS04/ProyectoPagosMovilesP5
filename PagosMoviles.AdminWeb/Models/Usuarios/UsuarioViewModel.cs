@@ -7,6 +7,8 @@ namespace PagosMoviles.AdminWeb.Models.Usuarios
         public string Email { get; set; } = string.Empty;
         public string Identificacion { get; set; } = string.Empty;
         public int RolId { get; set; }
+        public int IntentosFallidos { get; set; }
+        public bool Bloqueado { get; set; }
     }
 
     public class UsuarioFormModel
@@ -33,5 +35,9 @@ namespace PagosMoviles.AdminWeb.Models.Usuarios
         public string Password { get; set; } = string.Empty;
 
         public int RolId { get; set; } = 2;
+
+        public int IntentosFallidos { get; set; }
+
+        public bool Bloqueado { get; set; }
     }
 }

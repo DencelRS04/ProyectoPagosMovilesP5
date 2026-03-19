@@ -14,24 +14,37 @@ builder.Services.AddDataProtection()
     .SetApplicationName("PagosMoviles.AdminWeb");
 
 builder.Services.AddRazorPages();
-
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("GatewayApi", client =>
-{
-    var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
+// Todos los clientes apuntan al Gateway
+var gatewayBaseUrl = builder.Configuration["GatewayApi:BaseUrl"];
+if (string.IsNullOrWhiteSpace(gatewayBaseUrl))
+    throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
 
-    if (string.IsNullOrWhiteSpace(baseUrl))
-        throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
-
-    client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(15);
-})
-.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+var gatewayHandler = new Func<HttpClientHandler>(() => new HttpClientHandler
 {
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
+
+// Cliente principal
+builder.Services.AddHttpClient("GatewayApi", client =>
+{
+    client.BaseAddress = new Uri(gatewayBaseUrl.Trim().TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+})
+.ConfigurePrimaryHttpMessageHandler(gatewayHandler);
+
+// Alias usados por RolesService, PantallasService, Parametros y Usuarios pages
+foreach (var nombre in new[] { "gateway", "ParametroApi", "UsuarioApi" })
+{
+    builder.Services.AddHttpClient(nombre, client =>
+    {
+        client.BaseAddress = new Uri(gatewayBaseUrl.Trim().TrimEnd('/') + "/");
+        client.Timeout = TimeSpan.FromSeconds(15);
+    })
+    .ConfigurePrimaryHttpMessageHandler(gatewayHandler);
+}
 
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
