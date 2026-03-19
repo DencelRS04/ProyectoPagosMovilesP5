@@ -5,6 +5,7 @@ using PagosMoviles.UsuariosService.Data;
 using PagosMoviles.UsuariosService.DTOs;
 using PagosMoviles.UsuariosService.Services;
 using PagosMoviles.UsuariosService.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PagosMoviles.UsuariosService.Controllers
 {
@@ -66,7 +67,7 @@ namespace PagosMoviles.UsuariosService.Controllers
                 datos = resp.Data
             });
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] UsuarioCreateDto dto)
         {

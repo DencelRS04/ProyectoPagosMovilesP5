@@ -21,7 +21,7 @@
     <Folder Include="Models\Reportes\" />
     <Folder Include="Models\Roles\" />
     <Folder Include="Models\Session\" />
-    <Folder Include="Models\Usuarios\" />
+    <Folder Include="Models\Usuarios\NewFolder\" />
   </ItemGroup>
 
 </Project>

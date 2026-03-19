@@ -12,8 +12,6 @@ namespace PagosMoviles.PortalWeb.Pages
         private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
 
-        private const int ADMIN_ROL = 5;
-
         public IndexModel(IAuthService authService, IConfiguration configuration)
         {
             _authService = authService;
@@ -25,11 +23,13 @@ namespace PagosMoviles.PortalWeb.Pages
 
         public string Mensaje { get; set; } = string.Empty;
 
+        private const int MAX_INTENTOS = 3;
+
         public void OnGet()
         {
             Input = new LoginInputModel();
 
-            // 🔥 MENSAJE DE SESIÓN EXPIRADA
+            // 🔥 MENSAJE SESIÓN EXPIRADA
             var mensajeExpirado = HttpContext.Session.GetString(SessionKeys.SessionExpiredMessage);
 
             if (!string.IsNullOrWhiteSpace(mensajeExpirado))
@@ -50,7 +50,7 @@ namespace PagosMoviles.PortalWeb.Pages
                 return Page();
             }
 
-            // 🔥 MANEJO DE INTENTOS POR USUARIO (COMO ADMINWEB)
+            // 🔥 MANEJO DE INTENTOS POR USUARIO
             var usuarioAnterior = HttpContext.Session.GetString("UsuarioIntento");
 
             if (usuarioAnterior != Input.Usuario)
@@ -66,24 +66,29 @@ namespace PagosMoviles.PortalWeb.Pages
             var claveIntentos = $"Intentos_{Input.Usuario}";
             int intentos = HttpContext.Session.GetInt32(claveIntentos) ?? 0;
 
-            if (intentos >= 3)
+            if (intentos >= MAX_INTENTOS)
             {
                 Input.MensajeError = "El usuario se encuentra bloqueado.";
                 return Page();
             }
 
             var result = await _authService.LoginAsync(Input.Usuario, Input.Contrasena);
-            var mensajeServicio = (result.Item2 ?? "").ToLower();
+            var mensajeServicio = (result?.Item2 ?? "").ToLower();
 
-            // 🔴 SI NO EXISTE USUARIO
-            if (result.Item3 == null)
+            if (result == null)
             {
-                Input.MensajeError = "El usuario no está registrado.";
-                HttpContext.Session.Remove(claveIntentos);
+                Input.MensajeError = "Error en el servicio.";
                 return Page();
             }
 
-            // 🔴 LOGIN FALLIDO (CONTRASEÑA MALA)
+            // 🔴 USUARIO NO EXISTE
+            if (mensajeServicio.Contains("no existe") || mensajeServicio.Contains("no registrado"))
+            {
+                Input.MensajeError = "El usuario no está registrado.";
+                return Page();
+            }
+
+            // 🔴 LOGIN FALLIDO
             if (!result.Item1)
             {
                 if (mensajeServicio.Contains("bloqueado"))
@@ -92,27 +97,40 @@ namespace PagosMoviles.PortalWeb.Pages
                     return Page();
                 }
 
-                // 🔥 AQUÍ ESTÁ TU CAMBIO IMPORTANTE
                 intentos++;
                 HttpContext.Session.SetInt32(claveIntentos, intentos);
 
-                if (intentos >= 3)
+                if (intentos >= MAX_INTENTOS)
                 {
                     Input.MensajeError = "El usuario se bloqueó por fallar 3 intentos.";
                 }
                 else
                 {
-                    // 👇 LO QUE PEDISTE
-                    Input.MensajeError = "El usuario no está registrado.";
+                    Input.MensajeError = $"Usuario y/o contraseña incorrectos. Intento {intentos} de 3.";
                 }
 
                 return Page();
             }
 
+            // ✅ LOGIN CORRECTO
             var usuario = result.Item3;
 
-            // 🔥 LOGIN CORRECTO → RESET COMPLETO
-            HttpContext.Session.Remove(claveIntentos);
+            // 🔥 AQUÍ ESTÁ TU CAMBIO (RESET GLOBAL)
+            var keys = new List<string>();
+
+            foreach (var item in HttpContext.Session.Keys)
+            {
+                if (item.StartsWith("Intentos_"))
+                {
+                    keys.Add(item);
+                }
+            }
+
+            foreach (var key in keys)
+            {
+                HttpContext.Session.Remove(key);
+            }
+
             HttpContext.Session.Remove("UsuarioIntento");
 
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
@@ -122,23 +140,26 @@ namespace PagosMoviles.PortalWeb.Pages
 
             var adminUrl = _configuration["PortalSettings:AdminUrl"] ?? "https://localhost:7150";
 
-            // 🔥 ADMIN → REDIRIGE A ADMIN
-            if (rol == ADMIN_ROL)
+            // 🔥 ADMIN → REDIRECCIÓN
+            if (rol == 5)
             {
                 return Redirect(adminUrl + "/Index");
             }
 
-            // 🔥 USUARIO NORMAL → PORTAL
+            // 🔥 USUARIO NORMAL
             SessionHelper.LimpiarSesion(HttpContext.Session);
             SessionHelper.GuardarUsuarioSesion(HttpContext.Session, usuario);
 
             return Redirect("/Home/Index");
         }
 
-        // 🔥 ESTO TE FALTABA → POR ESO NO FUNCIONABA EL TIMEOUT
+        // 🔥 SESSION TIMEOUT
         public IActionResult OnPostSetSessionExpired()
         {
-            HttpContext.Session.SetString(SessionKeys.SessionExpiredMessage, "La sesión expiró por inactividad.");
+            HttpContext.Session.Remove("UsuarioId");
+
+            HttpContext.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
+
             return new EmptyResult();
         }
 

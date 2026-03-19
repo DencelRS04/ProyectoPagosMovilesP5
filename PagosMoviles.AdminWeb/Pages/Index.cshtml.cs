@@ -73,14 +73,12 @@ namespace PagosMoviles.AdminWeb.Pages
             {
                 var mensajeServicio = (result.Item2 ?? "").ToLower();
 
-                // 🔴 BLOQUEADO DESDE BD
                 if (mensajeServicio.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
                     return Page();
                 }
 
-                // 🔥 SUMAR INTENTOS SOLO A ESTE USUARIO
                 intentos++;
                 HttpContext.Session.SetInt32(claveIntentos, intentos);
 
@@ -98,8 +96,22 @@ namespace PagosMoviles.AdminWeb.Pages
 
             var usuario = result.Item3;
 
-            // 🔥 RESET INTENTOS COMPLETO AL LOGIN EXITOSO
-            HttpContext.Session.Remove(claveIntentos);
+            // 🔥 RESET GLOBAL DE INTENTOS (AQUÍ ESTÁ EL CAMBIO)
+            var keys = new List<string>();
+
+            foreach (var item in HttpContext.Session.Keys)
+            {
+                if (item.StartsWith("Intentos_"))
+                {
+                    keys.Add(item);
+                }
+            }
+
+            foreach (var key in keys)
+            {
+                HttpContext.Session.Remove(key);
+            }
+
             HttpContext.Session.Remove("UsuarioIntento");
 
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
@@ -117,10 +129,13 @@ namespace PagosMoviles.AdminWeb.Pages
             return Redirect("/Home/Index");
         }
 
-        public IActionResult OnPostLogout()
+        public IActionResult OnPostSetSessionExpired()
         {
-            SessionHelper.LimpiarSesion(HttpContext.Session);
-            return Redirect("/");
+            HttpContext.Session.Remove("UsuarioId");
+
+            HttpContext.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
+
+            return new EmptyResult();
         }
     }
 }
