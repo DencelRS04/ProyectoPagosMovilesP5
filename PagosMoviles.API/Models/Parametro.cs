@@ -2,8 +2,9 @@
 {
     public class Parametro
     {
-        public string ParametroId { get; set; }
-        public string Valor { get; set; }
+        public string ParametroId { get; set; } = string.Empty;
+        public string Valor { get; set; } = string.Empty;
     }
-
 }
+
+

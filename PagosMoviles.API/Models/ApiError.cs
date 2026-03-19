@@ -3,7 +3,7 @@
     public class ApiError
     {
         public int Codigo { get; set; }
-        public string Mensaje { get; set; }
-        public string Detalle { get; set; }
+        public string Mensaje { get; set; } = string.Empty;
+        public string Detalle { get; set; } = string.Empty;
     }
 }

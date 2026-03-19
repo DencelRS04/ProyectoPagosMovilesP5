@@ -141,6 +141,8 @@ namespace PagosMoviles.UsuariosService.Services
             usuario.NombreCompleto = dto.NombreCompleto?.Trim() ?? usuario.NombreCompleto;
             usuario.Telefono = dto.Telefono?.Trim() ?? usuario.Telefono;
             usuario.RolId = dto.RolId;
+            usuario.IntentosFallidos = dto.IntentosFallidos;
+            usuario.Bloqueado = dto.Bloqueado;
 
             await _context.SaveChangesAsync();
 

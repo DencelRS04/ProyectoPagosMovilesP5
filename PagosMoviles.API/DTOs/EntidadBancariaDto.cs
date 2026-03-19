@@ -1,6 +1,8 @@
-﻿namespace PagosMoviles.API.DTOs;
-public class EntidadBancariaDto
+﻿namespace PagosMoviles.API.DTOs
 {
-    public string CodigoEntidad { get; set; }
-    public string NombreInstitucion { get; set; }
+    public class EntidadBancariaDto
+    {
+        public string CodigoEntidad { get; set; } = string.Empty;
+        public string NombreInstitucion { get; set; } = string.Empty;
+    }
 }

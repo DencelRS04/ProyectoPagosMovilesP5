@@ -8,7 +8,7 @@ namespace PagosMoviles.Shared.Constants
 {
     public static class Roles
     {
-        public const int Admin = 5;
-        public const int Usuario = 1;
+        public const int Admin   = 1;
+        public const int Usuario = 2;
     }
 }
