@@ -1,156 +1,372 @@
 ﻿@page
 @using PagosMoviles.AdminWeb.Models.Transacciones
-@model PagosMoviles.AdminWeb.Pages.Transacciones.IndexModel  // ← actualizar
+@model PagosMoviles.AdminWeb.Pages.Transacciones.IndexModel
 @{
     ViewData["Title"] = "Reporte de Transacciones Diarias";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">
-                <i class="fas fa-chart-line me-2"></i>Reporte de Transacciones Diarias
-            </h2>
-        </div>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end mb-4">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Fecha</label>
-                    <input type="date"
-                           class="form-control"
-                           name="fecha"
-                           value="@Model.Fecha?.ToString("yyyy-MM-dd")"
-                           max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
+    }
+
+    .page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 15px;
+    }
+
+    .report-container {
+        width: 95%;
+        max-width: 1200px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    .report-title {
+        margin-bottom: 25px;
+        font-weight: 600;
+        color: #020617;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 260px;
+    }
+
+        .field-group label {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0;
+        }
+
+    .date-box {
+        display: flex;
+        align-items: center;
+        background: #f1f5f9;
+        border-radius: 16px;
+        padding: 6px;
+        box-shadow: inset 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+        .date-box input {
+            border: none;
+            outline: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            background: transparent;
+            width: 100%;
+            color: #0f172a;
+        }
+
+    .btn-consultar,
+    .btn-limpiar {
+        border: none;
+        padding: 12px 20px;
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 140px;
+    }
+
+    .btn-consultar {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: white;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.5);
+    }
+
+        .btn-consultar:hover {
+            transform: translateY(-3px) scale(1.03);
+        }
+
+    .btn-limpiar {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+        .btn-limpiar:hover {
+            transform: translateY(-3px) scale(1.03);
+            background: #cbd5e1;
+            color: #020617;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .report-table thead th {
+            text-align: left;
+            padding: 12px;
+            color: #475569;
+            font-size: 14px;
+            border: none;
+        }
+
+            .report-table thead th.text-end,
+            .report-table td.text-end {
+                text-align: right;
+            }
+
+        .report-table tbody tr,
+        .report-table tfoot tr {
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: 0.25s;
+        }
+
+            .report-table tbody tr:hover {
+                transform: translateY(-3px) scale(1.01);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            }
+
+        .report-table td {
+            padding: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .report-table tbody tr td:first-child,
+        .report-table tfoot tr td:first-child {
+            border-radius: 16px 0 0 16px;
+        }
+
+        .report-table tbody tr td:last-child,
+        .report-table tfoot tr td:last-child {
+            border-radius: 0 16px 16px 0;
+        }
+
+    .monto {
+        font-weight: 700;
+        color: #15803d;
+    }
+
+    .total-label {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .total-monto {
+        font-weight: 700;
+        color: #1d4ed8;
+        font-size: 1.1rem;
+    }
+
+    .info-card,
+    .empty-card,
+    .warning-card,
+    .footer-card {
+        background: white;
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        color: #0f172a;
+    }
+
+    .info-card {
+        margin-top: 20px;
+    }
+
+    .empty-card,
+    .warning-card {
+        text-align: center;
+        padding: 40px 20px;
+        margin-top: 10px;
+    }
+
+        .empty-card i,
+        .warning-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-card i {
+            color: #94a3b8;
+        }
+
+        .warning-card i {
+            color: #d97706;
+        }
+
+        .empty-card h4,
+        .warning-card h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .empty-card p,
+        .warning-card p {
+            margin-bottom: 0;
+            color: #64748b;
+        }
+
+    .footer-card {
+        margin-top: 25px;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    @@media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .field-group {
+            min-width: 100%;
+        }
+
+        .btn-consultar,
+        .btn-limpiar {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="report-container">
+        <h2 class="report-title">
+            <i class="fas fa-chart-line"></i>
+            Reporte de Transacciones Diarias
+        </h2>
+
+        <div class="top-bar">
+            <form method="get" class="filter-form">
+                <div class="field-group">
+                    <label>Fecha</label>
+                    <div class="date-box">
+                        <input type="date"
+                               name="fecha"
+                               value="@Model.Fecha?.ToString("yyyy-MM-dd")"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
                 </div>
 
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Consultar
+                <div>
+                    <button type="submit" class="btn-consultar">
+                        <i class="fas fa-search"></i>
+                        Consultar
                     </button>
                 </div>
 
                 @if (Model.Fecha.HasValue)
                 {
-                    <div class="col-md-2">
-                        <a href="/Transacciones" class="btn btn-outline-secondary w-100">
-                            <i class="fas fa-undo me-2"></i>Limpiar
+                    <div>
+                        <a href="/Transacciones" class="btn-limpiar">
+                            <i class="fas fa-undo"></i>
+                            Limpiar
                         </a>
                     </div>
                 }
             </form>
-
-            @if (Model.Transacciones.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Teléfono Origen</th>
-                                <th>Teléfono Destino</th>
-                                <th class="text-end">Monto</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var t in Model.Transacciones)  // ← Así debe ser
-                            {
-                                <tr>
-                                    <td>@t.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td>@t.TelefonoOrigen</td>
-                                    <td>@t.TelefonoDestino</td>
-                                    <td class="text-end fw-bold text-success">
-                                        $@t.Monto.ToString("N2")
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                        <tfoot class="table-secondary">
-                            <tr>
-                                <td colspan="3" class="text-end fw-bold">Total del día:</td>
-                                <td class="text-end fw-bold text-primary h5">
-                                    $@Model.Total.ToString("N2")
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Total de transacciones:</strong> @Model.Transacciones.Count
-                        </div>
-                    </div>
-                </div>
-            }
-            else if (Model.Fecha.HasValue)
-            {
-                <div class="alert alert-warning text-center py-4">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                    <h4>No hay transacciones para la fecha seleccionada</h4>
-                    <p class="mb-0">Prueba con otra fecha para ver los resultados.</p>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-light text-center py-5 border rounded">
-                    <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Selecciona una fecha para consultar</h4>
-                    <p class="text-muted mb-0">Usa el formulario superior para buscar transacciones por día.</p>
-                </div>
-            }
         </div>
 
-        <div class="card-footer text-muted">
-            <small>
-                <i class="fas fa-clock me-1"></i>
-                Última actualización: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
-            </small>
+        @if (Model.Transacciones.Any())
+        {
+            <div class="table-responsive">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Teléfono Origen</th>
+                            <th>Teléfono Destino</th>
+                            <th class="text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in Model.Transacciones)
+                        {
+                            <tr>
+                                <td>@t.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@t.TelefonoOrigen</td>
+                                <td>@t.TelefonoDestino</td>
+                                <td class="text-end monto">$@t.Monto.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end total-label">Total del día:</td>
+                            <td class="text-end total-monto">$@Model.Total.ToString("N2")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="info-card">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Total de transacciones:</strong> @Model.Transacciones.Count
+            </div>
+        }
+        else if (Model.Fecha.HasValue)
+        {
+            <div class="warning-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h4>No hay transacciones para la fecha seleccionada</h4>
+                <p>Prueba con otra fecha para ver los resultados.</p>
+            </div>
+        }
+        else
+        {
+            <div class="empty-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h4>Selecciona una fecha para consultar</h4>
+                <p>Usa el formulario superior para buscar transacciones por día.</p>
+            </div>
+        }
+
+        <div class="footer-card">
+            <i class="fas fa-clock me-1"></i>
+            Última actualización: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
         </div>
     </div>
 </div>
-
-@section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <style>
-        .table th {
-            font-weight: 600;
-        }
-
-        .table tbody tr:hover {
-            background-color: rgba(0,123,255,0.05);
-            transition: background-color 0.3s ease;
-        }
-
-        .btn {
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            border-bottom: none;
-        }
-
-        .alert {
-            border-radius: 10px;
-            border: none;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-            border-color: #80bdff;
-        }
-    </style>
-}

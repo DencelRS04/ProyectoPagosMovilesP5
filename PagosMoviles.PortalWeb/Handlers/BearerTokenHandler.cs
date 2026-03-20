@@ -16,20 +16,29 @@ namespace PagosMoviles.PortalWeb.Handlers
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request, CancellationToken cancellationToken)
+      HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var session = _httpContextAccessor.HttpContext?.Session;
+            Console.WriteLine($"[PORTAL HANDLER] *** EJECUTANDO ***");
 
-            if (session != null)
+            var session2 = _httpContextAccessor.HttpContext?.Session;
+            Console.WriteLine($"[PORTAL HANDLER] Session null: {session2 == null}");
+
+            var jsonSesion = session2?.GetString("USUARIO_SESION");
+            Console.WriteLine($"[PORTAL HANDLER] Json vacío: {string.IsNullOrWhiteSpace(jsonSesion)}");
+
+            if (session2 != null)
             {
-                var json = session.GetString(SessionKeys.UsuarioSesion);
-                if (!string.IsNullOrWhiteSpace(json))
+                var jsonData = session2.GetString(SessionKeys.UsuarioSesion);
+                if (!string.IsNullOrWhiteSpace(jsonData))
                 {
-                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
+                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(jsonData);
+                    Console.WriteLine($"[PORTAL HANDLER] Token: '{usuario?.AccessToken}'");
+
                     if (!string.IsNullOrWhiteSpace(usuario?.AccessToken))
                     {
                         request.Headers.Authorization =
                             new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
+                        Console.WriteLine($"[PORTAL HANDLER] Token adjuntado OK");
                     }
                 }
             }

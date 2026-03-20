@@ -7,16 +7,20 @@ using PagosMoviles.PortalWeb.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔥 Razor
+// 🔥 Razor + contexto HTTP
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 
-// 🔥 HTTP CLIENT AL GATEWAY
+// ✅ Registrar handler (IMPORTANTE: antes de usarlo)
+builder.Services.AddTransient<BearerTokenHandler>();
+
+// 🔥 HttpClient principal (Gateway)
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
     var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
     if (string.IsNullOrWhiteSpace(baseUrl))
         throw new InvalidOperationException("Falta GatewayApi:BaseUrl en appsettings.json");
+
     client.BaseAddress = new Uri(baseUrl.Trim().TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromSeconds(15);
 })
@@ -25,9 +29,9 @@ builder.Services.AddHttpClient("GatewayApi", client =>
     ServerCertificateCustomValidationCallback =
         HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 })
-.AddHttpMessageHandler<BearerTokenHandler>(); // 👈 token adjuntado automáticamente
+.AddHttpMessageHandler<BearerTokenHandler>();
 
-// 🔥 SERVICIOS
+// 🔥 Servicios
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 builder.Services.AddScoped<ISaldoService, SaldoService>();
@@ -35,51 +39,32 @@ builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
 builder.Services.AddScoped<AfiliacionService>();
 builder.Services.AddScoped<MovimientoService>();
 
-// 🔥 SESSION
+// 🔥 Sesión
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-
-    // ⏱️ 5 minutos por defecto (o config)
     options.IdleTimeout = TimeSpan.FromMinutes(
         builder.Configuration.GetValue<int>("SessionSettings:TimeoutMinutes", 5));
 });
 
 var app = builder.Build();
 
-// 🔥 ERRORES
+// 🔥 Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
-// 🔥 PIPELINE CORRECTO
 app.UseStaticFiles();
 app.UseRouting();
 
-// 🔥 SESSION SIEMPRE ANTES DEL MIDDLEWARE
-app.UseSession();
-
-// 🔥 DETECTOR DE SESIÓN EXPIRADA (CLAVE)
-app.Use(async (context, next) =>
-{
-    var teniaSesion = context.Session.GetString("UsuarioId");
-
-    await next();
-
-    var tieneSesionAhora = context.Session.GetString("UsuarioId");
-
-    if (!string.IsNullOrEmpty(teniaSesion) && string.IsNullOrEmpty(tieneSesionAhora))
-    {
-        context.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
-    }
-});
+app.UseSession(); // 👈 IMPORTANTE antes de Authorization
 
 app.UseAuthorization();
 
 app.MapRazorPages();
+
 app.Run();

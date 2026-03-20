@@ -1,41 +1,313 @@
 ﻿@page
 @model PagosMoviles.AdminWeb.Pages.ClientesCore.IndexModel
+@{
+    ViewData["Title"] = "Clientes Core";
+}
 
-<h2>Clientes Core</h2>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-<p>
-    <a asp-page="Create" class="btn btn-primary">Nuevo Cliente</a>
-</p>
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Identificación</th>
-            <th>Tipo</th>
-            <th>Nombre</th>
-            <th>Fecha Nacimiento</th>
-            <th>Teléfono</th>
-            <th>Activo</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Clientes)
-        {
-            <tr>
-                <td>@item.ClienteId</td>
-                <td>@item.Identificacion</td>
-                <td>@item.TipoIdentificacion</td>
-                <td>@item.NombreCompleto</td>
-                <td>@item.FechaNacimiento.ToString("yyyy-MM-dd")</td>
-                <td>@item.Telefono</td>
-                <td>@(item.Activo ? "Sí" : "No")</td>
-                <td>
-                    <a asp-page="Edit" asp-route-id="@item.ClienteId" class="btn btn-warning btn-sm">Editar</a>
-                    <a asp-page="Delete" asp-route-id="@item.ClienteId" class="btn btn-danger btn-sm">Desactivar</a>
-                </td>
-            </tr>
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
+    }
+
+    .container-ui {
+        width: 95%;
+        max-width: 1300px;
+        margin: 40px auto;
+        background: rgba(255,255,255,0.95);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+        margin-bottom: 25px;
+        font-weight: 600;
+        color: #020617;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .search-box {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 999px;
+        padding: 6px;
+    }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 10px;
+            background: transparent;
         }
-    </tbody>
-</table>
+
+    .btn-add {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    tbody tr {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    td {
+        padding: 12px;
+    }
+
+    .actions button {
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .edit {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .delete {
+        background: #dc2626;
+        color: white;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.activo {
+            display: flex;
+        }
+
+    .modal-box {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        width: 500px;
+    }
+
+        .modal-box h5 {
+            margin-bottom: 15px;
+        }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .btn-save {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .btn-cancel {
+        background: #ddd;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container-ui">
+
+    <h2>Clientes Core</h2>
+
+    <div class="top-bar">
+        <div class="search-box">
+            <input type="text" id="buscar" placeholder="Buscar cliente..." />
+        </div>
+
+        <button class="btn-add" onclick="abrirCrear()">+ Nuevo Cliente</button>
+    </div>
+
+    <table id="tabla">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Identificación</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Teléfono</th>
+                <th>Activo</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var c in Model.Clientes)
+            {
+                <tr>
+                    <td>@c.ClienteId</td>
+                    <td>@c.Identificacion</td>
+                    <td>@c.TipoIdentificacion</td>
+                    <td>@c.NombreCompleto</td>
+                    <td>@c.FechaNacimiento.ToString("yyyy-MM-dd")</td>
+                    <td>@c.Telefono</td>
+                    <td>@(c.Activo ? "Sí" : "No")</td>
+                    <td class="actions">
+
+                        <button class="edit"
+                                onclick="abrirEditar(@c.ClienteId,'@c.Identificacion','@c.TipoIdentificacion','@c.NombreCompleto','@c.FechaNacimiento.ToString("yyyy-MM-dd")','@c.Telefono',@c.Activo.ToString().ToLower())">
+                            Editar
+                        </button>
+
+                        <button class="delete"
+                                onclick="abrirEliminar(@c.ClienteId,'@c.NombreCompleto')">
+                            Desactivar
+                        </button>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- MODAL CREAR -->
+<div class="modal-overlay" id="modalCrear">
+    <div class="modal-box">
+        <h5>Nuevo Cliente</h5>
+
+        <form method="post" asp-page-handler="Crear">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="Cliente.Identificacion" class="form-control" placeholder="Identificación" />
+            <input asp-for="Cliente.TipoIdentificacion" class="form-control" placeholder="Tipo" />
+            <input asp-for="Cliente.NombreCompleto" class="form-control" placeholder="Nombre" />
+            <input asp-for="Cliente.FechaNacimiento" type="date" class="form-control" />
+            <input asp-for="Cliente.Telefono" class="form-control" />
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="cerrarCrear()">Cancelar</button>
+                <button type="submit" class="btn-save">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal-box">
+        <h5>Editar Cliente</h5>
+
+        <form method="post" asp-page-handler="Editar">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="ClienteEditar.ClienteId" id="editId" />
+
+            <input asp-for="ClienteEditar.Identificacion" id="editIdentificacion" class="form-control" />
+            <input asp-for="ClienteEditar.TipoIdentificacion" id="editTipo" class="form-control" />
+            <input asp-for="ClienteEditar.NombreCompleto" id="editNombre" class="form-control" />
+            <input asp-for="ClienteEditar.FechaNacimiento" id="editFecha" type="date" class="form-control" />
+            <input asp-for="ClienteEditar.Telefono" id="editTelefono" class="form-control" />
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="cerrarEditar()">Cancelar</button>
+                <button type="submit" class="btn-save">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
+<div class="modal-overlay" id="modalEliminar">
+    <div class="modal-box">
+        <h5>Desactivar Cliente</h5>
+        <p id="nombreEliminar"></p>
+
+        <form method="post" asp-page-handler="Eliminar">
+            <input type="hidden" name="id" id="deleteId" />
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="cerrarEliminar()">Cancelar</button>
+                <button type="submit" class="btn-save" style="background:#dc2626">Desactivar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function abrirCrear(){ document.getElementById('modalCrear').classList.add('activo'); }
+        function cerrarCrear(){ document.getElementById('modalCrear').classList.remove('activo'); }
+
+        function abrirEditar(id,i,t,n,f,tel,a){
+            document.getElementById('editId').value=id;
+            document.getElementById('editIdentificacion').value=i;
+            document.getElementById('editTipo').value=t;
+            document.getElementById('editNombre').value=n;
+            document.getElementById('editFecha').value=f;
+            document.getElementById('editTelefono').value=tel;
+            document.getElementById('modalEditar').classList.add('activo');
+        }
+
+        function cerrarEditar(){ document.getElementById('modalEditar').classList.remove('activo'); }
+
+        function abrirEliminar(id,n){
+            document.getElementById('deleteId').value=id;
+            document.getElementById('nombreEliminar').innerText=n;
+            document.getElementById('modalEliminar').classList.add('activo');
+        }
+
+        function cerrarEliminar(){ document.getElementById('modalEliminar').classList.remove('activo'); }
+
+        document.getElementById("buscar").addEventListener("keyup", function(){
+            let f=this.value.toLowerCase();
+            document.querySelectorAll("#tabla tbody tr").forEach(r=>{
+                r.style.display=r.innerText.toLowerCase().includes(f)?"":"none";
+            });
+        });
+    </script>
+}

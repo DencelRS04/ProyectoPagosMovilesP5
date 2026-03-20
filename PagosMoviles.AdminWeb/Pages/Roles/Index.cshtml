@@ -4,123 +4,654 @@
     ViewData["Title"] = "Administración de Roles";
 }
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .page-title { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin: 0; }
-    .btn-nuevo {
-        background-color: #0d6efd; color: white; border: none;
-        padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600;
-        text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
-        transition: background 0.2s;
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
     }
-    .btn-nuevo:hover { background-color: #0b5ed7; color: white; }
-    .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
-    .search-bar input {
-        border: 1px solid #ced4da; border-radius: 6px;
-        padding: 0.45rem 0.75rem; width: 300px; font-size: 0.95rem;
+
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
     }
-    .search-bar input:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
-    .btn-buscar { background: #343a40; color: white; border: none; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .btn-buscar:hover { background: #23272b; }
-    .btn-limpiar { background: white; color: #343a40; border: 1px solid #ced4da; padding: 0.45rem 1rem; border-radius: 6px; font-weight: 600; text-decoration: none; }
-    .btn-limpiar:hover { background: #f8f9fa; }
-    .tabla-container { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden; }
-    .tabla-container table { width: 100%; border-collapse: collapse; }
-    .tabla-container thead th { background: #1a1a2e; color: white; padding: 0.85rem 1rem; font-weight: 600; font-size: 0.9rem; text-align: left; }
-    .tabla-container tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
-    .tabla-container tbody tr:hover { background: #f8f9ff; }
-    .tabla-container tbody td { padding: 0.8rem 1rem; font-size: 0.95rem; color: #333; }
-    .btn-editar { background: #ffc107; color: #333; border: none; padding: 0.3rem 0.85rem; border-radius: 5px; font-weight: 600; font-size: 0.85rem; text-decoration: none; margin-right: 0.3rem; display: inline-block; transition: background 0.2s; }
-    .btn-editar:hover { background: #e0a800; color: #333; }
-    .btn-eliminar { background: #dc3545; color: white; border: none; padding: 0.3rem 0.85rem; border-radius: 5px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; }
-    .btn-eliminar:hover { background: #bb2d3b; }
-    .alert-success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-    .alert-danger { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-    .sin-resultados { text-align: center; padding: 3rem; color: #888; font-size: 1rem; }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-overlay.activo { display: flex; }
-    .modal-box { background: white; border-radius: 10px; padding: 2rem; max-width: 420px; width: 90%; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
-    .modal-box h5 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .modal-box p { color: #555; margin-bottom: 1.5rem; }
-    .modal-acciones { display: flex; gap: 0.75rem; justify-content: flex-end; }
-    .btn-cancelar { background: white; border: 1px solid #ced4da; color: #555; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .btn-confirmar-eliminar { background: #dc3545; color: white; border: none; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+    .roles-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 15px;
+    }
+
+    .roles-container {
+        width: 95%;
+        max-width: 1200px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    .roles-title {
+        margin-bottom: 25px;
+        font-weight: 600;
+        color: #020617;
+        letter-spacing: 0.5px;
+    }
+
+    .alert-success-custom {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #166534;
+        border: 1px solid #86efac;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-weight: 500;
+    }
+
+    .alert-danger-custom {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        font-weight: 500;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        background: #f1f5f9;
+        border-radius: 999px;
+        padding: 6px;
+        box-shadow: inset 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 10px 15px;
+            border-radius: 999px;
+            background: transparent;
+            width: 260px;
+        }
+
+        .search-box button,
+        .btn-clean {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-box button {
+            background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+            color: white;
+        }
+
+            .search-box button:hover {
+                transform: scale(1.05);
+            }
+
+    .btn-clean {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-clean:hover {
+            transform: scale(1.05);
+            background: #cbd5e1;
+            color: #0f172a;
+        }
+
+    .btn-add {
+        background: linear-gradient(135deg, #2563eb, #1e40af);
+        color: white;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.5);
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-3px) scale(1.03);
+            color: white;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .roles-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+        .roles-table thead th {
+            text-align: left;
+            padding: 12px;
+            color: #475569;
+            font-size: 14px;
+            border: none;
+        }
+
+        .roles-table tbody tr {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: 0.25s;
+        }
+
+            .roles-table tbody tr:hover {
+                transform: translateY(-3px) scale(1.01);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            }
+
+        .roles-table td {
+            padding: 15px;
+            vertical-align: middle;
+            border: none;
+        }
+
+        .roles-table tbody tr td:first-child {
+            border-radius: 16px 0 0 16px;
+        }
+
+        .roles-table tbody tr td:last-child {
+            border-radius: 0 16px 16px 0;
+        }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+        .actions button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.25s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .edit {
+        background: linear-gradient(135deg, #5879fc, #0d3dfb);
+        color: white;
+    }
+
+        .edit:hover {
+            transform: scale(1.1);
+        }
+
+    .delete {
+        background: linear-gradient(135deg, #f87171, #dc2626);
+        color: white;
+    }
+
+        .delete:hover {
+            transform: scale(1.1);
+        }
+
+    .empty-row td {
+        text-align: center;
+        color: #64748b;
+        font-style: italic;
+        padding: 25px;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+        .modal-overlay.activo {
+            display: flex;
+        }
+
+    .modal-box {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 560px;
+        width: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        animation: aparecerModal 0.2s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+        .modal-box h5 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #111827;
+        }
+
+        .modal-box p {
+            color: #4b5563;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+    .form-control-custom {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 13px 14px;
+        font-size: 1rem;
+        color: #374151;
+        background: #ffffff;
+        outline: none;
+        transition: 0.25s;
+    }
+
+        .form-control-custom:focus {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+        }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.85rem;
+        margin-top: 6px;
+        display: block;
+    }
+
+    .pantallas-box {
+        border: 1px solid #dbe3ee;
+        border-radius: 16px;
+        padding: 12px;
+        max-height: 240px;
+        overflow-y: auto;
+        background: #f8fafc;
+    }
+
+    .pantalla-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        transition: 0.2s;
+    }
+
+        .pantalla-item:hover {
+            background: #eaf2ff;
+        }
+
+        .pantalla-item input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            accent-color: #2563eb;
+            flex-shrink: 0;
+        }
+
+        .pantalla-item label {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #374151;
+            cursor: pointer;
+        }
+
+    .sin-pantallas {
+        color: #64748b;
+        font-size: 0.95rem;
+        text-align: center;
+        padding: 16px;
+        margin: 0;
+    }
+
+    .modal-acciones {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .btn-cancelar {
+        background: #e2e8f0;
+        border: none;
+        color: #1f2937;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+        text-decoration: none;
+    }
+
+        .btn-cancelar:hover {
+            background: #cbd5e1;
+        }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
+    }
+
+        .btn-guardar:hover {
+            transform: scale(1.03);
+        }
+
+    .btn-confirmar-eliminar {
+        background: linear-gradient(135deg, #f87171, #dc2626);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+        .btn-confirmar-eliminar:hover {
+            transform: scale(1.03);
+        }
+
+    @@keyframes aparecerModal {
+        from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .search-box input {
+            width: 100%;
+            min-width: 180px;
+        }
+
+        .search-form {
+            align-items: stretch;
+        }
+
+        .search-left {
+            width: 100%;
+        }
+
+        .modal-acciones {
+            flex-direction: column;
+        }
+
+        .btn-cancelar,
+        .btn-guardar,
+        .btn-confirmar-eliminar {
+            width: 100%;
+        }
+    }
 </style>
 
-<div class="container mt-4">
+<div class="roles-wrapper">
+    <div class="roles-container">
+        <h2 class="roles-title">Administración de Roles</h2>
 
-    @if (TempData["Mensaje"] != null)
-    {
-        <div class="alert-success">✅ @TempData["Mensaje"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert-danger">⚠️ @TempData["Error"]</div>
-    }
-    @if (Model.MensajeError != null)
-    {
-        <div class="alert-danger">⚠️ @Model.MensajeError</div>
-    }
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert-success-custom">✅ @TempData["Mensaje"]</div>
+        }
 
-    <div class="page-header">
-        <h1 class="page-title">Administración de Roles</h1>
-        <a asp-page="Create" class="btn-nuevo">+ Nuevo Rol</a>
-    </div>
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-danger-custom">⚠️ @TempData["Error"]</div>
+        }
 
-    <form method="get" class="search-bar">
-        <input type="text" name="buscar" value="@Model.Buscar"
-               placeholder="Buscar por ID o nombre..." />
-        <button type="submit" class="btn-buscar">Buscar</button>
-        <a asp-page="Index" class="btn-limpiar">Limpiar</a>
-    </form>
+        @if (Model.MensajeError != null)
+        {
+            <div class="alert-danger-custom">⚠️ @Model.MensajeError</div>
+        }
 
-    <div class="tabla-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre del Rol</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Roles.Any())
-                {
+        <div class="top-bar">
+            <form method="get" class="search-form">
+                <div class="search-left">
+                    <div class="search-box">
+                        <input type="text"
+                               name="buscar"
+                               value="@Model.Buscar"
+                               placeholder="Buscar por ID o nombre..." />
+                        <button type="submit">Buscar</button>
+                    </div>
+
+                    <a asp-page="Index" class="btn-clean">Limpiar</a>
+                </div>
+
+                <div>
+                    <button type="button" class="btn-add" onclick="abrirModalCrear()">+ Nuevo Rol</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="roles-table">
+                <thead>
                     <tr>
-                        <td colspan="3" class="sin-resultados">
-                            No se encontraron roles registrados.
-                        </td>
+                        <th>ID</th>
+                        <th>Nombre del Rol</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-                else
-                {
-                    @foreach (var r in Model.Roles)
+                </thead>
+                <tbody>
+                    @if (!Model.Roles.Any())
                     {
-                        <tr>
-                            <td>@r.RolId</td>
-                            <td>@r.Nombre</td>
-                            <td>
-                                <a asp-page="Edit" asp-route-id="@r.RolId"
-                                   class="btn-editar">Editar</a>
-                                <button type="button" class="btn-eliminar"
-                                        onclick="confirmarEliminar(@r.RolId, '@r.Nombre')">
-                                    Eliminar
-                                </button>
-                            </td>
+                        <tr class="empty-row">
+                            <td colspan="3">No se encontraron roles registrados.</td>
                         </tr>
                     }
-                }
-            </tbody>
-        </table>
+                    else
+                    {
+                        @foreach (var r in Model.Roles)
+                        {
+                            <tr>
+                                <td>@r.RolId</td>
+                                <td>@r.Nombre</td>
+                                <td>
+                                    <div class="actions">
+                                        <button type="button"
+                                                class="edit"
+                                                onclick="abrirModalEditar(@r.RolId, '@r.Nombre')">
+                                            Editar
+                                        </button>
+
+                                        <button type="button"
+                                                class="delete"
+                                                onclick="confirmarEliminar(@r.RolId, '@r.Nombre')">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+<!-- MODAL CREAR -->
+<div class="modal-overlay" id="modalCrear">
+    <div class="modal-box">
+        <h5>Nuevo Rol</h5>
+
+        <form method="post" asp-page-handler="Crear">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="NuevoRol.Nombre">Nombre del Rol</label>
+                <input asp-for="NuevoRol.Nombre" class="form-control-custom" type="text" placeholder="Ej: Administrador" />
+                <span asp-validation-for="NuevoRol.Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Pantallas asociadas</label>
+                <div class="pantallas-box">
+                    @if (!Model.Pantallas.Any())
+                    {
+                        <p class="sin-pantallas">No hay pantallas disponibles.</p>
+                    }
+                    else
+                    {
+                        @foreach (var p in Model.Pantallas)
+                        {
+                            <div class="pantalla-item">
+                                <input type="checkbox"
+                                       name="PantallasSeleccionadas"
+                                       value="@p.PantallaId"
+                                       id="crear_pant_@p.PantallaId" />
+                                <label for="crear_pant_@p.PantallaId">@p.Nombre — @p.Ruta</label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="modal-acciones">
+                <button type="button" class="btn-cancelar" onclick="cerrarModalCrear()">Cancelar</button>
+                <button type="submit" class="btn-guardar">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal-box">
+        <h5>Editar Rol</h5>
+
+        <form method="post" asp-page-handler="Editar">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Id" id="editId" />
+
+            <div class="form-group">
+                <label asp-for="Rol.Nombre">Nombre del Rol</label>
+                <input asp-for="Rol.Nombre" class="form-control-custom" type="text" id="editNombre" />
+                <span asp-validation-for="Rol.Nombre" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Pantallas asociadas</label>
+                <div class="pantallas-box">
+                    @if (!Model.Pantallas.Any())
+                    {
+                        <p class="sin-pantallas">No hay pantallas disponibles.</p>
+                    }
+                    else
+                    {
+                        @foreach (var p in Model.Pantallas)
+                        {
+                            <div class="pantalla-item">
+                                <input type="checkbox"
+                                       name="PantallasSeleccionadasEditar"
+                                       value="@p.PantallaId"
+                                       id="edit_pant_@p.PantallaId" />
+                                <label for="edit_pant_@p.PantallaId">@p.Nombre — @p.Ruta</label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="modal-acciones">
+                <button type="button" class="btn-cancelar" onclick="cerrarModalEditar()">Cancelar</button>
+                <button type="submit" class="btn-guardar">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR -->
 <div class="modal-overlay" id="modalEliminar">
     <div class="modal-box">
         <h5>Confirmar eliminación</h5>
         <p>¿Realmente desea eliminar el rol <strong id="nombreRol"></strong>?</p>
+
         <div class="modal-acciones">
-            <button class="btn-cancelar" onclick="cerrarModal()">No</button>
+            <button type="button" class="btn-cancelar" onclick="cerrarModalEliminar()">No</button>
+
             <form method="post" asp-page-handler="Eliminar" id="formEliminar">
                 <input type="hidden" name="id" id="idEliminar" />
                 @Html.AntiForgeryToken()
@@ -131,17 +662,52 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
     <script>
+        function abrirModalCrear() {
+            document.getElementById('modalCrear').classList.add('activo');
+        }
+
+        function cerrarModalCrear() {
+            document.getElementById('modalCrear').classList.remove('activo');
+        }
+
+        function abrirModalEditar(id, nombre) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editNombre').value = nombre;
+
+            document.querySelectorAll('input[name="PantallasSeleccionadasEditar"]').forEach(function (chk) {
+                chk.checked = false;
+            });
+
+            document.getElementById('modalEditar').classList.add('activo');
+        }
+
+        function cerrarModalEditar() {
+            document.getElementById('modalEditar').classList.remove('activo');
+        }
+
         function confirmarEliminar(id, nombre) {
             document.getElementById('idEliminar').value = id;
             document.getElementById('nombreRol').textContent = nombre;
             document.getElementById('modalEliminar').classList.add('activo');
         }
-        function cerrarModal() {
+
+        function cerrarModalEliminar() {
             document.getElementById('modalEliminar').classList.remove('activo');
         }
-        document.getElementById('modalEliminar').addEventListener('click', function(e) {
-            if (e.target === this) cerrarModal();
+
+        document.getElementById('modalCrear').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalCrear();
+        });
+
+        document.getElementById('modalEditar').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalEditar();
+        });
+
+        document.getElementById('modalEliminar').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalEliminar();
         });
     </script>
 }

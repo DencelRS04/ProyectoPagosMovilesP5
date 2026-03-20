@@ -68,7 +68,6 @@ namespace PagosMoviles.AdminWeb.Services.Auth
                         : loginResponse.ColorAvatar
                 };
 
-                // 🔥 RESET TOTAL DE INTENTOS
                 var session = _httpContextAccessor.HttpContext?.Session;
 
                 if (session != null)
