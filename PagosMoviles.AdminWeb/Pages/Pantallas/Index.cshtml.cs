@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.Shared.DTOs.Pantallas;
+using System.ComponentModel.DataAnnotations;
 
 namespace PagosMoviles.AdminWeb.Pages.Pantallas
 {
@@ -9,7 +10,10 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
     {
         private readonly IPantallasService _service;
 
-        public IndexModel(IPantallasService service) => _service = service;
+        public IndexModel(IPantallasService service)
+        {
+            _service = service;
+        }
 
         public List<PantallaDto> Pantallas { get; set; } = new();
         public string? MensajeError { get; set; }
@@ -17,34 +21,86 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
         [BindProperty(SupportsGet = true)]
         public string? Buscar { get; set; }
 
+        // CREAR
+        [BindProperty]
+        public PantallaCreateDtoValidado NuevaPantalla { get; set; } = new();
+
+        // EDITAR
+        [BindProperty]
+        public int Id { get; set; }
+
+        [BindProperty]
+        public PantallaEditDtoValidado Pantalla { get; set; } = new();
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
                 return RedirectToPage("/Auth/Login");
 
+            await CargarPantallas();
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostCrearAsync()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
+
+            await CargarPantallas();
+
+            if (!ModelState.IsValid)
+                return Page();
+
             try
             {
-                var todas = await _service.ObtenerPantallas();
+                var dto = new PantallaCreateDto
+                {
+                    Identificador = NuevaPantalla.Identificador,
+                    Nombre = NuevaPantalla.Nombre,
+                    Descripcion = NuevaPantalla.Descripcion,
+                    Ruta = NuevaPantalla.Ruta
+                };
 
-                // Filtro por nombre si hay búsqueda
-                Pantallas = string.IsNullOrWhiteSpace(Buscar)
-                    ? todas
-                    : todas.Where(p =>
-                        p.Nombre.Contains(Buscar, StringComparison.OrdinalIgnoreCase) ||
-                        p.Identificador.Contains(Buscar, StringComparison.OrdinalIgnoreCase))
-                      .ToList();
-            }
-            catch (HttpRequestException ex) when
-                (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                return RedirectToPage("/Account/Login");
+                await _service.CrearPantalla(dto);
+                TempData["Mensaje"] = "Pantalla creada correctamente.";
+                return RedirectToPage();
             }
             catch
             {
-                MensajeError = "No se pudo cargar la lista de pantallas. Verifique la conexión.";
+                MensajeError = "No se pudo crear la pantalla. Verifique los datos.";
+                return Page();
             }
+        }
 
-            return Page();
+        public async Task<IActionResult> OnPostEditarAsync()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
+                return RedirectToPage("/Auth/Login");
+
+            await CargarPantallas();
+
+            if (!ModelState.IsValid)
+                return Page();
+
+            try
+            {
+                var dto = new PantallaCreateDto
+                {
+                    Identificador = Pantalla.Identificador,
+                    Nombre = Pantalla.Nombre,
+                    Descripcion = Pantalla.Descripcion,
+                    Ruta = Pantalla.Ruta
+                };
+
+                await _service.ActualizarPantalla(Id, dto);
+                TempData["Mensaje"] = "Pantalla actualizada correctamente.";
+                return RedirectToPage();
+            }
+            catch
+            {
+                MensajeError = "No se pudo actualizar la pantalla.";
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostEliminarAsync(int id)
@@ -64,5 +120,69 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
 
             return RedirectToPage();
         }
+
+        private async Task CargarPantallas()
+        {
+            try
+            {
+                var todas = await _service.ObtenerPantallas();
+
+                Pantallas = string.IsNullOrWhiteSpace(Buscar)
+                    ? todas
+                    : todas.Where(p =>
+                        p.Nombre.Contains(Buscar, StringComparison.OrdinalIgnoreCase) ||
+                        p.Identificador.Contains(Buscar, StringComparison.OrdinalIgnoreCase))
+                      .ToList();
+            }
+            catch (HttpRequestException ex) when
+                (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                MensajeError = "Sesión no autorizada.";
+                Pantallas = new List<PantallaDto>();
+            }
+            catch
+            {
+                MensajeError = "No se pudo cargar la lista de pantallas. Verifique la conexión.";
+                Pantallas = new List<PantallaDto>();
+            }
+        }
+    }
+
+    public class PantallaCreateDtoValidado
+    {
+        [Required(ErrorMessage = "El identificador es obligatorio.")]
+        public string Identificador { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
+            ErrorMessage = "El nombre solo puede contener letras, números y espacios.")]
+        public string Nombre { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La descripción es obligatoria.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
+            ErrorMessage = "La descripción solo puede contener letras, números y espacios.")]
+        public string Descripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La ruta es obligatoria.")]
+        public string Ruta { get; set; } = string.Empty;
+    }
+
+    public class PantallaEditDtoValidado
+    {
+        [Required(ErrorMessage = "El identificador es obligatorio.")]
+        public string Identificador { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
+            ErrorMessage = "Solo letras, números y espacios.")]
+        public string Nombre { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La descripción es obligatoria.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
+            ErrorMessage = "Solo letras, números y espacios.")]
+        public string Descripcion { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La ruta es obligatoria.")]
+        public string Ruta { get; set; } = string.Empty;
     }
 }
