@@ -335,6 +335,80 @@
             transform: scale(1.03);
         }
 
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+        .modal-overlay.activo {
+            display: flex;
+        }
+
+    .modal-box {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 460px;
+        width: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+        .modal-box h5 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .modal-box p {
+            color: #4b5563;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+    .modal-acciones {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .btn-cancelar-eliminar {
+        background: #e2e8f0;
+        border: none;
+        color: #1f2937;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+        .btn-cancelar-eliminar:hover {
+            background: #cbd5e1;
+        }
+
+    .btn-confirmar-eliminar {
+        background: linear-gradient(135deg, #f87171, #dc2626);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+        .btn-confirmar-eliminar:hover {
+            transform: scale(1.03);
+        }
+
     @@media (max-width: 768px) {
         .search-box input {
             width: 100%;
@@ -346,6 +420,15 @@
         }
 
         .search-left {
+            width: 100%;
+        }
+
+        .modal-acciones {
+            flex-direction: column;
+        }
+
+        .btn-cancelar-eliminar,
+        .btn-confirmar-eliminar {
             width: 100%;
         }
     }
@@ -411,11 +494,11 @@
                                         Editar
                                     </button>
 
-                                    <form method="post" asp-page-handler="Eliminar" style="display:inline">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@p.ParametroId" />
-                                        <button type="submit" class="delete">Eliminar</button>
-                                    </form>
+                                    <button type="button"
+                                            class="delete"
+                                            onclick="confirmarEliminarParametro('@p.ParametroId')">
+                                        Eliminar
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -479,6 +562,23 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modalEliminarParametro">
+    <div class="modal-box">
+        <h5>Confirmar eliminación</h5>
+        <p>¿Realmente desea eliminar el parámetro <strong id="nombreParametroEliminar"></strong>?</p>
+
+        <div class="modal-acciones">
+            <button type="button" class="btn-cancelar-eliminar" onclick="cerrarModalEliminarParametro()">No</button>
+
+            <form method="post" asp-page-handler="Eliminar" id="formEliminarParametro">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="idParametroEliminar" />
+                <button type="submit" class="btn-confirmar-eliminar">Sí, eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/parametros.js"></script>
@@ -501,4 +601,20 @@
             });
         </script>
     }
+
+    <script>
+        function confirmarEliminarParametro(id) {
+            document.getElementById('idParametroEliminar').value = id;
+            document.getElementById('nombreParametroEliminar').textContent = id;
+            document.getElementById('modalEliminarParametro').classList.add('activo');
+        }
+
+        function cerrarModalEliminarParametro() {
+            document.getElementById('modalEliminarParametro').classList.remove('activo');
+        }
+
+        document.getElementById('modalEliminarParametro').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalEliminarParametro();
+        });
+    </script>
 }

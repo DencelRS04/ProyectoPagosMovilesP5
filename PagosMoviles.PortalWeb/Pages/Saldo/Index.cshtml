@@ -1,92 +1,240 @@
 ﻿@page
 @model PagosMoviles.PortalWeb.Pages.Saldo.IndexModel
 @{
+    Layout = "/Pages/Shared/_Layout.cshtml";
     ViewData["Title"] = "Consulta de Saldo";
 }
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-    .page-title { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1.5rem; }
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
+    }
+
+    .saldo-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 70px 15px 30px;
+    }
+
+    .saldo-container {
+        width: 95%;
+        max-width: 700px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    .page-title {
+        font-size: 1.9rem;
+        font-weight: 600;
+        color: #020617;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+    }
+
     .consulta-card {
-        background: white; border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        padding: 2rem; max-width: 500px; margin-bottom: 1.5rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
     }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 0.4rem; font-size: 0.95rem; }
-    .form-group input {
-        width: 100%; border: 1px solid #ced4da; border-radius: 6px;
-        padding: 0.5rem 0.75rem; font-size: 0.95rem; box-sizing: border-box;
+
+    .form-group {
+        margin-bottom: 1.25rem;
     }
-    .form-group input:focus { outline: none; border-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
-    .text-danger { color: #dc3545; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.45rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 0.85rem 0.95rem;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background: #ffffff;
+            transition: 0.25s;
+        }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #93c5fd;
+                box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+            }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
     .btn-consultar {
-        background: #0d6efd; color: white; border: none;
-        padding: 0.6rem 1.75rem; border-radius: 6px; font-weight: 600;
-        font-size: 0.95rem; cursor: pointer; width: 100%; margin-top: 0.5rem;
-        transition: background 0.2s;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 0.9rem 1.75rem;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 0.5rem;
+        transition: 0.25s;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
     }
-    .btn-consultar:hover { background: #0b5ed7; }
+
+        .btn-consultar:hover {
+            transform: scale(1.02);
+        }
+
     .resultado-card {
-        background: white; border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        padding: 2rem; max-width: 500px;
-        border-left: 5px solid #0d6efd;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
+        border-left: 6px solid #2563eb;
     }
-    .resultado-titulo { font-size: 1rem; color: #555; font-weight: 600; margin-bottom: 0.5rem; }
-    .resultado-saldo { font-size: 2.5rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1rem; }
-    .resultado-saldo span { font-size: 1.1rem; color: #555; margin-right: 0.4rem; }
-    .resultado-detalle { font-size: 0.9rem; color: #666; }
-    .resultado-detalle strong { color: #333; }
+
+    .resultado-titulo {
+        font-size: 1rem;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .resultado-saldo {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #020617;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+
+        .resultado-saldo span {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-right: 0.4rem;
+        }
+
+    .resultado-detalle {
+        font-size: 0.95rem;
+        color: #475569;
+    }
+
+        .resultado-detalle p {
+            margin: 0.45rem 0;
+        }
+
+        .resultado-detalle strong {
+            color: #0f172a;
+        }
+
     .alert-danger {
-        background: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
-        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; max-width: 500px;
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 1rem;
     }
+
     .alert-warning {
-        background: #fff3cd; color: #664d03; border: 1px solid #ffecb5;
-        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; max-width: 500px;
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        border: 1px solid #fcd34d;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .saldo-container {
+            padding: 20px;
+        }
+
+        .consulta-card,
+        .resultado-card {
+            padding: 1.25rem;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+        }
+
+        .resultado-saldo {
+            font-size: 2rem;
+        }
     }
 </style>
 
-<div class="container mt-4">
-    <h1 class="page-title">Consulta de Saldo</h1>
+<div class="saldo-wrapper">
+    <div class="saldo-container">
+        <h1 class="page-title">Consulta de Saldo</h1>
 
-    @if (Model.MensajeError != null)
-    {
-        <div class="alert-danger">⚠️ @Model.MensajeError</div>
-    }
+        @if (Model.MensajeError != null)
+        {
+            <div class="alert-danger">⚠️ @Model.MensajeError</div>
+        }
 
-    <div class="consulta-card">
-        <form method="post">
-            <div class="form-group">
-                <label asp-for="Telefono">Número de teléfono</label>
-                <input asp-for="Telefono" placeholder="Ej: 88888888" maxlength="20" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Identificacion">Identificación</label>
-                <input asp-for="Identificacion" placeholder="Ej: 123456789" maxlength="20" />
-                <span asp-validation-for="Identificacion" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn-consultar">🔍 Consultar saldo</button>
-        </form>
-    </div>
+        <div class="consulta-card">
+            <form method="post">
+                <div class="form-group">
+                    <label asp-for="Telefono">Número de teléfono</label>
+                    <input asp-for="Telefono" placeholder="Ej: 88888888" maxlength="20" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
 
-    @if (Model.Resultado != null && Model.Resultado.Saldo > 0)
-    {
-        <div class="resultado-card">
-            <p class="resultado-titulo">Saldo disponible</p>
-            <p class="resultado-saldo">
-                <span>₡</span>@Model.Resultado.Saldo.ToString("N2")
-            </p>
-            <div class="resultado-detalle">
-                <p>📱 Teléfono: <strong>@Model.Resultado.Afiliacion.Telefono</strong></p>
-                <p>🪪 Identificación: <strong>@Model.Resultado.Afiliacion.Identificacion</strong></p>
-                <p>🏦 Cuenta: <strong>@Model.Resultado.Afiliacion.NumeroCuenta</strong></p>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Identificacion">Identificación</label>
+                    <input asp-for="Identificacion" placeholder="Ej: 123456789" maxlength="20" />
+                    <span asp-validation-for="Identificacion" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn-consultar"> Consultar saldo</button>
+            </form>
         </div>
-    }
+
+        @if (Model.Resultado != null)
+        {
+            <div class="resultado-card">
+                <p class="resultado-titulo">Saldo disponible</p>
+                <p class="resultado-saldo">
+                    <span>₡</span>@Model.Resultado.Saldo.ToString("N2")
+                </p>
+
+                <div class="resultado-detalle">
+                    <p> Teléfono: <strong>@Model.Resultado.Afiliacion.Telefono</strong></p>
+                    <p> Identificación: <strong>@Model.Resultado.Afiliacion.Identificacion</strong></p>
+                    <p> Cuenta: <strong>@Model.Resultado.Afiliacion.NumeroCuenta</strong></p>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }

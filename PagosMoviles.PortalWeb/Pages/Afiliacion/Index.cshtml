@@ -5,58 +5,223 @@
     ViewData["Title"] = "Afiliación";
 }
 
-<div class="afiliacion-wrapper">
-    <div class="afiliacion-header">
-        <div class="header-bar"></div>
-        <div>
-            <h2>Mantenimiento de Afiliación</h2>
-            <p>Complete la información para inscribirse en Pagos Móviles</p>
-        </div>
-    </div>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
-    {
-        <div class="alert alert-success afiliacion-alert">
-            @Model.Mensaje
-        </div>
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
     }
 
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger afiliacion-alert"></div>
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
+    }
 
-    <div class="afiliacion-card">
-        <div class="afiliacion-card-title">
-            Formulario de Afiliación
+    .afiliacion-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 70px 15px 30px;
+    }
+
+    .afiliacion-container {
+        width: 95%;
+        max-width: 700px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    .page-title {
+        font-size: 1.9rem;
+        font-weight: 600;
+        color: #020617;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        margin-bottom: 1.75rem;
+        font-size: 0.95rem;
+    }
+
+    .afiliacion-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.45rem;
+            font-size: 0.95rem;
+        }
+
+    .form-control {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.95rem;
+        background: #ffffff;
+        transition: 0.25s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+        }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .alert-success-custom {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #166534;
+        border: 1px solid #86efac;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-danger-custom {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .afiliacion-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+
+    .btn-secondary-custom {
+        background: #e2e8f0;
+        color: #1f2937;
+        border: none;
+        padding: 0.9rem 1.4rem;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .btn-secondary-custom:hover {
+            background: #cbd5e1;
+        }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 0.9rem 1.4rem;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
+    }
+
+        .btn-primary-custom:hover {
+            transform: scale(1.02);
+        }
+
+    @@media (max-width: 768px) {
+        .afiliacion-container {
+            padding: 20px;
+        }
+
+        .afiliacion-card {
+            padding: 1.25rem;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+        }
+
+        .afiliacion-actions {
+            flex-direction: column;
+        }
+
+            .afiliacion-actions button {
+                width: 100%;
+            }
+    }
+</style>
+
+<div class="afiliacion-wrapper">
+    <div class="afiliacion-container">
+
+        <h2 class="page-title">Mantenimiento de Afiliación</h2>
+        <p class="page-subtitle">
+            Complete la información para inscribirse en Pagos Móviles
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <div class="alert-success-custom">
+                ✔ @Model.Mensaje
+            </div>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="alert-danger-custom"></div>
+
+        <div class="afiliacion-card">
+            <form method="post">
+
+                <div class="form-group">
+                    <label asp-for="Afiliacion.Identificacion">Identificación</label>
+                    <input asp-for="Afiliacion.Identificacion" class="form-control" />
+                    <span asp-validation-for="Afiliacion.Identificacion" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Afiliacion.NumeroCuenta">Número de cuenta</label>
+                    <input asp-for="Afiliacion.NumeroCuenta" class="form-control" />
+                    <span asp-validation-for="Afiliacion.NumeroCuenta" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Afiliacion.Telefono">Teléfono</label>
+                    <input asp-for="Afiliacion.Telefono" class="form-control" />
+                    <span asp-validation-for="Afiliacion.Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="afiliacion-actions">
+                    <button type="submit" asp-page-handler="ValidarCliente" class="btn-secondary-custom">
+                        Validar cliente
+                    </button>
+
+                    <button type="submit" asp-page-handler="Registrar" class="btn-primary-custom">
+                        Guardar afiliación
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <form method="post" class="afiliacion-form">
-            <div class="mb-3">
-                <label asp-for="Afiliacion.Identificacion" class="form-label">Identificación</label>
-                <input asp-for="Afiliacion.Identificacion" class="form-control" id="identificacion" />
-                <span asp-validation-for="Afiliacion.Identificacion" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Afiliacion.NumeroCuenta" class="form-label">Número de cuenta</label>
-                <input asp-for="Afiliacion.NumeroCuenta" class="form-control" id="numeroCuenta" />
-                <span asp-validation-for="Afiliacion.NumeroCuenta" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Afiliacion.Telefono" class="form-label">Teléfono</label>
-                <input asp-for="Afiliacion.Telefono" class="form-control" id="telefono" />
-                <span asp-validation-for="Afiliacion.Telefono" class="text-danger"></span>
-            </div>
-
-            <div class="afiliacion-actions">
-                <button type="submit" asp-page-handler="ValidarCliente" class="btn btn-outline-primary">
-                    Validar cliente
-                </button>
-
-                <button type="submit" asp-page-handler="Registrar" class="btn btn-primary">
-                    Guardar afiliación
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
