@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.PortalWeb.Helpers;
-using PagosMoviles.Shared.Constants;
 
 namespace PagosMoviles.PortalWeb.Pages.Home
 {
@@ -18,6 +17,12 @@ namespace PagosMoviles.PortalWeb.Pages.Home
 
         public IActionResult OnGet()
         {
+            if (TempData["SesionExpirada"] != null)
+            {
+                UsuarioNombre = "Cliente";
+                return Page();
+            }
+
             var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
 
             if (usuario == null)
@@ -44,13 +49,9 @@ namespace PagosMoviles.PortalWeb.Pages.Home
                 if (diferencia.TotalMinutes >= 5)
                 {
                     SessionHelper.LimpiarSesion(HttpContext.Session);
-
-                    HttpContext.Session.SetString(
-                        SessionKeys.SessionExpiredMessage,
-                        "La sesión ha expirado por inactividad."
-                    );
-
-                    return Redirect("/");
+                    TempData["SesionExpirada"] = "La sesión se venció por inactividad.";
+                    UsuarioNombre = "Cliente";
+                    return Page();
                 }
             }
 
