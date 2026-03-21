@@ -16,6 +16,9 @@ namespace PagosMoviles.AdminWeb.Pages.ClientesCore
 
         public List<ClienteViewModel> Clientes { get; set; } = new();
 
+        [BindProperty(SupportsGet = true)]
+        public string? Busqueda { get; set; }
+
         [BindProperty]
         public ClienteViewModel Cliente { get; set; } = new();
 
@@ -28,6 +31,18 @@ namespace PagosMoviles.AdminWeb.Pages.ClientesCore
         public async Task OnGetAsync()
         {
             Clientes = await _service.ListarAsync();
+
+            if (!string.IsNullOrWhiteSpace(Busqueda))
+            {
+                var b = Busqueda.ToLower();
+
+                Clientes = Clientes
+                    .Where(c =>
+                        (!string.IsNullOrWhiteSpace(c.Identificacion) && c.Identificacion.ToLower().Contains(b)) ||
+                        (!string.IsNullOrWhiteSpace(c.NombreCompleto) && c.NombreCompleto.ToLower().Contains(b)) ||
+                        (!string.IsNullOrWhiteSpace(c.Telefono) && c.Telefono.ToLower().Contains(b)))
+                    .ToList();
+            }
         }
 
         public async Task<IActionResult> OnPostCrearAsync()

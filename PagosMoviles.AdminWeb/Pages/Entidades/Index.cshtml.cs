@@ -11,6 +11,9 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
 
         public List<EntidadViewModel> Entidades { get; set; } = new();
 
+        [BindProperty(SupportsGet = true)]
+        public string? Busqueda { get; set; }
+
         [BindProperty]
         public EntidadCreateModel Entidad { get; set; } = new();
 
@@ -27,6 +30,17 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
         public async Task OnGet()
         {
             Entidades = await _service.ListarAsync();
+
+            if (!string.IsNullOrWhiteSpace(Busqueda))
+            {
+                var b = Busqueda.ToLower();
+
+                Entidades = Entidades
+                    .Where(e =>
+                        (!string.IsNullOrWhiteSpace(e.CodigoEntidad) && e.CodigoEntidad.ToLower().Contains(b)) ||
+                        (!string.IsNullOrWhiteSpace(e.NombreInstitucion) && e.NombreInstitucion.ToLower().Contains(b)))
+                    .ToList();
+            }
         }
 
         public async Task<IActionResult> OnPostCrearAsync()

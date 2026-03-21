@@ -1,128 +1,273 @@
 ﻿@page
 @model PagosMoviles.PortalWeb.Pages.Transferencias.IndexModel
 @{
+    Layout = "/Pages/Shared/_Layout.cshtml";
     ViewData["Title"] = "Transferencia de Pagos Móviles";
 }
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-    .page-title { font-size: 1.75rem; font-weight: 700; color: #1a1a2e; margin-bottom: 1.5rem; }
+    * {
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: radial-gradient(circle at top, #1e3a8a, #020617);
+        min-height: 100vh;
+    }
+
+    .transferencia-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 70px 15px 30px;
+    }
+
+    .transferencia-container {
+        width: 95%;
+        max-width: 700px;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+
+    .page-title {
+        font-size: 1.9rem;
+        font-weight: 600;
+        color: #020617;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        margin-bottom: 1.75rem;
+        font-size: 0.95rem;
+    }
+
     .transferencia-card {
-        background: white; border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        padding: 2rem; max-width: 540px; margin-bottom: 1.5rem;
-    }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 0.4rem; font-size: 0.95rem; }
-    .form-group input, .form-group select {
-        width: 100%; border: 1px solid #ced4da; border-radius: 6px;
-        padding: 0.5rem 0.75rem; font-size: 0.95rem; box-sizing: border-box;
         background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
     }
-    .form-group input:focus, .form-group select:focus {
-        outline: none; border-color: #0d6efd;
-        box-shadow: 0 0 0 3px rgba(13,110,253,.15);
-    }
-    .text-danger { color: #dc3545; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
-    .text-muted { color: #888; font-size: 0.82rem; margin-top: 0.25rem; display: block; }
-    .btn-transferir {
-        background: #0d6efd; color: white; border: none;
-        padding: 0.6rem 1.75rem; border-radius: 6px; font-weight: 600;
-        font-size: 0.95rem; cursor: pointer; width: 100%; margin-top: 0.5rem;
-        transition: background 0.2s;
-    }
-    .btn-transferir:hover { background: #0b5ed7; }
+
     .resultado-exito {
-        background: white; border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        padding: 2rem; max-width: 540px;
-        border-left: 5px solid #198754;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
+        border-left: 6px solid #16a34a;
     }
-    .resultado-exito .icono { font-size: 2rem; margin-bottom: 0.5rem; }
-    .resultado-exito h3 { font-size: 1.2rem; font-weight: 700; color: #198754; margin-bottom: 0.5rem; }
-    .resultado-exito p { color: #555; font-size: 0.95rem; margin: 0; }
-    .alert-danger {
-        background: #f8d7da; color: #842029; border: 1px solid #f5c2c7;
-        border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; max-width: 540px;
+
+        .resultado-exito .icono {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .resultado-exito h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 0.5rem;
+        }
+
+        .resultado-exito p {
+            color: #475569;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+    .form-group {
+        margin-bottom: 1.25rem;
     }
-    .separador { border: none; border-top: 1px solid #f0f0f0; margin: 1.5rem 0; }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.45rem;
+            font-size: 0.95rem;
+        }
+
+    .form-control {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 14px;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        background: #ffffff;
+        transition: 0.25s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+        }
+
+    .text-danger {
+        color: #dc2626;
+        font-size: 0.82rem;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .hint-text {
+        color: #64748b;
+        font-size: 0.82rem;
+    }
+
+    .alert-danger-custom {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .separador {
+        border: none;
+        border-top: 1px solid #e5e7eb;
+        margin: 1.5rem 0;
+    }
+
     .seccion-titulo {
-        font-size: 0.82rem; font-weight: 600; color: #888;
-        text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 1rem;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 0.9rem 1.75rem;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 0.5rem;
+        transition: 0.25s;
+        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
+    }
+
+        .btn-primary-custom:hover {
+            transform: scale(1.02);
+        }
+
+    @@media (max-width: 768px) {
+        .transferencia-container {
+            padding: 20px;
+        }
+
+        .transferencia-card,
+        .resultado-exito {
+            padding: 1.25rem;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+        }
     }
 </style>
 
-<div class="container mt-4">
-    <h1 class="page-title">Transferencia de Pagos Móviles</h1>
+<div class="transferencia-wrapper">
+    <div class="transferencia-container">
+        <h2 class="page-title">Transferencia de Pagos Móviles</h2>
+        <p class="page-subtitle">
+            Complete la información para realizar una transferencia de Pagos Móviles.
+        </p>
 
-    @if (Model.MensajeError != null)
-    {
-        <div class="alert-danger">⚠️ @Model.MensajeError</div>
-    }
+        @if (Model.MensajeError != null)
+        {
+            <div class="alert-danger-custom">
+                ✖ @Model.MensajeError
+            </div>
+        }
 
-    @if (Model.Resultado != null && Model.Resultado.Codigo == 200)
-    {
-        <div class="resultado-exito">
-            <div class="icono">✅</div>
-            <h3>Transferencia exitosa</h3>
-            <p>@Model.Resultado.Descripcion</p>
-        </div>
-    }
-    else
-    {
-        <div class="transferencia-card">
-            <form method="post">
+        @if (Model.Resultado != null && Model.Resultado.Codigo == 200)
+        {
+            <div class="resultado-exito">
+                <div class="icono">✅</div>
+                <h3>Transferencia exitosa</h3>
+                <p>@Model.Resultado.Descripcion</p>
+            </div>
+        }
+        else
+        {
+            <div class="transferencia-card">
+                <form method="post">
 
-                <p class="seccion-titulo">Datos de origen</p>
+                    <p class="seccion-titulo">Datos de origen</p>
 
-                <div class="form-group">
-                    <label asp-for="TelefonoOrigen">Teléfono origen</label>
-                    <input asp-for="TelefonoOrigen" placeholder="Ej: 88888888" maxlength="20" />
-                    <span asp-validation-for="TelefonoOrigen" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="TelefonoOrigen">Teléfono origen</label>
+                        <input asp-for="TelefonoOrigen" class="form-control" placeholder="Ej: 88888888" maxlength="20" />
+                        <span asp-validation-for="TelefonoOrigen" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label asp-for="NombreOrigen">Nombre origen</label>
-                    <input asp-for="NombreOrigen" placeholder="Ej: Juan Perez" />
-                    <span asp-validation-for="NombreOrigen" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="NombreOrigen">Nombre origen</label>
+                        <input asp-for="NombreOrigen" class="form-control" placeholder="Ej: Juan Perez" />
+                        <span asp-validation-for="NombreOrigen" class="text-danger"></span>
+                    </div>
 
-                <hr class="separador" />
-                <p class="seccion-titulo">Datos de destino</p>
+                    <hr class="separador" />
+                    <p class="seccion-titulo">Datos de destino</p>
 
-                <div class="form-group">
-                    <label asp-for="TelefonoDestino">Teléfono destino</label>
-                    <input asp-for="TelefonoDestino" placeholder="Ej: 77777777" maxlength="20" />
-                    <span asp-validation-for="TelefonoDestino" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="TelefonoDestino">Teléfono destino</label>
+                        <input asp-for="TelefonoDestino" class="form-control" placeholder="Ej: 77777777" maxlength="20" />
+                        <span asp-validation-for="TelefonoDestino" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label asp-for="EntidadDestino">Entidad destino</label>
-                    <input asp-for="EntidadDestino" placeholder="Ej: OTRO_BANCO001" />
-                    <span asp-validation-for="EntidadDestino" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="EntidadDestino">Entidad destino</label>
+                        <input asp-for="EntidadDestino" class="form-control" placeholder="Ej: OTRO_BANCO001" />
+                        <span asp-validation-for="EntidadDestino" class="text-danger"></span>
+                    </div>
 
-                <hr class="separador" />
-                <p class="seccion-titulo">Detalles de la transferencia</p>
+                    <hr class="separador" />
+                    <p class="seccion-titulo">Detalles de la transferencia</p>
 
-                <div class="form-group">
-                    <label asp-for="Monto">Monto (₡)</label>
-                    <input asp-for="Monto" type="number" placeholder="Ej: 5000"
-                           min="1" max="100000" step="0.01" />
-                    <span asp-validation-for="Monto" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="Monto">Monto (₡)</label>
+                        <input asp-for="Monto"
+                               class="form-control"
+                               type="number"
+                               placeholder="Ej: 5000"
+                               min="1"
+                               max="100000"
+                               step="0.01" />
+                        <span asp-validation-for="Monto" class="text-danger"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label asp-for="Descripcion">Descripción</label>
-                    <input asp-for="Descripcion" placeholder="Máximo 25 caracteres" maxlength="25" />
-                    <span asp-validation-for="Descripcion" class="text-danger"></span>
-                </div>
+                    <div class="form-group">
+                        <label asp-for="Descripcion">Descripción</label>
+                        <input asp-for="Descripcion" class="form-control" placeholder="Máximo 25 caracteres" maxlength="25" />
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
 
-                <button type="submit" class="btn-transferir">💸 Realizar transferencia</button>
-            </form>
-        </div>
-    }
+                    <button type="submit" class="btn-primary-custom"> Realizar transferencia</button>
+                </form>
+            </div>
+        }
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }
