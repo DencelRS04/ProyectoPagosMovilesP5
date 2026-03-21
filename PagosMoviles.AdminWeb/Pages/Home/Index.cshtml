@@ -21,7 +21,6 @@
         position: relative;
     }
 
-    /* USUARIO ARRIBA DERECHA */
     .user-info {
         position: absolute;
         top: 20px;
@@ -31,7 +30,6 @@
         opacity: 0.85;
     }
 
-    /* TARJETA PRINCIPAL */
     .dashboard-card {
         backdrop-filter: blur(12px);
         background: rgba(255,255,255,0.06);
@@ -63,7 +61,6 @@
             font-size: 1rem;
         }
 
-    /* EFECTO */
     @@keyframes fadeIn {
         from {
             opacity: 0;
@@ -76,7 +73,64 @@
         }
     }
 
-    /* RESPONSIVE */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.75);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+        .modal-overlay.activo {
+            display: flex;
+        }
+
+    .modal-box {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 28px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+        text-align: center;
+    }
+
+        .modal-box h5 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .modal-box p {
+            color: #4b5563;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+    .modal-acciones {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-confirmar-modal {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+        .btn-confirmar-modal:hover {
+            transform: scale(1.03);
+        }
+
     @@media (max-width: 768px) {
         .dashboard-card {
             padding: 30px;
@@ -93,10 +147,8 @@
 </style>
 
 <div class="dashboard-wrapper">
-
-    <!-- CONTENIDO -->
     <div class="dashboard-card">
-        <h1>Bienvenido, @Model.UsuarioNombre, al panel administrativo de </h1>
+        <h1>Bienvenido, @Model.UsuarioNombre, al panel administrativo de</h1>
         <h2>DAYJA BANK</h2>
 
         <p>
@@ -105,5 +157,37 @@
             Gestione, controle y supervise todas las operaciones del sistema de manera segura.
         </p>
     </div>
-
 </div>
+
+<div class="modal-overlay" id="modalSesionExpirada">
+    <div class="modal-box">
+        <h5>Sesión expirada</h5>
+        <p id="mensajeSesionExpirada"></p>
+
+        <div class="modal-acciones">
+            <button type="button" class="btn-confirmar-modal" onclick="redirigirIndex()">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function redirigirIndex() {
+            window.location.href = "/Index";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var mensaje = '@Html.Raw((TempData["SesionExpirada"]?.ToString() ?? "").Replace("'", "\\'"))';
+
+            if (mensaje !== '') {
+                document.getElementById("mensajeSesionExpirada").textContent = mensaje;
+                document.getElementById("modalSesionExpirada").classList.add("activo");
+
+                document.body.style.pointerEvents = "none";
+                document.getElementById("modalSesionExpirada").style.pointerEvents = "all";
+            }
+        });
+    </script>
+}

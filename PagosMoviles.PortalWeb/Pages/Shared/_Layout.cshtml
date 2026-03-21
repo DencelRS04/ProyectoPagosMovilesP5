@@ -22,50 +22,118 @@
         </div>
     </div>
 
+    <!-- PANEL IZQUIERDO -->
     <div class="left-panel">
         <button onclick="location.href='/Afiliacion'">Afiliación</button>
         <button onclick="location.href='/Desinscripcion'">Desinscripción</button>
         <button onclick="location.href='/Saldo'">Consulta de Saldo</button>
-        <button onclick="location.href='/Tranferencias'">Transferencias</button>
+        <button onclick="location.href='/Transferencias'">Transferencias</button>
         <button onclick="location.href='/Movimientos'">Movimientos</button>
     </div>
 
+    <!-- 🔥 MODAL GLOBAL DE SESIÓN EXPIRADA -->
+    <div class="modal-overlay" id="modalSesionExpirada">
+        <div class="modal-box">
+            <h5>Sesión expirada</h5>
+            <p id="mensajeSesionExpirada">La sesión expiró por inactividad.</p>
+
+            <div class="modal-acciones">
+                <button type="button" class="btn-confirmar-modal" onclick="redirigirIndex()">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- 🔥 IMPORTANTE (con versión para evitar cache) -->
     <script src="~/js/session-timeout.js" asp-append-version="true"></script>
+
+    <script>
+        function redirigirIndex() {
+            window.location.href = "/Index";
+        }
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- ESTILOS -->
     <style>
-            .left-panel {
-                position: fixed;
-                left: 20px;
-                top: 120px;
-                width: 250px;
-                display: flex;
-                flex-direction: column;
-                gap: 18px;
-                z-index: 999;
+        .left-panel {
+            position: fixed;
+            left: 20px;
+            top: 120px;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            z-index: 999;
+        }
+
+            .left-panel button {
+                width: 100%;
+                padding: 16px;
+                font-size: 16px;
+                border: none;
+                border-radius: 10px;
+                background: #4e73df;
+                color: white;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+                box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
             }
 
-                .left-panel button {
-                    width: 100%;
-                    padding: 16px;
-                    font-size: 16px;
-                    border: none;
-                    border-radius: 10px;
-                    background: #4e73df;
-                    color: white;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: 0.2s;
-                    box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+                .left-panel button:hover {
+                    background: #2e59d9;
+                    transform: scale(1.05);
                 }
 
-                    .left-panel button:hover {
-                        background: #2e59d9;
-                        transform: scale(1.05);
-                    }
+        /* 🔥 MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .modal-overlay.activo {
+                display: flex;
+            }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            text-align: center;
+        }
+
+            .modal-box h5 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .modal-box p {
+                margin-bottom: 20px;
+            }
+
+        .btn-confirmar-modal {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
     </style>
 </body>
 </html>
