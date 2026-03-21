@@ -24,4 +24,8 @@
     <Folder Include="Models\Usuarios\NewFolder\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="10.0.5" />
+  </ItemGroup>
+
 </Project>
