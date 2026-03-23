@@ -87,6 +87,7 @@ builder.Services.AddHttpClient("ApiGateway", (sp, client) =>
 builder.Services.AddScoped<CoreCuentaService>();
 builder.Services.AddScoped<CoreTransaccionService>();
 builder.Services.AddScoped<CoreClienteService>();
+builder.Services.AddScoped<CoreAccountsService>(); // ? NUEVO
 
 // Seguridad remota
 builder.Services.AddScoped<CoreGatewayTokenProbe>();
