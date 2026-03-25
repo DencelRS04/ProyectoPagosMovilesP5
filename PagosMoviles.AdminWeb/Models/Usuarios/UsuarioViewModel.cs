@@ -6,6 +6,7 @@ namespace PagosMoviles.AdminWeb.Models.Usuarios
         public string NombreCompleto { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Identificacion { get; set; } = string.Empty;
+        public string Telefono { get; set; } = string.Empty;
         public int RolId { get; set; }
         public int IntentosFallidos { get; set; }
         public bool Bloqueado { get; set; }
