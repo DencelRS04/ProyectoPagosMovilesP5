@@ -22,7 +22,7 @@ function abrirEditar(btn) {
     document.getElementById('Formulario_NombreCompleto').value = usuario.nombreCompleto;
     document.getElementById('Formulario_Email').value = usuario.email;
     document.getElementById('Formulario_Identificacion').value = usuario.identificacion;
-    document.getElementById('Formulario_RolId').value = usuario.rolId;
+    document.getElementById('Formulario_RolId').value = String(usuario.rolId);
     document.getElementById('Formulario_Telefono').value = usuario.telefono ??'';
     document.getElementById('Formulario_Password').value = '';
     document.getElementById('fBloqueado').value = usuario.bloqueado ? 'true' : 'false';
