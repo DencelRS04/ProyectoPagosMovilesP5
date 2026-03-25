@@ -1,7 +1,7 @@
 ﻿@page
 @model PagosMoviles.AdminWeb.Pages.Entidades.IndexModel
 @{
-    ViewData["Title"] = "Administración de Entidades Bancarias";
+    ViewData["Title"] = "Administración de Entidades";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         min-height: 100vh;
     }
 
-    .entidades-wrapper {
+    .wrapper {
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -26,7 +26,7 @@
         padding: 30px 15px;
     }
 
-    .entidades-container {
+    .container {
         width: 95%;
         max-width: 1200px;
         background: rgba(255,255,255,0.95);
@@ -36,31 +36,20 @@
         box-shadow: 0 25px 60px rgba(0,0,0,0.5);
     }
 
-    .entidades-title {
+    h2 {
         margin-bottom: 25px;
         font-weight: 600;
         color: #020617;
         letter-spacing: 0.5px;
     }
 
-    .alert-success-custom {
-        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    .alert-success {
+        background: #dcfce7;
         color: #166534;
-        border: 1px solid #86efac;
+        padding: 12px 15px;
         border-radius: 14px;
-        padding: 14px 16px;
-        margin-bottom: 16px;
-        font-weight: 500;
-    }
-
-    .alert-danger-custom {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
-        color: #991b1b;
-        border: 1px solid #fca5a5;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin-bottom: 16px;
-        font-weight: 500;
+        margin-bottom: 20px;
+        font-weight: 600;
     }
 
     .top-bar {
@@ -72,22 +61,6 @@
         margin-bottom: 25px;
     }
 
-    .search-form {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .search-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
     .search-box {
         display: flex;
         align-items: center;
@@ -95,6 +68,7 @@
         border-radius: 999px;
         padding: 6px;
         box-shadow: inset 0 3px 8px rgba(0,0,0,0.1);
+        gap: 6px;
     }
 
         .search-box input {
@@ -104,10 +78,11 @@
             border-radius: 999px;
             background: transparent;
             width: 260px;
+            font-size: 14px;
         }
 
         .search-box button,
-        .btn-clean {
+        .search-box a {
             border: none;
             padding: 10px 18px;
             border-radius: 999px;
@@ -118,26 +93,25 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            font-size: 14px;
         }
 
-        .search-box button {
-            background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-            color: white;
-        }
-
-            .search-box button:hover {
-                transform: scale(1.05);
-            }
-
-    .btn-clean {
-        background: #e2e8f0;
-        color: #1e293b;
+    .btn-search {
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+        color: white;
     }
 
-        .btn-clean:hover {
+        .btn-search:hover {
             transform: scale(1.05);
-            background: #cbd5e1;
-            color: #0f172a;
+        }
+
+    .btn-clear {
+        background: #dbe2ea;
+        color: #334155;
+    }
+
+        .btn-clear:hover {
+            transform: scale(1.05);
         }
 
     .btn-add {
@@ -156,69 +130,58 @@
             transform: translateY(-3px) scale(1.03);
         }
 
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    .entidades-table {
+    table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0 10px;
     }
 
-        .entidades-table thead th {
-            text-align: left;
-            padding: 12px;
-            color: #475569;
-            font-size: 14px;
-            border: none;
-        }
-
-        .entidades-table tbody tr {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            transition: 0.25s;
-        }
-
-            .entidades-table tbody tr:hover {
-                transform: translateY(-3px) scale(1.01);
-                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            }
-
-        .entidades-table td {
-            padding: 15px;
-            vertical-align: middle;
-            border: none;
-        }
-
-        .entidades-table tbody tr td:first-child {
-            border-radius: 16px 0 0 16px;
-        }
-
-        .entidades-table tbody tr td:last-child {
-            border-radius: 0 16px 16px 0;
-        }
-
-    .actions {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+    thead th {
+        text-align: left;
+        padding: 12px;
+        color: #475569;
+        font-size: 14px;
     }
 
-        .actions button {
-            border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.25s;
+    tbody tr {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: 0.25s;
+    }
+
+        tbody tr:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
+
+    td {
+        padding: 15px;
+        color: #1f2937;
+    }
+
+    tbody tr td:first-child {
+        border-radius: 16px 0 0 16px;
+        font-weight: 600;
+    }
+
+    tbody tr td:last-child {
+        border-radius: 0 16px 16px 0;
+    }
+
+    .actions button {
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-right: 6px;
+        font-weight: 600;
+        transition: 0.25s;
+        color: white;
+    }
 
     .edit {
         background: linear-gradient(135deg, #5879fc, #0d3dfb);
-        color: white;
     }
 
         .edit:hover {
@@ -227,28 +190,28 @@
 
     .delete {
         background: linear-gradient(135deg, #f87171, #dc2626);
-        color: white;
     }
 
         .delete:hover {
             transform: scale(1.1);
         }
 
-    .empty-row td {
+    .empty-message {
         text-align: center;
         color: #64748b;
-        font-style: italic;
-        padding: 25px;
+        font-weight: 600;
+        padding: 30px 10px;
     }
 
+    /* MODALES */
     .modal-overlay {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.55);
-        z-index: 1050;
-        align-items: center;
+        background: rgba(0,0,0,0.55);
         justify-content: center;
+        align-items: center;
+        z-index: 9999;
         padding: 20px;
     }
 
@@ -257,264 +220,188 @@
         }
 
     .modal-box {
-        background: #ffffff;
-        border-radius: 24px;
-        padding: 28px;
-        max-width: 600px;
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
         width: 100%;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-        max-height: 90vh;
-        overflow-y: auto;
+        max-width: 420px;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.35);
     }
 
-        .modal-box h5 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 18px;
-            color: #111827;
-        }
-
-        .modal-box p {
-            color: #4b5563;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-
-    .form-group {
-        margin-bottom: 18px;
+    .modal-title {
+        margin: 0 0 18px 0;
+        font-size: 22px;
+        font-weight: 600;
+        color: #020617;
     }
 
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-
-    .form-control-custom {
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 14px;
-        padding: 13px 14px;
-        font-size: 1rem;
-        color: #374151;
-        background: #ffffff;
-        outline: none;
-        transition: 0.25s;
-        box-sizing: border-box;
-    }
-
-        .form-control-custom:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
-        }
-
-        .form-control-custom[readonly],
-        .form-control-custom[disabled] {
-            background: #f8fafc;
-            cursor: not-allowed;
-        }
-
-    .text-danger {
-        color: #dc2626;
-        font-size: 0.85rem;
-        margin-top: 6px;
+    .modal-label {
         display: block;
+        margin-bottom: 6px;
+        margin-top: 12px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 600;
     }
 
-    .help-text {
-        color: #6b7280;
-        font-size: 0.85rem;
-        margin-top: 6px;
+    .modal-input {
+        width: 100%;
+        margin-top: 2px;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        outline: none;
+        font-size: 14px;
     }
 
-    .modal-acciones {
+        .modal-input[disabled] {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+    .modal-text {
+        color: #334155;
+        margin-top: 8px;
+        margin-bottom: 0;
+    }
+
+    .modal-actions {
+        margin-top: 18px;
         display: flex;
-        gap: 10px;
         justify-content: flex-end;
-        flex-wrap: wrap;
-        margin-top: 24px;
+        gap: 10px;
     }
 
-    .btn-cancelar {
+    .modal-btn {
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-cancel {
         background: #e2e8f0;
-        border: none;
-        color: #1f2937;
-        padding: 10px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
-        text-decoration: none;
+        color: #1e293b;
     }
 
-        .btn-cancelar:hover {
-            background: #cbd5e1;
-        }
-
-    .btn-guardar {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    .btn-save {
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
         color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
-        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
     }
 
-        .btn-guardar:hover {
-            transform: scale(1.03);
-        }
-
-    .btn-confirmar-eliminar {
+    .btn-delete-confirm {
         background: linear-gradient(135deg, #f87171, #dc2626);
         color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.25s;
     }
 
-        .btn-confirmar-eliminar:hover {
-            transform: scale(1.03);
-        }
-
     @@media (max-width: 768px) {
-        .search-box input {
-            width: 100%;
-            min-width: 180px;
-        }
-
-        .search-form {
+        .top-bar {
+            flex-direction: column;
             align-items: stretch;
         }
 
-        .search-left {
+        .search-box {
+            width: 100%;
+            flex-wrap: wrap;
+            border-radius: 18px;
+        }
+
+            .search-box input {
+                width: 100%;
+            }
+
+        .btn-add {
             width: 100%;
         }
 
-        .modal-acciones {
-            flex-direction: column;
-        }
-
-        .btn-cancelar,
-        .btn-guardar,
-        .btn-confirmar-eliminar,
-        .btn-clean {
-            width: 100%;
+        table {
+            display: block;
+            overflow-x: auto;
         }
     }
 </style>
 
-<div class="entidades-wrapper">
-    <div class="entidades-container">
-        <h2 class="entidades-title">Administración de Entidades Bancarias</h2>
+<div class="wrapper">
+    <div class="container">
+        <h2>Administración de Entidades</h2>
 
-        @if (TempData["Error"] != null)
+        @if (TempData["Success"] != null)
         {
-            <div class="alert-danger-custom">@TempData["Error"]</div>
-        }
-
-        @if (!string.IsNullOrEmpty(Model.ErrorMensaje))
-        {
-            <div class="alert-danger-custom">@Model.ErrorMensaje</div>
+            <div class="alert-success">@TempData["Success"]</div>
         }
 
         <div class="top-bar">
-            <form method="get" class="search-form">
-                <div class="search-left">
-                    <div class="search-box">
-                        <input type="text"
-                               name="Busqueda"
-                               value="@Model.Busqueda"
-                               placeholder="Buscar por identificador..." />
-                        <button type="submit">Buscar</button>
-                    </div>
-
-                    <a asp-page="/Entidades/Index" class="btn-clean">Limpiar</a>
-                </div>
-
-                <div>
-                    <button type="button" class="btn-add" onclick="abrirModalCrear()">+ Nueva Entidad</button>
-                </div>
+            <form method="get" class="search-box">
+                <input type="text"
+                       name="Busqueda"
+                       value="@Model.Busqueda"
+                       placeholder="Buscar por código o nombre..." />
+                <button type="submit" class="btn-search">Buscar</button>
+                <a asp-page="./Index" class="btn-clear">Limpiar</a>
             </form>
+
+            <button type="button" class="btn-add" onclick="abrirCrear()">+ Nueva Entidad</button>
         </div>
 
-        <div class="table-responsive">
-            <table class="entidades-table">
-                <thead>
-                    <tr>
-                        <th>Identificador</th>
-                        <th>Nombre</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Entidades != null && Model.Entidades.Any())
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Entidades != null && Model.Entidades.Any())
+                {
+                    @foreach (var e in Model.Entidades)
                     {
-                        @foreach (var entidad in Model.Entidades)
-                        {
-                            <tr>
-                                <td>@entidad.CodigoEntidad</td>
-                                <td>@entidad.NombreInstitucion</td>
-                                <td>
-                                    <div class="actions">
-                                        <button type="button"
-                                                class="edit"
-                                                onclick="abrirModalEditar('@entidad.EntidadId', '@entidad.CodigoEntidad', '@Html.Raw(entidad.NombreInstitucion?.Replace("'", "\\'"))')">
-                                            Editar
-                                        </button>
+                        <tr>
+                            <td>@e.CodigoEntidad</td>
+                            <td>@e.NombreInstitucion</td>
+                            <td class="actions">
+                                <button type="button"
+                                        class="edit"
+                                        onclick="editar('@e.EntidadId','@e.CodigoEntidad','@e.NombreInstitucion')">
+                                    Editar
+                                </button>
 
-                                        <button type="button"
-                                                class="delete"
-                                                onclick="confirmarEliminarEntidad('@entidad.CodigoEntidad', '@Html.Raw(entidad.NombreInstitucion?.Replace("'", "\\'"))')">
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr class="empty-row">
-                            <td colspan="3">No se encontraron entidades registradas.</td>
+                                <button type="button"
+                                        class="delete"
+                                        onclick="eliminar('@e.EntidadId','@e.NombreInstitucion')">
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="empty-message">No se encontraron entidades bancarias.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- MODAL CREAR -->
 <div class="modal-overlay" id="modalCrear">
     <div class="modal-box">
-        <h5>Nueva Entidad</h5>
+        <h3 class="modal-title">Nueva Entidad</h3>
 
         <form method="post" asp-page-handler="Crear">
-            @Html.AntiForgeryToken()
+            <label class="modal-label">Código</label>
+            <input type="text" name="Entidad.CodigoEntidad" class="modal-input" required />
 
-            <div class="form-group">
-                <label asp-for="Entidad.CodigoEntidad">Identificador</label>
-                <input asp-for="Entidad.CodigoEntidad" class="form-control-custom" placeholder="Ej: 101" />
-                <span asp-validation-for="Entidad.CodigoEntidad" class="text-danger"></span>
-            </div>
+            <label class="modal-label">Nombre</label>
+            <input type="text" name="Entidad.NombreInstitucion" class="modal-input" required />
 
-            <div class="form-group">
-                <label asp-for="Entidad.NombreInstitucion">Nombre</label>
-                <input asp-for="Entidad.NombreInstitucion" class="form-control-custom" placeholder="Ingrese el nombre de la entidad" />
-                <span asp-validation-for="Entidad.NombreInstitucion" class="text-danger"></span>
-            </div>
-
-            <div class="modal-acciones">
-                <button type="button" class="btn-cancelar" onclick="cerrarModalCrear()">Cancelar</button>
-                <button type="submit" class="btn-guardar">Guardar</button>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="cerrarCrear()">Cancelar</button>
+                <button type="submit" class="modal-btn btn-save">Guardar</button>
             </div>
         </form>
     </div>
@@ -523,99 +410,92 @@
 <!-- MODAL EDITAR -->
 <div class="modal-overlay" id="modalEditar">
     <div class="modal-box">
-        <h5>Editar Entidad</h5>
+        <h3 class="modal-title">Editar Entidad</h3>
 
         <form method="post" asp-page-handler="Editar">
-            @Html.AntiForgeryToken()
+            <input type="hidden" name="EntidadEditar.EntidadId" id="editId" />
+            <input type="hidden" name="EntidadEditar.CodigoEntidad" id="editCodigoHidden" />
 
-            <input type="hidden" asp-for="EntidadEditar.EntidadId" id="editEntidadId" />
-            <input type="hidden" asp-for="EntidadEditar.CodigoEntidad" id="editCodigoEntidadHidden" />
+            <label class="modal-label">Código</label>
+            <input type="text" id="editCodigoVisible" class="modal-input" disabled />
 
-            <div class="form-group">
-                <label>Identificador</label>
-                <input type="text" class="form-control-custom" id="editCodigoEntidadVisible" readonly disabled />
-                <div class="help-text">El identificador no puede ser modificado.</div>
-            </div>
+            <label class="modal-label">Nombre</label>
+            <input type="text" name="EntidadEditar.NombreInstitucion" id="editNombre" class="modal-input" required />
 
-            <div class="form-group">
-                <label asp-for="EntidadEditar.NombreInstitucion">Nombre</label>
-                <input asp-for="EntidadEditar.NombreInstitucion"
-                       class="form-control-custom"
-                       id="editNombreInstitucion"
-                       placeholder="Ingrese el nombre de la entidad" />
-                <span asp-validation-for="EntidadEditar.NombreInstitucion" class="text-danger"></span>
-            </div>
-
-            <div class="modal-acciones">
-                <button type="button" class="btn-cancelar" onclick="cerrarModalEditar()">Cancelar</button>
-                <button type="submit" class="btn-guardar">Guardar cambios</button>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="cerrarEditar()">Cancelar</button>
+                <button type="submit" class="modal-btn btn-save">Guardar</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- MODAL ELIMINAR -->
-<div class="modal-overlay" id="modalEliminarEntidad">
+<div class="modal-overlay" id="modalEliminar">
     <div class="modal-box">
-        <h5>Confirmar eliminación</h5>
-        <p>¿Realmente desea eliminar la entidad <strong id="nombreEntidadEliminar"></strong>?</p>
+        <h3 class="modal-title">Eliminar Entidad</h3>
 
-        <div class="modal-acciones">
-            <button type="button" class="btn-cancelar" onclick="cerrarModalEliminarEntidad()">No</button>
+        <p class="modal-text">¿Desea eliminar <strong id="nombreEliminar"></strong>?</p>
 
-            <form method="post" asp-page-handler="Eliminar" id="formEliminarEntidad">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" id="idEntidadEliminar" />
-                <button type="submit" class="btn-confirmar-eliminar">Sí, eliminar</button>
-            </form>
-        </div>
+        <form method="post" asp-page-handler="Eliminar">
+            <input type="hidden" name="id" id="deleteId" />
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" onclick="cerrarEliminar()">Cancelar</button>
+                <button type="submit" class="modal-btn btn-delete-confirm">Eliminar</button>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script>
-        function abrirModalCrear() {
-            document.getElementById('modalCrear').classList.add('activo');
+        const modalCrear = document.getElementById("modalCrear");
+        const modalEditar = document.getElementById("modalEditar");
+        const modalEliminar = document.getElementById("modalEliminar");
+
+        const editId = document.getElementById("editId");
+        const editCodigoHidden = document.getElementById("editCodigoHidden");
+        const editCodigoVisible = document.getElementById("editCodigoVisible");
+        const editNombre = document.getElementById("editNombre");
+
+        const deleteId = document.getElementById("deleteId");
+        const nombreEliminar = document.getElementById("nombreEliminar");
+
+        function abrirCrear() {
+            modalCrear.classList.add("activo");
         }
 
-        function cerrarModalCrear() {
-            document.getElementById('modalCrear').classList.remove('activo');
+        function cerrarCrear() {
+            modalCrear.classList.remove("activo");
         }
 
-        function abrirModalEditar(entidadId, codigoEntidad, nombreInstitucion) {
-            document.getElementById('editEntidadId').value = entidadId;
-            document.getElementById('editCodigoEntidadHidden').value = codigoEntidad;
-            document.getElementById('editCodigoEntidadVisible').value = codigoEntidad;
-            document.getElementById('editNombreInstitucion').value = nombreInstitucion;
-            document.getElementById('modalEditar').classList.add('activo');
+        function editar(id, codigo, nombre) {
+            editId.value = id;
+            editCodigoHidden.value = codigo;
+            editCodigoVisible.value = codigo;
+            editNombre.value = nombre;
+            modalEditar.classList.add("activo");
         }
 
-        function cerrarModalEditar() {
-            document.getElementById('modalEditar').classList.remove('activo');
+        function cerrarEditar() {
+            modalEditar.classList.remove("activo");
         }
 
-        function confirmarEliminarEntidad(id, nombre) {
-            document.getElementById('idEntidadEliminar').value = id;
-            document.getElementById('nombreEntidadEliminar').textContent = nombre;
-            document.getElementById('modalEliminarEntidad').classList.add('activo');
+        function eliminar(id, nombre) {
+            deleteId.value = id;
+            nombreEliminar.innerText = nombre;
+            modalEliminar.classList.add("activo");
         }
 
-        function cerrarModalEliminarEntidad() {
-            document.getElementById('modalEliminarEntidad').classList.remove('activo');
+        function cerrarEliminar() {
+            modalEliminar.classList.remove("activo");
         }
 
-        document.getElementById('modalCrear').addEventListener('click', function (e) {
-            if (e.target === this) cerrarModalCrear();
-        });
-
-        document.getElementById('modalEditar').addEventListener('click', function (e) {
-            if (e.target === this) cerrarModalEditar();
-        });
-
-        document.getElementById('modalEliminarEntidad').addEventListener('click', function (e) {
-            if (e.target === this) cerrarModalEliminarEntidad();
-        });
+        window.onclick = function (e) {
+            if (e.target === modalCrear) cerrarCrear();
+            if (e.target === modalEditar) cerrarEditar();
+            if (e.target === modalEliminar) cerrarEliminar();
+        }
     </script>
 }

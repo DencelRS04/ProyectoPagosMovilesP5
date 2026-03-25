@@ -14,140 +14,45 @@ namespace PagosMoviles.AdminWeb.Services.Entidades
 
         public async Task<List<EntidadViewModel>> ListarAsync()
         {
-            try
-            {
-                var client = _httpClientFactory.CreateClient("GatewayApi");
-                Console.WriteLine($"[DEBUG SERVICE] BaseAddress: '{client.BaseAddress}'");
-                Console.WriteLine($"[DEBUG SERVICE] Auth header: '{client.DefaultRequestHeaders.Authorization}'");
+            var client = _httpClientFactory.CreateClient("GatewayApi");
 
-                var httpResponse = await client.GetAsync("gateway/admin/entidad");
+            var response = await client.GetFromJsonAsync<ApiResponse<List<EntidadViewModel>>>("gateway/admin/entidad");
 
-                if (!httpResponse.IsSuccessStatusCode)
-                {
-                    return new List<EntidadViewModel>();
-                }
-
-                var response = await httpResponse.Content
-                    .ReadFromJsonAsync<ApiResponse<List<EntidadViewModel>>>();
-
-                return response?.Datos ?? new List<EntidadViewModel>();
-            }
-            catch
-            {
-                return new List<EntidadViewModel>();
-            }
+            return response?.Datos ?? new List<EntidadViewModel>();
         }
 
         public async Task<(bool ok, string mensaje)> CrearAsync(EntidadCreateModel entidad)
         {
-            try
-            {
-                var client = _httpClientFactory.CreateClient("GatewayApi");
-                var model = new
-                {
-                    codigoEntidad = entidad.CodigoEntidad,
-                    nombreInstitucion = entidad.NombreInstitucion
-                };
+            var client = _httpClientFactory.CreateClient("GatewayApi");
 
-                var httpResponse = await client.PostAsJsonAsync("gateway/admin/entidad", model);
+            var httpResponse = await client.PostAsJsonAsync("gateway/admin/entidad", entidad);
 
-                if (!httpResponse.IsSuccessStatusCode)
-                {
-                    var error = await httpResponse.Content
-                        .ReadFromJsonAsync<ApiResponse<object>>();
+            var result = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<object>>();
 
-                    return (false, error?.Descripcion ?? "Error al crear entidad");
-                }
-
-                return (true, "Entidad creada correctamente");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Error al crear entidad: {ex.Message}");
-            }
+            return (httpResponse.IsSuccessStatusCode, result?.Descripcion ?? "");
         }
 
-        public async Task<EntidadViewModel?> ObtenerPorIdAsync(int id)
-        {
-            try
-            {
-                var client = _httpClientFactory.CreateClient("GatewayApi");
-                var httpResponse = await client.GetAsync($"gateway/admin/entidad/{id}");
-
-                if (!httpResponse.IsSuccessStatusCode)
-                {
-                    return null;
-                }
-
-                var response = await httpResponse.Content
-                    .ReadFromJsonAsync<ApiResponse<EntidadViewModel>>();
-
-                return response?.Datos;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public async Task ActualizarAsync(int entidadId, EntidadEditModel entidad)
+        // 🔥 AQUÍ ESTABA EL ERROR
+        public async Task<(bool ok, string mensaje)> ActualizarAsync(int id, EntidadEditModel entidad)
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
-            var model = new
-            {
-                codigoEntidad = entidad.CodigoEntidad,
-                nombreInstitucion = entidad.NombreInstitucion
-            };
 
-            var httpResponse = await client.PutAsJsonAsync(
-                $"gateway/admin/entidad/{entidadId}",
-                model
-            );
+            var httpResponse = await client.PutAsJsonAsync($"gateway/admin/entidad/{id}", entidad);
 
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                var response = await httpResponse.Content
-                    .ReadFromJsonAsync<ApiResponse<EntidadViewModel>>();
+            var result = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<object>>();
 
-                throw new Exception(response?.Descripcion ?? "Error al actualizar entidad");
-            }
+            return (httpResponse.IsSuccessStatusCode, result?.Descripcion ?? "");
         }
 
         public async Task<(bool ok, string mensaje)> EliminarAsync(int id)
         {
-            try
-            {
-                var client = _httpClientFactory.CreateClient("GatewayApi");
-                var httpResponse = await client.DeleteAsync($"gateway/admin/entidad/{id}");
+            var client = _httpClientFactory.CreateClient("GatewayApi");
 
-                ApiResponse<object>? response = null;
+            var httpResponse = await client.DeleteAsync($"gateway/admin/entidad/{id}");
 
-                try
-                {
-                    response = await httpResponse.Content
-                        .ReadFromJsonAsync<ApiResponse<object>>();
-                }
-                catch
-                {
-                    response = null;
-                }
+            var result = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<object>>();
 
-                if (!httpResponse.IsSuccessStatusCode)
-                    return (false, response?.Descripcion ?? "No se pudo eliminar la entidad");
-
-                return (true, response?.Descripcion ?? "Entidad eliminada correctamente");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"No se pudo eliminar la entidad: {ex.Message}");
-            }
-        }
-
-        private class ApiResponse<T>
-        {
-            public int Codigo { get; set; }
-            public string? Descripcion { get; set; }
-            public T? Datos { get; set; }
+            return (httpResponse.IsSuccessStatusCode, result?.Descripcion ?? "");
         }
     }
 }

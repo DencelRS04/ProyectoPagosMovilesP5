@@ -9,6 +9,11 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
     {
         private readonly EntidadService _service;
 
+        public IndexModel(EntidadService service)
+        {
+            _service = service;
+        }
+
         public List<EntidadViewModel> Entidades { get; set; } = new();
 
         [BindProperty(SupportsGet = true)]
@@ -20,142 +25,58 @@ namespace PagosMoviles.AdminWeb.Pages.Entidades
         [BindProperty]
         public EntidadEditModel EntidadEditar { get; set; } = new();
 
-        public string? ErrorMensaje { get; set; }
-
-        public IndexModel(EntidadService service)
+        public async Task OnGetAsync()
         {
-            _service = service;
-        }
+            var lista = await _service.ListarAsync();
 
-        public async Task OnGet()
-        {
-            try
+            if (!string.IsNullOrWhiteSpace(Busqueda))
             {
-                Entidades = await _service.ListarAsync();
-
-                if (!string.IsNullOrWhiteSpace(Busqueda))
-                {
-                    var b = Busqueda.ToLower();
-
-                    Entidades = Entidades
-                        .Where(e =>
-                            (!string.IsNullOrWhiteSpace(e.CodigoEntidad) && e.CodigoEntidad.ToLower().Contains(b)) ||
-                            (!string.IsNullOrWhiteSpace(e.NombreInstitucion) && e.NombreInstitucion.ToLower().Contains(b)))
-                        .ToList();
-                }
+                lista = lista.Where(e =>
+                    (e.CodigoEntidad != null && e.CodigoEntidad.Contains(Busqueda, StringComparison.OrdinalIgnoreCase)) ||
+                    (e.NombreInstitucion != null && e.NombreInstitucion.Contains(Busqueda, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
             }
-            catch (Exception ex)
-            {
-                ErrorMensaje = $"No se pudieron cargar las entidades. {ex.Message}";
-                Entidades = new List<EntidadViewModel>();
-            }
+
+            Entidades = lista;
         }
 
         public async Task<IActionResult> OnPostCrearAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                Entidades = await _service.ListarAsync();
-                return Page();
-            }
+            var (ok, mensaje) = await _service.CrearAsync(Entidad);
 
-            try
-            {
-                var (ok, mensaje) = await _service.CrearAsync(Entidad);
+            if (ok)
+                TempData["Success"] = "Entidad creada correctamente";
+            else
+                TempData["Error"] = mensaje;
 
-                if (!ok)
-                {
-                    ErrorMensaje = mensaje;
-                    Entidades = await _service.ListarAsync();
-                    return Page();
-                }
-
-                return RedirectToPage();
-            }
-            catch (Exception ex)
-            {
-                ErrorMensaje = $"No se pudo crear la entidad. {ex.Message}";
-                Entidades = await _service.ListarAsync();
-                return Page();
-            }
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostEditarAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                Entidades = await _service.ListarAsync();
-                return Page();
-            }
-
-            if (EntidadEditar?.EntidadId == 0)
-            {
-                ModelState.AddModelError(string.Empty, "El ID de entidad no fue recibido.");
-                Entidades = await _service.ListarAsync();
-                return Page();
-            }
-
             try
             {
                 await _service.ActualizarAsync(EntidadEditar.EntidadId, EntidadEditar);
-                return RedirectToPage();
+                TempData["Success"] = "Entidad editada correctamente";
             }
             catch (Exception ex)
             {
-                ErrorMensaje = ex.Message;
-                Entidades = await _service.ListarAsync();
-                return Page();
+                TempData["Error"] = ex.Message;
             }
+
+            return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostCargarEditarAsync(int id)
+        public async Task<IActionResult> OnPostEliminarAsync(int id)
         {
-            try
-            {
-                var entidadVm = await _service.ObtenerPorIdAsync(id);
+            var (ok, mensaje) = await _service.EliminarAsync(id);
 
-                if (entidadVm == null)
-                {
-                    TempData["Error"] = $"ID incorrecto: no existe una entidad con el ID {id}.";
-                    return RedirectToPage();
-                }
+            if (ok)
+                TempData["Success"] = "Entidad eliminada correctamente";
+            else
+                TempData["Error"] = mensaje;
 
-                EntidadEditar = new EntidadEditModel
-                {
-                    EntidadId = entidadVm.EntidadId,
-                    CodigoEntidad = entidadVm.CodigoEntidad,
-                    NombreInstitucion = entidadVm.NombreInstitucion
-                };
-
-                Entidades = await _service.ListarAsync();
-                return Page();
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"No se pudo cargar la entidad. {ex.Message}";
-                return RedirectToPage();
-            }
-        }
-
-        public async Task<IActionResult> OnPostEliminar(int id)
-        {
-            try
-            {
-                var (ok, mensaje) = await _service.EliminarAsync(id);
-
-                if (!ok)
-                {
-                    TempData["Error"] = mensaje;
-                    return RedirectToPage();
-                }
-
-                return RedirectToPage();
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"No se pudo eliminar la entidad. {ex.Message}";
-                return RedirectToPage();
-            }
+            return RedirectToPage();
         }
     }
 }
