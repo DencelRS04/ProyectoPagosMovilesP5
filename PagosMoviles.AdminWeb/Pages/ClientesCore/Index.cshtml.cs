@@ -20,13 +20,10 @@ namespace PagosMoviles.AdminWeb.Pages.ClientesCore
         public string? Busqueda { get; set; }
 
         [BindProperty]
-        public ClienteViewModel Cliente { get; set; } = new();
+        public ClienteCreateModel Cliente { get; set; } = new();
 
         [BindProperty]
-        public ClienteViewModel ClienteEditar { get; set; } = new();
-
-        [BindProperty]
-        public ClienteViewModel ClienteEliminar { get; set; } = new();
+        public ClienteEditModel ClienteEditar { get; set; } = new();
 
         public async Task OnGetAsync()
         {
@@ -47,64 +44,75 @@ namespace PagosMoviles.AdminWeb.Pages.ClientesCore
 
         public async Task<IActionResult> OnPostCrearAsync()
         {
-            if (!ModelState.IsValid)
+            Cliente = LeerFormularioCrear();
+
+            ModelState.Clear();
+            if (!TryValidateModel(Cliente, nameof(Cliente)))
             {
                 Clientes = await _service.ListarAsync();
+                ViewData["AbrirModalCrear"] = true;
                 return Page();
             }
 
-            var resultado = await _service.CrearAsync(Cliente);
+            var model = new ClienteViewModel
+            {
+                Identificacion = Cliente.Identificacion,
+                TipoIdentificacion = Cliente.TipoIdentificacion,
+                NombreCompleto = Cliente.NombreCompleto,
+                FechaNacimiento = Cliente.FechaNacimiento,
+                Telefono = Cliente.Telefono,
+                Activo = Cliente.Activo
+            };
+
+            var resultado = await _service.CrearAsync(model);
 
             if (!resultado.ok)
             {
                 ModelState.AddModelError(string.Empty, resultado.mensaje);
                 Clientes = await _service.ListarAsync();
+                ViewData["AbrirModalCrear"] = true;
                 return Page();
             }
 
+            TempData["MensajeExito"] = "Cliente creado correctamente.";
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostEditarAsync(int id)
         {
-            if (!ModelState.IsValid)
+            ClienteEditar = LeerFormularioEditar(id);
+
+            ModelState.Clear();
+            if (!TryValidateModel(ClienteEditar, nameof(ClienteEditar)))
             {
                 Clientes = await _service.ListarAsync();
+                ViewData["AbrirModalEditar"] = true;
                 return Page();
             }
 
-            var resultado = await _service.ActualizarAsync(id, ClienteEditar);
+            var model = new ClienteViewModel
+            {
+                ClienteId = id,
+                Identificacion = ClienteEditar.Identificacion,
+                TipoIdentificacion = ClienteEditar.TipoIdentificacion,
+                NombreCompleto = ClienteEditar.NombreCompleto,
+                FechaNacimiento = ClienteEditar.FechaNacimiento,
+                Telefono = ClienteEditar.Telefono,
+                Activo = ClienteEditar.Activo
+            };
+
+            var resultado = await _service.ActualizarAsync(id, model);
 
             if (!resultado.ok)
             {
                 ModelState.AddModelError(string.Empty, resultado.mensaje);
                 Clientes = await _service.ListarAsync();
+                ViewData["AbrirModalEditar"] = true;
                 return Page();
             }
 
+            TempData["MensajeExito"] = "Cliente actualizado correctamente.";
             return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostCargarEditarAsync(int id)
-        {
-            var cliente = await _service.ObtenerPorIdAsync(id);
-            if (cliente == null)
-                return RedirectToPage();
-
-            ClienteEditar = cliente;
-            Clientes = await _service.ListarAsync();
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostCargarEliminarAsync(int id)
-        {
-            var cliente = await _service.ObtenerPorIdAsync(id);
-            if (cliente == null)
-                return RedirectToPage();
-
-            ClienteEliminar = cliente;
-            Clientes = await _service.ListarAsync();
-            return Page();
         }
 
         public async Task<IActionResult> OnPostEliminarAsync(int id)
@@ -118,7 +126,61 @@ namespace PagosMoviles.AdminWeb.Pages.ClientesCore
                 return Page();
             }
 
+            TempData["MensajeExito"] = "Cliente desactivado correctamente.";
             return RedirectToPage();
+        }
+
+        private ClienteCreateModel LeerFormularioCrear()
+        {
+            return new ClienteCreateModel
+            {
+                Identificacion = ObtenerValor("Cliente.Identificacion", "Identificacion"),
+                TipoIdentificacion = ObtenerValor("Cliente.TipoIdentificacion", "TipoIdentificacion"),
+                NombreCompleto = ObtenerValor("Cliente.NombreCompleto", "NombreCompleto"),
+                FechaNacimiento = ObtenerFecha("Cliente.FechaNacimiento", "FechaNacimiento"),
+                Telefono = ObtenerValor("Cliente.Telefono", "Telefono"),
+                Activo = ObtenerBool("Cliente.Activo", "Activo")
+            };
+        }
+
+        private ClienteEditModel LeerFormularioEditar(int id)
+        {
+            return new ClienteEditModel
+            {
+                ClienteId = id,
+                Identificacion = ObtenerValor("ClienteEditar.Identificacion", "Identificacion"),
+                TipoIdentificacion = ObtenerValor("ClienteEditar.TipoIdentificacion", "TipoIdentificacion"),
+                NombreCompleto = ObtenerValor("ClienteEditar.NombreCompleto", "NombreCompleto"),
+                FechaNacimiento = ObtenerFecha("ClienteEditar.FechaNacimiento", "FechaNacimiento"),
+                Telefono = ObtenerValor("ClienteEditar.Telefono", "Telefono"),
+                Activo = ObtenerBool("ClienteEditar.Activo", "Activo")
+            };
+        }
+
+        private string ObtenerValor(string conPrefijo, string sinPrefijo)
+        {
+            return Request.Form[conPrefijo].FirstOrDefault()
+                ?? Request.Form[sinPrefijo].FirstOrDefault()
+                ?? string.Empty;
+        }
+
+        private DateTime? ObtenerFecha(string conPrefijo, string sinPrefijo)
+        {
+            var valor = Request.Form[conPrefijo].FirstOrDefault()
+                ?? Request.Form[sinPrefijo].FirstOrDefault();
+
+            if (DateTime.TryParse(valor, out var fecha))
+                return fecha;
+
+            return null;
+        }
+
+        private bool ObtenerBool(string conPrefijo, string sinPrefijo)
+        {
+            var valor = Request.Form[conPrefijo].FirstOrDefault()
+                ?? Request.Form[sinPrefijo].FirstOrDefault();
+
+            return valor == "true" || valor == "on";
         }
     }
 }

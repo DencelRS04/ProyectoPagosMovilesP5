@@ -22,6 +22,7 @@
           { "RequestHeadersCopy": "true" }
         ]
       },
+
       "admin-rol-route": {
         "ClusterId": "usuarios-service-cluster",
         "Match": {
@@ -32,6 +33,7 @@
           { "RequestHeadersCopy": "true" }
         ]
       },
+
       "admin-parametro-route": {
         "ClusterId": "usuarios-service-cluster",
         "Match": {
@@ -42,6 +44,7 @@
           { "RequestHeadersCopy": "true" }
         ]
       },
+
       "admin-afiliacion-route": {
         "ClusterId": "usuarios-service-cluster",
         "Match": {
@@ -63,6 +66,7 @@
           { "RequestHeadersCopy": "true" }
         ]
       },
+
       "admin-bitacora-route": {
         "ClusterId": "pagosmoviles-api-cluster",
         "Match": {
@@ -103,6 +107,17 @@
         },
         "Transforms": [
           { "PathSet": "/accounts/balance" },
+          { "RequestHeadersCopy": "true" }
+        ]
+      },
+
+      "admin-transactions-process-route": {
+        "ClusterId": "pagosmoviles-api-cluster",
+        "Match": {
+          "Path": "/gateway/admin/transactions/process"
+        },
+        "Transforms": [
+          { "PathSet": "/api/transactions/process" },
           { "RequestHeadersCopy": "true" }
         ]
       }

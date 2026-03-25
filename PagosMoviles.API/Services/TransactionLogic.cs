@@ -23,16 +23,15 @@ public class TransactionLogic : ITransactionLogic
         IConfiguration config,
         HttpClient httpClient,
         BitacoraService bitacora,
-        PagosMovilesRepository repository) // 👈 agregá esto
+        PagosMovilesRepository repository) //  agregá esto
     {
         _context = context;
         _config = config;
         _httpClient = httpClient;
         _bitacora = bitacora;
-        _repository = repository; // 👈 y esto
+        _repository = repository; //  y esto
     }
 
-    // 2. Reemplazá solo el método ObtenerPorFecha
     public async Task<BusinessLogicResponseDto> ObtenerPorFecha(DateTime fecha)
     {
         try
@@ -44,7 +43,7 @@ public class TransactionLogic : ITransactionLogic
             {
                 StatusCode = 200,
                 Message = "OK",
-                ResponseObject = transacciones // 👈 solo la lista, sin el objeto wrapper
+                ResponseObject = transacciones //  solo la lista, sin el objeto wrapper
             };
         }
         catch (Exception ex)

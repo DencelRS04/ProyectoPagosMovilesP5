@@ -51,35 +51,47 @@ namespace PagosMoviles.CoreBancarioService.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<(bool ok, string mensaje, ClienteDto? cliente)> CrearAsync(ClienteDto dto)
+        public async Task<(bool ok, string mensaje, object? cliente)> CrearAsync(ClienteDto dto)
+{
+    try
+    {
+        // Validar duplicado
+        var existe = await _db.Clientes
+            .AnyAsync(c => c.Identificacion == dto.Identificacion);
+
+        if (existe)
+            return (false, "La identificación ya existe", null);
+
+        // Crear entidad
+        var cliente = new Cliente
         {
-            bool existe = await _db.Clientes.AnyAsync(c => c.Identificacion == dto.Identificacion);
-            if (existe)
-                return (false, "Ya existe un cliente con esa identificación", null);
+            Identificacion = dto.Identificacion,
+            TipoIdentificacion = dto.TipoIdentificacion,
+            NombreCompleto = dto.NombreCompleto,
+            FechaNacimiento = dto.FechaNacimiento,
+            Telefono = dto.Telefono,
+            Activo = true
+        };
 
-            var cliente = new Cliente
-            {
-                Identificacion = dto.Identificacion,
-                TipoIdentificacion = dto.TipoIdentificacion,
-                NombreCompleto = dto.NombreCompleto,
-                FechaNacimiento = dto.FechaNacimiento,
-                Telefono = dto.Telefono,
-                Activo = dto.Activo
-            };
+        //  AGREGAR
+        _db.Clientes.Add(cliente);
 
-            _db.Clientes.Add(cliente);
-            await _db.SaveChangesAsync();
+        //  GUARDAR
+        await _db.SaveChangesAsync();
 
-            return (true, "Cliente creado correctamente", new ClienteDto
-            {
-                ClienteId = cliente.ClienteId,
-                Identificacion = cliente.Identificacion,
-                TipoIdentificacion = cliente.TipoIdentificacion,
-                NombreCompleto = cliente.NombreCompleto,
-                FechaNacimiento = cliente.FechaNacimiento,
-                Telefono = cliente.Telefono,
-                Activo = cliente.Activo
-            });
+        return (true, "Cliente creado correctamente", cliente);
+    }
+    catch (Exception ex)
+    {
+        return (false, $"Error: {ex.Message}", null);
+    }
+}
+
+        public async Task<bool> ExistePorIdentificacionAsync(string identificacion)
+        {
+            return await _db.Clientes
+                .AsNoTracking()
+                .AnyAsync(c => c.Identificacion == identificacion && c.Activo);
         }
 
         public async Task<(bool ok, string mensaje)> ActualizarAsync(int id, ClienteDto dto)

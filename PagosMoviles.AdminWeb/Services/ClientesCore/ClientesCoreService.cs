@@ -63,8 +63,24 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var httpResponse = await client.PostAsJsonAsync("gateway/admin/core/client", model);
+            if (model.FechaNacimiento == null)
+                return (false, "Debe seleccionar una fecha de nacimiento.");
+
+            var dto = new
+            {
+                identificacion = model.Identificacion?.Trim(),
+                tipoIdentificacion = model.TipoIdentificacion?.Trim(),
+                nombreCompleto = model.NombreCompleto?.Trim(),
+                fechaNacimiento = model.FechaNacimiento.Value,
+                telefono = model.Telefono?.Trim(),
+                activo = model.Activo
+            };
+
+            var httpResponse = await client.PostAsJsonAsync("gateway/admin/core/client", dto);
             var raw = await httpResponse.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"POST Crear Cliente Status: {(int)httpResponse.StatusCode}");
+            Console.WriteLine($"POST Crear Cliente Respuesta: {raw}");
 
             if (!httpResponse.IsSuccessStatusCode)
                 return (false, $"Error HTTP {(int)httpResponse.StatusCode}: {raw}");
@@ -86,8 +102,25 @@ namespace PagosMoviles.AdminWeb.Services.ClientesCore
         {
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
-            var httpResponse = await client.PutAsJsonAsync($"gateway/admin/core/client/{id}", model);
+            if (model.FechaNacimiento == null)
+                return (false, "Debe seleccionar una fecha de nacimiento.");
+
+            var dto = new
+            {
+                clienteId = id,
+                identificacion = model.Identificacion?.Trim(),
+                tipoIdentificacion = model.TipoIdentificacion?.Trim(),
+                nombreCompleto = model.NombreCompleto?.Trim(),
+                fechaNacimiento = model.FechaNacimiento.Value,
+                telefono = model.Telefono?.Trim(),
+                activo = model.Activo
+            };
+
+            var httpResponse = await client.PutAsJsonAsync($"gateway/admin/core/client/{id}", dto);
             var raw = await httpResponse.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"PUT Actualizar Cliente Status: {(int)httpResponse.StatusCode}");
+            Console.WriteLine($"PUT Actualizar Cliente Respuesta: {raw}");
 
             if (!httpResponse.IsSuccessStatusCode)
                 return (false, $"Error HTTP {(int)httpResponse.StatusCode}: {raw}");

@@ -7,14 +7,14 @@ using PagosMoviles.PortalWeb.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔥 Razor + contexto HTTP
+//  Razor + contexto HTTP
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 
-// ✅ Registrar handler (IMPORTANTE: antes de usarlo)
+//  Registrar handler (IMPORTANTE: antes de usarlo)
 builder.Services.AddTransient<BearerTokenHandler>();
 
-// 🔥 HttpClient principal (Gateway)
+// HttpClient principal (Gateway)
 builder.Services.AddHttpClient("GatewayApi", client =>
 {
     var baseUrl = builder.Configuration["GatewayApi:BaseUrl"];
@@ -31,7 +31,7 @@ builder.Services.AddHttpClient("GatewayApi", client =>
 })
 .AddHttpMessageHandler<BearerTokenHandler>();
 
-// 🔥 Servicios
+//  Servicios
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IPerfilService, PerfilService>();
 builder.Services.AddScoped<ISaldoService, SaldoService>();
@@ -39,7 +39,7 @@ builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
 builder.Services.AddScoped<AfiliacionService>();
 builder.Services.AddScoped<MovimientoService>();
 
-// 🔥 Sesión
+//  Sesión
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -51,7 +51,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// 🔥 Middleware
+//  Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -61,7 +61,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseSession(); // 👈 IMPORTANTE antes de Authorization
+app.UseSession(); // IMPORTANTE antes de Authorization
 
 app.UseAuthorization();
 

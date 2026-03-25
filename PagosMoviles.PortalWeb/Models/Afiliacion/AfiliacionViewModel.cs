@@ -9,14 +9,16 @@ namespace PagosMoviles.PortalWeb.Models.Afiliacion
         public string Identificacion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El número de cuenta es obligatorio")]
-        [RegularExpression(@"^[A-Za-z0-9]{3,25}$", ErrorMessage = "El número de cuenta es inválido")]
+        [RegularExpression(@"^[A-Za-z0-9]{3,20}$", ErrorMessage = "Número de cuenta inválido")]
         public string NumeroCuenta { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El teléfono es obligatorio")]
         [RegularExpression(@"^\d{8}$", ErrorMessage = "El teléfono debe tener 8 dígitos")]
         public string Telefono { get; set; } = string.Empty;
 
-        public string NombreCompleto { get; set; } = string.Empty;
         public bool ClienteExiste { get; set; }
+
+        public string? Mensaje { get; set; }
+        public string? Error { get; set; }
     }
 }

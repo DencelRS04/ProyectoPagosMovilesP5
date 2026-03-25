@@ -17,7 +17,6 @@
 }
 
 <body>
-
     <div class="app-shell">
         <partial name="_Sidebar" />
 
@@ -30,9 +29,19 @@
         </div>
     </div>
 
+    <div class="left-panel">
+        <button onclick="location.href='/Usuarios'">Gestión de Usuarios</button>
+        <button onclick="location.href='/ClientesCore'">Clientes</button>
+        <button onclick="location.href='/Roles'">Gestión de Roles</button>
+        <button onclick="location.href='/Pantallas'">Gestión de Pantallas</button>
+        <button onclick="location.href='/Parametros'">Parámetros</button>
+        <button onclick="location.href='/Entidades'">Entidades</button>
+        <button onclick="location.href='/Transacciones'">Transacciones</button>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    b<script src="~/js/session-timeout.js" asp-append-version="true"></script>
+    <script src="~/js/session-timeout.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
@@ -67,16 +76,5 @@
                         transform: scale(1.05);
                     }
     </style>
-
-    <div class="left-panel">
-        <button onclick="location.href='/Usuarios'">Gestión de Usuarios</button>
-        <button onclick="location.href='/ClientesCore'">ClientesCore</button>
-        <button onclick="location.href='/Roles'">Gestión de Roles</button>
-        <button onclick="location.href='/Pantallas'">Gestión de Pantallas</button>
-        <button onclick="location.href='/Parametros'">Parámetros</button>
-        <button onclick="location.href='/Entidades'">Entidades</button>
-        <button onclick="location.href='/Transacciones'">Transacciones</button>
-    </div>
-
 </body>
 </html>

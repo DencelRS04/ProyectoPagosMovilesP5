@@ -41,8 +41,8 @@ namespace PagosMoviles.PortalWeb.Services.Transferencias
             Console.WriteLine(JsonSerializer.Serialize(dto));
 
             var response = await client.PostAsJsonAsync(
-                "gateway/admin/core/api/transactions/process",
-                dto);
+            "gateway/admin/transactions/process",
+            dto);
 
             var raw = await response.Content.ReadAsStringAsync();
 

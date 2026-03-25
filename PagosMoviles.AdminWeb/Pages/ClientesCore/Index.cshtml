@@ -1,7 +1,7 @@
 ﻿@page
 @model PagosMoviles.AdminWeb.Pages.ClientesCore.IndexModel
 @{
-    ViewData["Title"] = "Clientes Core";
+    ViewData["Title"] = "Clientes";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -105,20 +105,10 @@
             color: white;
         }
 
-            .search-box button:hover {
-                transform: scale(1.05);
-            }
-
     .btn-clean {
         background: #e2e8f0;
         color: #1e293b;
     }
-
-        .btn-clean:hover {
-            transform: scale(1.05);
-            background: #cbd5e1;
-            color: #0f172a;
-        }
 
     .btn-add {
         background: linear-gradient(135deg, #2563eb, #1e40af);
@@ -129,12 +119,7 @@
         font-weight: 600;
         cursor: pointer;
         box-shadow: 0 10px 25px rgba(37,99,235,0.5);
-        transition: 0.3s;
     }
-
-        .btn-add:hover {
-            transform: translateY(-3px) scale(1.03);
-        }
 
     .table-responsive {
         overflow-x: auto;
@@ -159,26 +144,12 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            transition: 0.25s;
         }
-
-            .clientes-table tbody tr:hover {
-                transform: translateY(-3px) scale(1.01);
-                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            }
 
         .clientes-table td {
             padding: 15px;
             vertical-align: middle;
             border: none;
-        }
-
-        .clientes-table tbody tr td:first-child {
-            border-radius: 16px 0 0 16px;
-        }
-
-        .clientes-table tbody tr td:last-child {
-            border-radius: 0 16px 16px 0;
         }
 
     .estado {
@@ -212,7 +183,6 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.25s;
         }
 
     .edit {
@@ -220,18 +190,10 @@
         color: white;
     }
 
-        .edit:hover {
-            transform: scale(1.1);
-        }
-
     .delete {
         background: linear-gradient(135deg, #f87171, #dc2626);
         color: white;
     }
-
-        .delete:hover {
-            transform: scale(1.1);
-        }
 
     .empty-row td {
         text-align: center;
@@ -266,19 +228,6 @@
         overflow-y: auto;
     }
 
-        .modal-box h5 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 18px;
-            color: #111827;
-        }
-
-        .modal-box p {
-            color: #4b5563;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-
     .form-group {
         margin-bottom: 18px;
     }
@@ -300,14 +249,8 @@
         color: #374151;
         background: #ffffff;
         outline: none;
-        transition: 0.25s;
         box-sizing: border-box;
     }
-
-        .form-control-custom:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
-        }
 
     .check-wrap {
         display: flex;
@@ -316,32 +259,12 @@
         margin-top: 8px;
     }
 
-        .check-wrap input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #2563eb;
-        }
-
     .text-danger {
         color: #dc2626;
         font-size: 0.85rem;
         margin-top: 6px;
         display: block;
     }
-
-    .validation-summary-errors {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
-        color: #991b1b;
-        border: 1px solid #fca5a5;
-        border-radius: 14px;
-        padding: 14px 16px;
-        margin-bottom: 16px;
-    }
-
-        .validation-summary-errors ul {
-            margin: 0;
-            padding-left: 18px;
-        }
 
     .modal-acciones {
         display: flex;
@@ -359,12 +282,7 @@
         border-radius: 12px;
         cursor: pointer;
         font-weight: 600;
-        transition: 0.25s;
     }
-
-        .btn-cancelar:hover {
-            background: #cbd5e1;
-        }
 
     .btn-guardar {
         background: linear-gradient(135deg, #2563eb, #1d4ed8);
@@ -374,13 +292,7 @@
         border-radius: 12px;
         cursor: pointer;
         font-weight: 600;
-        transition: 0.25s;
-        box-shadow: 0 10px 25px rgba(37,99,235,0.30);
     }
-
-        .btn-guardar:hover {
-            transform: scale(1.03);
-        }
 
     .btn-confirmar-eliminar {
         background: linear-gradient(135deg, #f87171, #dc2626);
@@ -390,37 +302,6 @@
         border-radius: 12px;
         cursor: pointer;
         font-weight: 600;
-        transition: 0.25s;
-    }
-
-        .btn-confirmar-eliminar:hover {
-            transform: scale(1.03);
-        }
-
-    @@media (max-width: 768px) {
-        .search-box input {
-            width: 100%;
-            min-width: 180px;
-        }
-
-        .search-form {
-            align-items: stretch;
-        }
-
-        .search-left {
-            width: 100%;
-        }
-
-        .modal-acciones {
-            flex-direction: column;
-        }
-
-        .btn-cancelar,
-        .btn-guardar,
-        .btn-confirmar-eliminar,
-        .btn-clean {
-            width: 100%;
-        }
     }
 </style>
 
@@ -428,14 +309,18 @@
     <div class="clientes-container">
         <h2 class="clientes-title">Clientes Core</h2>
 
+        @if (TempData["MensajeExito"] != null)
+        {
+            <div class="alert alert-success mb-3">
+                @TempData["MensajeExito"]
+            </div>
+        }
+
         <div class="top-bar">
             <form method="get" class="search-form">
                 <div class="search-left">
                     <div class="search-box">
-                        <input type="text"
-                               name="Busqueda"
-                               value="@Model.Busqueda"
-                               placeholder="Buscar por identificación, nombre o teléfono..." />
+                        <input type="text" name="Busqueda" value="@Model.Busqueda" placeholder="Buscar por identificación, nombre o teléfono..." />
                         <button type="submit">Buscar</button>
                     </div>
 
@@ -472,7 +357,7 @@
                                 <td>@item.Identificacion</td>
                                 <td>@item.TipoIdentificacion</td>
                                 <td>@item.NombreCompleto</td>
-                                <td>@item.FechaNacimiento.ToString("yyyy-MM-dd")</td>
+                                <td>@(item.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")</td>
                                 <td>@item.Telefono</td>
                                 <td>
                                     @if (item.Activo)
@@ -489,14 +374,14 @@
                                         <button type="button"
                                                 class="edit"
                                                 onclick="abrirModalEditarCliente(
-                                                                    '@item.ClienteId',
-                                                                    '@Html.Raw((item.Identificacion ?? "").Replace("'", "\\'"))',
-                                                                    '@Html.Raw((item.TipoIdentificacion ?? "").Replace("'", "\\'"))',
-                                                                    '@Html.Raw((item.NombreCompleto ?? "").Replace("'", "\\'"))',
-                                                                    '@item.FechaNacimiento.ToString("yyyy-MM-dd")',
-                                                                    '@Html.Raw((item.Telefono ?? "").Replace("'", "\\'"))',
-                                                                    @item.Activo.ToString().ToLower()
-                                                                )">
+                                            '@item.ClienteId',
+                                            '@Html.Raw((item.Identificacion ?? "").Replace("'", "\\'"))',
+                                            '@Html.Raw((item.TipoIdentificacion ?? "").Replace("'", "\\'"))',
+                                            '@Html.Raw((item.NombreCompleto ?? "").Replace("'", "\\'"))',
+                                            '@(item.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")',
+                                            '@Html.Raw((item.Telefono ?? "").Replace("'", "\\'"))',
+                                            '@item.Activo.ToString().ToLower()'
+                                            )">
                                             Editar
                                         </button>
 
@@ -522,12 +407,11 @@
     </div>
 </div>
 
-<!-- MODAL CREAR -->
 <div class="modal-overlay" id="modalCrearCliente">
     <div class="modal-box">
         <h5>Nuevo Cliente</h5>
 
-        <form method="post" asp-page-handler="Crear">
+        <form method="post" asp-page-handler="Crear" novalidate>
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -574,17 +458,15 @@
     </div>
 </div>
 
-<!-- MODAL EDITAR -->
 <div class="modal-overlay" id="modalEditarCliente">
     <div class="modal-box">
         <h5>Editar Cliente</h5>
 
-        <form method="post" asp-page-handler="Editar" id="formEditarCliente">
+        <form method="post" asp-page-handler="Editar" id="formEditarCliente" novalidate>
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="ClienteEditar.ClienteId" id="editClienteId" />
-
             <div class="form-group">
                 <label asp-for="ClienteEditar.Identificacion"></label>
                 <input asp-for="ClienteEditar.Identificacion" id="editIdentificacion" class="form-control-custom" />
@@ -628,7 +510,6 @@
     </div>
 </div>
 
-<!-- MODAL ELIMINAR -->
 <div class="modal-overlay" id="modalEliminarCliente">
     <div class="modal-box">
         <h5>Confirmar desactivación</h5>
@@ -649,6 +530,28 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
+    @if (ViewData["AbrirModalCrear"] as bool? == true)
+    {
+        <script>
+            abrirModalCrearCliente();
+        </script>
+    }
+
+    @if (ViewData["AbrirModalEditar"] as bool? == true)
+    {
+        <script>
+            abrirModalEditarCliente(
+                '@Model.ClienteEditar.ClienteId',
+                '@Html.Raw((Model.ClienteEditar.Identificacion ?? "").Replace("'", "\\'"))',
+                '@Html.Raw((Model.ClienteEditar.TipoIdentificacion ?? "").Replace("'", "\\'"))',
+                '@Html.Raw((Model.ClienteEditar.NombreCompleto ?? "").Replace("'", "\\'"))',
+                '@(Model.ClienteEditar.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "")',
+                '@Html.Raw((Model.ClienteEditar.Telefono ?? "").Replace("'", "\\'"))',
+                '@Model.ClienteEditar.Activo.ToString().ToLower()'
+            );
+        </script>
+    }
+
     <script>
         function abrirModalCrearCliente() {
             document.getElementById('modalCrearCliente').classList.add('activo');
@@ -665,7 +568,7 @@
             document.getElementById('editNombreCompleto').value = nombre;
             document.getElementById('editFechaNacimiento').value = fecha;
             document.getElementById('editTelefono').value = telefono;
-            document.getElementById('editActivo').checked = activo;
+            document.getElementById('editActivo').checked = (activo === 'true');
 
             document.getElementById('formEditarCliente').action = '?handler=Editar&id=' + id;
             document.getElementById('modalEditarCliente').classList.add('activo');

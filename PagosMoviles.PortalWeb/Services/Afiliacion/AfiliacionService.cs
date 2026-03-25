@@ -18,7 +18,7 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
             var client = _httpClientFactory.CreateClient("GatewayApi");
 
             var httpResponse = await client.GetAsync(
-                $"gateway/admin/core/client-exists?identificacion={Uri.EscapeDataString(identificacion)}");
+                $"gateway/admin/core/client/exists?identificacion={Uri.EscapeDataString(identificacion)}");
 
             var rawContent = await httpResponse.Content.ReadAsStringAsync();
 

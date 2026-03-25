@@ -17,7 +17,7 @@ namespace PagosMoviles.UsuariosService.Services
             if (string.IsNullOrWhiteSpace(identificacion))
                 return SrvResponse<bool>.Fail("La identificación es requerida");
 
-            var resp = await _http.GetAsync($"core/client-exists?identificacion={Uri.EscapeDataString(identificacion)}");
+            var resp = await _http.GetAsync($"core/client/exists?identificacion={Uri.EscapeDataString(identificacion)}");
 
             if (!resp.IsSuccessStatusCode)
             {
