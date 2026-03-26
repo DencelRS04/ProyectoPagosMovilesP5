@@ -4,7 +4,6 @@ using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.AdminWeb.Services.Roles;
 using PagosMoviles.Shared.DTOs.Pantallas;
 using PagosMoviles.Shared.DTOs.Roles;
-using System.ComponentModel.DataAnnotations;
 
 namespace PagosMoviles.AdminWeb.Pages.Roles
 {
@@ -21,28 +20,10 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public List<RolDto> Roles { get; set; } = new();
         public List<PantallaDto> Pantallas { get; set; } = new();
-
         public string? MensajeError { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string? Buscar { get; set; }
-
-        // ===== CREAR =====
-        [BindProperty]
-        public RolCreateDtoValidado NuevoRol { get; set; } = new();
-
-        [BindProperty]
-        public List<int> PantallasSeleccionadas { get; set; } = new();
-
-        // ===== EDITAR =====
-        [BindProperty]
-        public int Id { get; set; }
-
-        [BindProperty]
-        public RolCreateDtoValidado Rol { get; set; } = new();
-
-        [BindProperty]
-        public List<int> PantallasSeleccionadasEditar { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -51,7 +32,6 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
             await CargarRoles();
             await CargarPantallas();
-
             return Page();
         }
 
@@ -60,28 +40,29 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
                 return RedirectToPage("/Auth/Login");
 
-            await CargarRoles();
-            await CargarPantallas();
+            var nombre = Request.Form["NuevoRol.Nombre"].ToString();
+            var pantallasSeleccionadas = Request.Form["PantallasSeleccionadas"]
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Select(x => int.Parse(x))
+                .Where(x => x > 0)
+                .ToList();
 
-            if (!ModelState.IsValid)
-                return Page();
+            var dto = new RolCreateDto
+            {
+                Nombre = nombre,
+                Pantallas = pantallasSeleccionadas
+            };
 
             try
             {
-                var dto = new RolCreateDto
-                {
-                    Nombre = NuevoRol.Nombre,
-                    Pantallas = PantallasSeleccionadas
-                };
-
                 await _rolesService.CrearRol(dto);
                 TempData["Mensaje"] = "Rol creado correctamente.";
                 return RedirectToPage();
             }
-            catch
+            catch (Exception ex)
             {
-                MensajeError = "No se pudo crear el rol.";
-                return Page();
+                TempData["Error"] = $"Error: {ex.Message}";
+                return RedirectToPage();
             }
         }
 
@@ -90,28 +71,30 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
                 return RedirectToPage("/Auth/Login");
 
-            await CargarRoles();
-            await CargarPantallas();
+            var id = int.Parse(Request.Form["Id"]);
+            var nombre = Request.Form["Rol.Nombre"].ToString();
+            var pantallasSeleccionadas = Request.Form["PantallasSeleccionadasEditar"]
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Select(x => int.Parse(x))
+                .Where(x => x > 0)
+                .ToList();
 
-            if (!ModelState.IsValid)
-                return Page();
+            var dto = new RolCreateDto
+            {
+                Nombre = nombre,
+                Pantallas = pantallasSeleccionadas
+            };
 
             try
             {
-                var dto = new RolCreateDto
-                {
-                    Nombre = Rol.Nombre,
-                    Pantallas = PantallasSeleccionadasEditar
-                };
-
-                await _rolesService.ActualizarRol(Id, dto);
+                await _rolesService.ActualizarRol(id, dto);
                 TempData["Mensaje"] = "Rol actualizado correctamente.";
                 return RedirectToPage();
             }
-            catch
+            catch (Exception ex)
             {
-                MensajeError = "No se pudo actualizar el rol.";
-                return Page();
+                TempData["Error"] = $"Error: {ex.Message}";
+                return RedirectToPage();
             }
         }
 
@@ -146,10 +129,6 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
                         r.Nombre.Contains(Buscar, StringComparison.OrdinalIgnoreCase))
                       .ToList();
             }
-            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                RedirectToPage("/Account/Login");
-            }
             catch
             {
                 MensajeError = "No se pudo cargar la lista de roles.";
@@ -168,13 +147,5 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
                 Pantallas = new List<PantallaDto>();
             }
         }
-    }
-
-    public class RolCreateDtoValidado
-    {
-        [Required(ErrorMessage = "El nombre es obligatorio.")]
-        [RegularExpression(@"^[a-zA-Z·ÈÌÛ˙¡…Õ”⁄Ò—0-9 ]+$",
-            ErrorMessage = "Solo letras, n˙meros y espacios.")]
-        public string Nombre { get; set; } = string.Empty;
     }
 }

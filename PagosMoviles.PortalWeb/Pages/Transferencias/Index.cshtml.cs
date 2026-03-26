@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PagosMoviles.PortalWeb.Services.Transferencias;
-using PagosMoviles.Shared.DTOs.Transferencias;
+using PagosMoviles.PortalWeb.Models.Transferencias;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.RegularExpressions;

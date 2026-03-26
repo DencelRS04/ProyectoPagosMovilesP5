@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PagosMoviles.API\PagosMoviles.API.csproj" />
-    <ProjectReference Include="..\PagosMoviles.Shared\PagosMoviles.Shared.csproj" />
+	  <ProjectReference Include="..\PagosMoviles.Shared\PagosMoviles.Shared.csproj" />
+	  <ProjectReference Include="..\PagosMoviles.API\PagosMoviles.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

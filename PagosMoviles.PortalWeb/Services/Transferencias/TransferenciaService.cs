@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PagosMoviles.PortalWeb.Helpers;
-using PagosMoviles.Shared.DTOs.Transferencias;
+using PagosMoviles.PortalWeb.Models.Transferencias;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -41,8 +41,8 @@ namespace PagosMoviles.PortalWeb.Services.Transferencias
             Console.WriteLine(JsonSerializer.Serialize(dto));
 
             var response = await client.PostAsJsonAsync(
-            "gateway/admin/transactions/process",
-            dto);
+                "gateway/admin/transactions/route",
+                dto);
 
             var raw = await response.Content.ReadAsStringAsync();
 

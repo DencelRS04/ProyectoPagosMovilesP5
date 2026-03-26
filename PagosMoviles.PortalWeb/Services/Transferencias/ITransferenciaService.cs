@@ -1,4 +1,4 @@
-﻿using PagosMoviles.Shared.DTOs.Transferencias;
+﻿using PagosMoviles.PortalWeb.Models.Transferencias;
 
 namespace PagosMoviles.PortalWeb.Services.Transferencias
 {

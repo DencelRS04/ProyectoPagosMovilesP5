@@ -526,6 +526,7 @@
 </div>
 
 <!-- MODAL CREAR -->
+<!-- MODAL CREAR -->
 <div class="modal-overlay" id="modalCrear">
     <div class="modal-box">
         <h5>Nueva Pantalla</h5>
@@ -534,27 +535,23 @@
             @Html.AntiForgeryToken()
 
             <div class="form-group">
-                <label asp-for="NuevaPantalla.Identificador">Identificador</label>
-                <input asp-for="NuevaPantalla.Identificador" class="form-control-custom" placeholder="Ej: PANT001" />
-                <span asp-validation-for="NuevaPantalla.Identificador" class="text-danger"></span>
+                <label>Identificador</label>
+                <input name="NuevaPantalla.Identificador" class="form-control-custom" />
             </div>
 
             <div class="form-group">
-                <label asp-for="NuevaPantalla.Nombre">Nombre</label>
-                <input asp-for="NuevaPantalla.Nombre" class="form-control-custom" placeholder="Nombre de la pantalla" />
-                <span asp-validation-for="NuevaPantalla.Nombre" class="text-danger"></span>
+                <label>Nombre</label>
+                <input name="NuevaPantalla.Nombre" class="form-control-custom" />
             </div>
 
             <div class="form-group">
-                <label asp-for="NuevaPantalla.Descripcion">Descripción</label>
-                <textarea asp-for="NuevaPantalla.Descripcion" class="form-control-custom" placeholder="Descripción de la pantalla"></textarea>
-                <span asp-validation-for="NuevaPantalla.Descripcion" class="text-danger"></span>
+                <label>Descripción</label>
+                <textarea name="NuevaPantalla.Descripcion" class="form-control-custom"></textarea>
             </div>
 
             <div class="form-group">
-                <label asp-for="NuevaPantalla.Ruta">Ruta de acceso</label>
-                <input asp-for="NuevaPantalla.Ruta" class="form-control-custom" placeholder="Ej: /Pantallas/Index" />
-                <span asp-validation-for="NuevaPantalla.Ruta" class="text-danger"></span>
+                <label>Ruta</label>
+                <input name="NuevaPantalla.Ruta" class="form-control-custom" />
             </div>
 
             <div class="modal-acciones">
@@ -660,6 +657,21 @@
             document.getElementById('modalEliminar').classList.remove('activo');
         }
 
+        // 🔥 NUEVA FUNCIÓN (CLAVE)
+        function enviarCrear() {
+            console.log("Intentando enviar formulario...");
+
+            const form = document.getElementById("formCrear");
+
+            if (!form) {
+                alert("Formulario no encontrado");
+                return;
+            }
+
+            form.submit(); // 🚀 FORZAR POST
+        }
+
+        // Cerrar modales al hacer click fuera
         document.getElementById('modalCrear').addEventListener('click', function (e) {
             if (e.target === this) cerrarModalCrear();
         });
