@@ -11,6 +11,10 @@
         padding: 60px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: white;
+        display: flex;
+        justify-content: center; /* centra horizontal */
+        align-items: center; /* centra vertical */
+        height: calc(100vh - 120px); /* ocupa toda la pantalla */
     }
 
     body {
@@ -142,10 +146,16 @@
 
 <div class="container">
     <div class="card">
-        <h1>Bienvenido al portal de clientes</h1>
+        <h1>
+            Bienvenido, @Model.UsuarioNombre
+        </h1>
+        <!--
+        <h1>
+            Bienvenido al portal de clientes
+        </h1>
 
         <div class="username">@Model.UsuarioNombre</div>
-
+        
         <div class="box">
             <p>Nos alegra tenerte aquí. Este es tu espacio, donde cada decisión financiera cobra valor y cada paso está respaldado por seguridad y confianza.</p>
         </div>
@@ -168,7 +178,7 @@
 
         <div class="footer">
             © 2026 DAYJA BANK - Todos los derechos reservados
-        </div>
+        </div>-->
     </div>
 </div>
 
