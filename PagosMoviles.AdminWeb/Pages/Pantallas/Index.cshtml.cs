@@ -46,29 +46,24 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
                 return RedirectToPage("/Auth/Login");
 
-            await CargarPantallas();
-
-            if (!ModelState.IsValid)
-                return Page();
+            var dto = new PantallaCreateDto
+            {
+                Identificador = Request.Form["NuevaPantalla.Identificador"],
+                Nombre = Request.Form["NuevaPantalla.Nombre"],
+                Descripcion = Request.Form["NuevaPantalla.Descripcion"],
+                Ruta = Request.Form["NuevaPantalla.Ruta"]
+            };
 
             try
             {
-                var dto = new PantallaCreateDto
-                {
-                    Identificador = NuevaPantalla.Identificador,
-                    Nombre = NuevaPantalla.Nombre,
-                    Descripcion = NuevaPantalla.Descripcion,
-                    Ruta = NuevaPantalla.Ruta
-                };
-
                 await _service.CrearPantalla(dto);
                 TempData["Mensaje"] = "Pantalla creada correctamente.";
                 return RedirectToPage();
             }
-            catch
+            catch (Exception ex)
             {
-                MensajeError = "No se pudo crear la pantalla. Verifique los datos.";
-                return Page();
+                TempData["Error"] = $"Error: {ex.Message}";
+                return RedirectToPage();
             }
         }
 
@@ -77,29 +72,25 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
                 return RedirectToPage("/Auth/Login");
 
-            await CargarPantallas();
-
-            if (!ModelState.IsValid)
-                return Page();
+            var id = int.Parse(Request.Form["Id"]);
+            var dto = new PantallaCreateDto
+            {
+                Identificador = Request.Form["Pantalla.Identificador"],
+                Nombre = Request.Form["Pantalla.Nombre"],
+                Descripcion = Request.Form["Pantalla.Descripcion"],
+                Ruta = Request.Form["Pantalla.Ruta"]
+            };
 
             try
             {
-                var dto = new PantallaCreateDto
-                {
-                    Identificador = Pantalla.Identificador,
-                    Nombre = Pantalla.Nombre,
-                    Descripcion = Pantalla.Descripcion,
-                    Ruta = Pantalla.Ruta
-                };
-
-                await _service.ActualizarPantalla(Id, dto);
+                await _service.ActualizarPantalla(id, dto);
                 TempData["Mensaje"] = "Pantalla actualizada correctamente.";
                 return RedirectToPage();
             }
-            catch
+            catch (Exception ex)
             {
-                MensajeError = "No se pudo actualizar la pantalla.";
-                return Page();
+                TempData["Error"] = $"Error: {ex.Message}";
+                return RedirectToPage();
             }
         }
 
@@ -154,13 +145,9 @@ namespace PagosMoviles.AdminWeb.Pages.Pantallas
         public string Identificador { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
-        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
-            ErrorMessage = "El nombre solo puede contener letras, números y espacios.")]
         public string Nombre { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La descripción es obligatoria.")]
-        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9 ]+$",
-            ErrorMessage = "La descripción solo puede contener letras, números y espacios.")]
         public string Descripcion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La ruta es obligatoria.")]

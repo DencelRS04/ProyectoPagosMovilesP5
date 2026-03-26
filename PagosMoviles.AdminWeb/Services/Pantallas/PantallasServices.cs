@@ -26,7 +26,9 @@ namespace PagosMoviles.AdminWeb.Services.Pantallas
 
         private HttpClient ClienteAutenticado()
         {
-            var client = _factory.CreateClient("gateway");
+            var client = _factory.CreateClient(); // ✅ USAR FACTORY
+
+            client.BaseAddress = new Uri("https://localhost:7143/");
 
             var json = _ctx.HttpContext?.Session.GetString("USUARIO_SESION");
             string token = null;
@@ -69,8 +71,16 @@ namespace PagosMoviles.AdminWeb.Services.Pantallas
 
         public async Task CrearPantalla(PantallaCreateDto dto)
         {
-            var response = await ClienteAutenticado().PostAsJsonAsync("pantalla", dto);
-            response.EnsureSuccessStatusCode();
+            var client = ClienteAutenticado();
+
+            var response = await client.PostAsJsonAsync("pantalla", dto);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Status: {response.StatusCode} - {content}");
+            }
         }
 
         public async Task ActualizarPantalla(int id, PantallaCreateDto dto)

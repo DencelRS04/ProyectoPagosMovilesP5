@@ -560,9 +560,8 @@
             @Html.AntiForgeryToken()
 
             <div class="form-group">
-                <label asp-for="NuevoRol.Nombre">Nombre del Rol</label>
-                <input asp-for="NuevoRol.Nombre" class="form-control-custom" type="text" placeholder="Ej: Administrador" />
-                <span asp-validation-for="NuevoRol.Nombre" class="text-danger"></span>
+                <label>Nombre del Rol</label>
+                <input name="NuevoRol.Nombre" class="form-control-custom" type="text" placeholder="Ej: Administrador" />
             </div>
 
             <div class="form-group">
@@ -604,12 +603,11 @@
         <form method="post" asp-page-handler="Editar">
             @Html.AntiForgeryToken()
 
-            <input type="hidden" asp-for="Id" id="editId" />
+            <input type="hidden" name="Id" id="editId" />
 
             <div class="form-group">
-                <label asp-for="Rol.Nombre">Nombre del Rol</label>
-                <input asp-for="Rol.Nombre" class="form-control-custom" type="text" id="editNombre" />
-                <span asp-validation-for="Rol.Nombre" class="text-danger"></span>
+                <label>Nombre del Rol</label>
+                <input name="Rol.Nombre" class="form-control-custom" type="text" id="editNombre" />
             </div>
 
             <div class="form-group">
