@@ -73,6 +73,15 @@ namespace PagosMoviles.AdminWeb.Pages
             {
                 var mensajeServicio = (result.Item2 ?? "").ToLower();
 
+                // 🔥 VALIDACIÓN: USUARIO NO EXISTE
+                if (mensajeServicio.Contains("no existente") ||
+                    mensajeServicio.Contains("no existe") ||
+                    mensajeServicio.Contains("no encontrado"))
+                {
+                    Input.MensajeError = "Usuario no existente.";
+                    return Page();
+                }
+
                 if (mensajeServicio.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
@@ -96,7 +105,7 @@ namespace PagosMoviles.AdminWeb.Pages
 
             var usuario = result.Item3;
 
-            // 🔥 RESET GLOBAL DE INTENTOS (AQUÍ ESTÁ EL CAMBIO)
+            // 🔥 RESET GLOBAL DE INTENTOS
             var keys = new List<string>();
 
             foreach (var item in HttpContext.Session.Keys)
@@ -129,10 +138,17 @@ namespace PagosMoviles.AdminWeb.Pages
             return Redirect("/Home/Index");
         }
 
+        public IActionResult OnPostLogout()
+        {
+            SessionHelper.LimpiarSesion(HttpContext.Session);
+            HttpContext.Session.Clear();
+
+            return RedirectToPage("/Index");
+        }
+
         public IActionResult OnPostSetSessionExpired()
         {
             HttpContext.Session.Remove("UsuarioId");
-
             HttpContext.Session.SetString("SessionExpiredMessage", "La sesión expiró por inactividad.");
 
             return new EmptyResult();
