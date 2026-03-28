@@ -47,7 +47,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
             {
                 var mensaje = (result?.Item2 ?? "").ToLower();
 
-                // 🔴 SI VIENE BLOQUEADO DESDE BD
+                //  SI VIENE BLOQUEADO DESDE BD
                 if (mensaje.Contains("bloqueado"))
                 {
                     Input.MensajeError = "El usuario se encuentra bloqueado.";
@@ -69,7 +69,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
                 return Page();
             }
 
-            // ✅ LOGIN OK → RESET
+            // LOGIN OK → RESET
             HttpContext.Session.SetInt32("IntentosLogin", 0);
 
             var usuario = result.Item3;
@@ -77,7 +77,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
             usuario.FotoPerfil = usuario.FotoPerfil ?? "";
             usuario.ColorAvatar = string.IsNullOrWhiteSpace(usuario.ColorAvatar) ? "#4285F4" : usuario.ColorAvatar;
 
-            // 🔥 ADMIN = 5
+            // ADMIN = 5
             if (usuario.RolId != 5)
             {
                 Input.MensajeError = "No tiene permisos para acceder al portal administrativo.";
@@ -89,7 +89,7 @@ namespace PagosMoviles.AdminWeb.Pages.Auth
             return Redirect("/Home/Index");
         }
 
-        // 🔥 MENSAJE DE SESIÓN EXPIRADA
+        // MENSAJE DE SESIÓN EXPIRADA
         public IActionResult OnPostSetSessionExpired()
         {
             HttpContext.Session.SetString(SessionKeys.SessionExpiredMessage, "La sesión expiró por inactividad.");

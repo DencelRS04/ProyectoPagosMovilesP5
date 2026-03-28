@@ -22,7 +22,7 @@ namespace PagosMoviles.AdminWeb.Services.Auth
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Tuple<bool, string, UsuarioSesionModel>> LoginAsync(string usuario, string contrasena)
+        public async Task<Tuple<bool, string, UsuarioSesionModel>> LoginAsync(string usuario, string contrasena) 
         {
             try
             {
