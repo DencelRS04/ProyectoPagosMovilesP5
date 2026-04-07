@@ -31,7 +31,7 @@ namespace PagosMoviles.UsuariosService.Controllers
             _context = context;
             _env = env;
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Listar()
         {

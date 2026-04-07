@@ -41,6 +41,17 @@ builder.Configuration["ConnectionStrings:CoreBancarioDb"] ??=
 // HttpClients
 builder.Services.AddHttpClient();
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddHttpClient<CoreSrvClient>((sp, client) =>
 {
     var cfg = sp.GetRequiredService<IConfiguration>();
@@ -142,7 +153,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();
