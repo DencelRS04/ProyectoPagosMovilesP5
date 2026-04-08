@@ -12,6 +12,17 @@ builder.Services.AddControllers(o =>
     o.Filters.AddService<GatewayBearerGuardFilter>();
 });
 
+// Después de builder.Services.AddControllers()
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -104,7 +115,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapControllers();
