@@ -33,6 +33,7 @@ namespace PagosMoviles.UsuariosService.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
+
         public async Task<IActionResult> Listar()
         {
             var resp = await _service.ObtenerTodosAsync();
