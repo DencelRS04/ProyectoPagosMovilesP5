@@ -10,6 +10,7 @@ namespace PagosMoviles.Shared.DTOs.Roles
     {
         public int RolId { get; set; }
         public string Nombre { get; set; }
+        public List<int> Pantallas { get; set; } = new List<int>();
     }
 }
 

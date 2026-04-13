@@ -211,33 +211,12 @@
             <div class="transferencia-card">
                 <form method="post">
 
-                    <p class="seccion-titulo">Datos de origen</p>
-
-                    <div class="form-group">
-                        <label asp-for="TelefonoOrigen">Teléfono origen</label>
-                        <input asp-for="TelefonoOrigen" class="form-control" placeholder="Ej: 88888888" maxlength="20" />
-                        <span asp-validation-for="TelefonoOrigen" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="NombreOrigen">Nombre origen</label>
-                        <input asp-for="NombreOrigen" class="form-control" placeholder="Ej: Juan Perez" />
-                        <span asp-validation-for="NombreOrigen" class="text-danger"></span>
-                    </div>
-
-                    <hr class="separador" />
                     <p class="seccion-titulo">Datos de destino</p>
 
                     <div class="form-group">
                         <label asp-for="TelefonoDestino">Teléfono destino</label>
                         <input asp-for="TelefonoDestino" class="form-control" placeholder="Ej: 77777777" maxlength="20" />
                         <span asp-validation-for="TelefonoDestino" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="EntidadDestino">Entidad destino</label>
-                        <input asp-for="EntidadDestino" class="form-control" placeholder="Ej: OTRO_BANCO001" />
-                        <span asp-validation-for="EntidadDestino" class="text-danger"></span>
                     </div>
 
                     <hr class="separador" />
@@ -261,7 +240,7 @@
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
-                    <button type="submit" class="btn-primary-custom"> Realizar transferencia</button>
+                    <button type="submit" class="btn-primary-custom">💸 Realizar transferencia</button>
                 </form>
             </div>
         }

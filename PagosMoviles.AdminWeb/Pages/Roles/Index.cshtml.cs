@@ -20,6 +20,7 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public List<RolDto> Roles { get; set; } = new();
         public List<PantallaDto> Pantallas { get; set; } = new();
+        public Dictionary<int, List<int>> RolPantallas { get; set; } = new();
         public string? MensajeError { get; set; }
 
         [BindProperty(SupportsGet = true)]
@@ -121,6 +122,7 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
             try
             {
                 var todos = await _rolesService.ObtenerRoles();
+                todos = todos.Where(r => r.RolId == 1 || r.RolId == 5).ToList();
 
                 Roles = string.IsNullOrWhiteSpace(Buscar)
                     ? todos
@@ -128,6 +130,25 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
                         r.RolId.ToString().Contains(Buscar) ||
                         r.Nombre.Contains(Buscar, StringComparison.OrdinalIgnoreCase))
                       .ToList();
+
+                // Leer pantallas de RolPantalla directamente
+                RolPantallas = new Dictionary<int, List<int>>();
+                var connStr = "Server=138.59.135.33;Database=PagosMoviles;User Id=denceljrs04;Password=denceljasan2004;TrustServerCertificate=True;Encrypt=False;";
+
+                using var conn = new Microsoft.Data.SqlClient.SqlConnection(connStr);
+                await conn.OpenAsync();
+
+                foreach (var rol in Roles)
+                {
+                    var pantallas = new List<int>();
+                    using var cmd = new Microsoft.Data.SqlClient.SqlCommand(
+                        "SELECT PantallaId FROM RolPantalla WHERE RolId = @RolId", conn);
+                    cmd.Parameters.AddWithValue("@RolId", rol.RolId);
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                        pantallas.Add(reader.GetInt32(0));
+                    RolPantallas[rol.RolId] = pantallas;
+                }
             }
             catch
             {

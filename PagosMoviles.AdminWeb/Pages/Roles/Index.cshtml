@@ -663,6 +663,8 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        var rolPantallas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RolPantallas));
+
         function abrirModalCrear() {
             document.getElementById('modalCrear').classList.add('activo');
         }
@@ -675,9 +677,18 @@
             document.getElementById('editId').value = id;
             document.getElementById('editNombre').value = nombre;
 
+            // Limpiar todos los checkboxes
             document.querySelectorAll('input[name="PantallasSeleccionadasEditar"]').forEach(function (chk) {
                 chk.checked = false;
             });
+
+            // Marcar las pantallas del rol
+            if (rolPantallas[id]) {
+                rolPantallas[id].forEach(function(pantallaId) {
+                    var chk = document.querySelector('input[name="PantallasSeleccionadasEditar"][value="' + pantallaId + '"]');
+                    if (chk) chk.checked = true;
+                });
+            }
 
             document.getElementById('modalEditar').classList.add('activo');
         }
