@@ -33,25 +33,31 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
             var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
             var token = usuario?.AccessToken;
             var client = _httpFactory.CreateClient("UsuarioApi");
+
             if (!string.IsNullOrEmpty(token))
+            {
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
+            }
+
             return client;
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+
             if (usuario == null || string.IsNullOrEmpty(usuario.AccessToken))
                 return Redirect("/");
 
             var client = CrearClienteConToken();
-            var response = await client.GetAsync("user");
+            var response = await client.GetAsync("gateway/admin/user");
 
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var resultado = JsonSerializer.Deserialize<ApiRespuesta<List<UsuarioViewModel>>>(json,
+                var resultado = JsonSerializer.Deserialize<ApiRespuesta<List<UsuarioViewModel>>>(
+                    json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                 Usuarios = resultado?.Datos ?? new();
@@ -60,14 +66,16 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
                 {
                     var b = Busqueda.ToLower();
                     Usuarios = Usuarios
-                        .Where(u => u.NombreCompleto.ToLower().Contains(b)
-                                 || u.Identificacion.ToLower().Contains(b))
+                        .Where(u =>
+                            (!string.IsNullOrWhiteSpace(u.NombreCompleto) && u.NombreCompleto.ToLower().Contains(b)) ||
+                            (!string.IsNullOrWhiteSpace(u.Identificacion) && u.Identificacion.ToLower().Contains(b)))
                         .ToList();
                 }
             }
             else
             {
-                MensajeError = $"Error al cargar usuarios. ({(int)response.StatusCode})";
+                var errorBody = await response.Content.ReadAsStringAsync();
+                MensajeError = $"Error al cargar usuarios. ({(int)response.StatusCode}) {errorBody}";
             }
 
             return Page();
@@ -76,6 +84,7 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
         public async Task<IActionResult> OnPostGuardarAsync()
         {
             bool esNuevo = !Formulario.UsuarioId.HasValue || Formulario.UsuarioId == 0;
+
             if (esNuevo && string.IsNullOrWhiteSpace(Formulario.Password))
                 ModelState.AddModelError("Formulario.Password", "La contraseña es obligatoria al crear un usuario.");
 
@@ -88,14 +97,14 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
             var client = CrearClienteConToken();
             var opciones = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var body = JsonSerializer.Serialize(Formulario, opciones);
-            var content = new StringContent(body, Encoding.UTF8, new MediaTypeHeaderValue("application/json"));
+            var content = new StringContent(body, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response;
 
             if (!esNuevo)
-                response = await client.PutAsync($"user/{Formulario.UsuarioId}", content);
+                response = await client.PutAsync($"gateway/admin/user/{Formulario.UsuarioId}", content);
             else
-                response = await client.PostAsync("user", content);
+                response = await client.PostAsync("gateway/admin/user", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -114,7 +123,7 @@ namespace PagosMoviles.AdminWeb.Pages.Usuarios
         public async Task<IActionResult> OnPostEliminarAsync(int id)
         {
             var client = CrearClienteConToken();
-            var response = await client.DeleteAsync($"user/{id}");
+            var response = await client.DeleteAsync($"gateway/admin/user/{id}");
 
             if (response.IsSuccessStatusCode)
                 MensajeExito = "Usuario eliminado correctamente.";

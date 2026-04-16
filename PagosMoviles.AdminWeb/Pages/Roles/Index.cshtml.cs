@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using PagosMoviles.AdminWeb.Helpers;
 using PagosMoviles.AdminWeb.Services.Pantallas;
 using PagosMoviles.AdminWeb.Services.Roles;
 using PagosMoviles.Shared.DTOs.Pantallas;
 using PagosMoviles.Shared.DTOs.Roles;
+using PagosMoviles.Shared.Constants;
 
 namespace PagosMoviles.AdminWeb.Pages.Roles
 {
@@ -28,8 +30,9 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.AccessToken))
+                return RedirectToPage("/Index");
 
             await CargarRoles();
             await CargarPantallas();
@@ -38,8 +41,9 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnPostCrearAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.AccessToken))
+                return RedirectToPage("/Index");
 
             var nombre = Request.Form["NuevoRol.Nombre"].ToString();
             var pantallasSeleccionadas = Request.Form["PantallasSeleccionadas"]
@@ -69,8 +73,9 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnPostEditarAsync()
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.AccessToken))
+                return RedirectToPage("/Index");
 
             var id = int.Parse(Request.Form["Id"]);
             var nombre = Request.Form["Rol.Nombre"].ToString();
@@ -101,8 +106,9 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
 
         public async Task<IActionResult> OnPostEliminarAsync(int id)
         {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("USUARIO_SESION")))
-                return RedirectToPage("/Auth/Login");
+            var usuario = SessionHelper.ObtenerUsuarioSesion(HttpContext.Session);
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.AccessToken))
+                return RedirectToPage("/Index");
 
             try
             {
@@ -131,8 +137,8 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
                         r.Nombre.Contains(Buscar, StringComparison.OrdinalIgnoreCase))
                       .ToList();
 
-                // Leer pantallas de RolPantalla directamente
                 RolPantallas = new Dictionary<int, List<int>>();
+
                 var connStr = "Server=138.59.135.33;Database=PagosMoviles;User Id=denceljrs04;Password=denceljasan2004;TrustServerCertificate=True;Encrypt=False;";
 
                 using var conn = new Microsoft.Data.SqlClient.SqlConnection(connStr);
@@ -144,9 +150,11 @@ namespace PagosMoviles.AdminWeb.Pages.Roles
                     using var cmd = new Microsoft.Data.SqlClient.SqlCommand(
                         "SELECT PantallaId FROM RolPantalla WHERE RolId = @RolId", conn);
                     cmd.Parameters.AddWithValue("@RolId", rol.RolId);
+
                     using var reader = await cmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                         pantallas.Add(reader.GetInt32(0));
+
                     RolPantallas[rol.RolId] = pantallas;
                 }
             }

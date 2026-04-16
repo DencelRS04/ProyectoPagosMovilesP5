@@ -23,9 +23,16 @@ namespace PagosMoviles.AdminWeb.Handlers
             if (session != null)
             {
                 var json = session.GetString(SessionKeys.UsuarioSesion);
+
                 if (!string.IsNullOrWhiteSpace(json))
                 {
-                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
+                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(
+                        json,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
                     if (!string.IsNullOrWhiteSpace(usuario?.AccessToken))
                     {
                         request.Headers.Authorization =

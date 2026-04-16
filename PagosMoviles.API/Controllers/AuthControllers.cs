@@ -15,11 +15,16 @@ namespace PagosMoviles.API.Controllers
     {
         private readonly PagosMovilesDbContext _context;
         private readonly JwtService _jwt;
+        private readonly IConfiguration _config;
 
-        public AuthController(PagosMovilesDbContext context, JwtService jwt)
+        public AuthController(
+            PagosMovilesDbContext context,
+            JwtService jwt,
+            IConfiguration config)
         {
             _context = context;
             _jwt = jwt;
+            _config = config;
         }
 
         [AllowAnonymous]
@@ -29,7 +34,6 @@ namespace PagosMoviles.API.Controllers
             var email = Request.Headers["usuario"].ToString().Trim();
             var password = Request.Headers["password"].ToString().Trim();
 
-            //  Datos vacíos → 400 BadRequest
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 return BadRequest(new
@@ -41,7 +45,6 @@ namespace PagosMoviles.API.Controllers
 
             var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
 
-            //  Usuario no existe → 404 NotFound
             if (user == null)
             {
                 return NotFound(new
@@ -51,7 +54,6 @@ namespace PagosMoviles.API.Controllers
                 });
             }
 
-            //  Usuario bloqueado → 403 Forbidden
             if (user.Bloqueado)
             {
                 return StatusCode(403, new
@@ -63,15 +65,12 @@ namespace PagosMoviles.API.Controllers
 
             var hashedPassword = HashPassword(password);
 
-            //  Contraseña incorrecta → 401 Unauthorized
             if (user.PasswordHash != hashedPassword)
             {
                 user.IntentosFallidos++;
 
                 if (user.IntentosFallidos >= 3)
-                {
                     user.Bloqueado = true;
-                }
 
                 await _context.SaveChangesAsync();
 
@@ -82,39 +81,50 @@ namespace PagosMoviles.API.Controllers
                 });
             }
 
-            //  Login correcto
             user.IntentosFallidos = 0;
             await _context.SaveChangesAsync();
 
+            int minutes = 5;
+            int.TryParse(_config["Jwt:Minutes"], out minutes);
+            if (minutes <= 0)
+                minutes = 5;
+
             var jwt = _jwt.GenerarToken(user);
             var refresh = Guid.NewGuid().ToString();
+            var fechaExpiracion = DateTime.UtcNow.AddMinutes(minutes);
 
-            _context.TokenSesiones.Add(new TokenSesion
+            var tokenSesion = new TokenSesion
             {
                 UsuarioId = user.UsuarioId,
                 JwtToken = jwt,
                 RefreshToken = refresh,
-                FechaExpiracion = DateTime.Now.AddDays(1)
-            });
+                FechaExpiracion = fechaExpiracion
+            };
 
+            _context.TokenSesiones.Add(tokenSesion);
             await _context.SaveChangesAsync();
+
+            Console.WriteLine($"LOGIN: token generado = {jwt}");
+            Console.WriteLine($"LOGIN: token guardado = {tokenSesion.JwtToken}");
+            Console.WriteLine($"LOGIN: FechaExpiracion = {tokenSesion.FechaExpiracion:O}");
 
             return StatusCode(201, new
             {
                 codigo = 201,
                 descripcion = "Login exitoso",
-                expires_in = DateTime.Now.AddMinutes(5),
+                expires_in = fechaExpiracion,
                 access_token = jwt,
                 refresh_token = refresh,
                 usuarioID = user.UsuarioId,
                 nombreCompleto = user.NombreCompleto,
                 rolId = user.RolId,
                 fotoPerfil = user.FotoPerfil,
-                colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar
+                colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar)
+                    ? "#4285F4"
+                    : user.ColorAvatar
             });
         }
 
-        //  Validación de token → 200 OK
         [HttpGet("validate")]
         public IActionResult Validate()
         {
@@ -128,12 +138,10 @@ namespace PagosMoviles.API.Controllers
 
         private static string HashPassword(string password)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
         }
     }
 }

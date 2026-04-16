@@ -2,7 +2,7 @@
   "ReverseProxy": {
     "Routes": {
       "auth-route": {
-        "ClusterId": "usuarios-service-cluster",
+        "ClusterId": "pagosmoviles-api-cluster",
         "Match": {
           "Path": "/gateway/auth/{**catch-all}"
         },
@@ -24,7 +24,7 @@
       },
 
       "admin-rol-route": {
-        "ClusterId": "usuarios-service-cluster",
+        "ClusterId": "pagosmoviles-api-cluster",
         "Match": {
           "Path": "/gateway/admin/rol/{**catch-all}"
         },
@@ -35,7 +35,7 @@
       },
 
       "admin-parametro-route": {
-        "ClusterId": "usuarios-service-cluster",
+        "ClusterId": "pagosmoviles-api-cluster",
         "Match": {
           "Path": "/gateway/admin/parametro/{**catch-all}"
         },
@@ -49,6 +49,17 @@
         "ClusterId": "usuarios-service-cluster",
         "Match": {
           "Path": "/gateway/admin/afiliacion/{**catch-all}"
+        },
+        "Transforms": [
+          { "PathRemovePrefix": "/gateway/admin" },
+          { "RequestHeadersCopy": "true" }
+        ]
+      },
+
+      "admin-pantalla-route": {
+        "ClusterId": "pagosmoviles-api-cluster",
+        "Match": {
+          "Path": "/gateway/admin/pantalla/{**catch-all}"
         },
         "Transforms": [
           { "PathRemovePrefix": "/gateway/admin" },
@@ -101,7 +112,7 @@
       },
 
       "trans-balance-route": {
-        "ClusterId": "core-bancario-cluster",
+        "ClusterId": "pagosmoviles-api-cluster",
         "Match": {
           "Path": "/gateway/trans/accounts/balance"
         },
@@ -118,6 +129,39 @@
         },
         "Transforms": [
           { "PathSet": "/api/transactions/process" },
+          { "RequestHeadersCopy": "true" }
+        ]
+      },
+
+      "admin-transactions-route-route": {
+        "ClusterId": "pagosmoviles-api-cluster",
+        "Match": {
+          "Path": "/gateway/admin/transactions/route"
+        },
+        "Transforms": [
+          { "PathSet": "/transactions/route" },
+          { "RequestHeadersCopy": "true" }
+        ]
+      },
+
+      "admin-accounts-transactions-route": {
+        "ClusterId": "pagosmoviles-api-cluster",
+        "Match": {
+          "Path": "/gateway/admin/accounts/transactions/{telefono}"
+        },
+        "Transforms": [
+          { "PathPattern": "/accounts/transactions/{telefono}" },
+          { "RequestHeadersCopy": "true" }
+        ]
+      },
+
+      "admin-transactions-report-route": {
+        "ClusterId": "pagosmoviles-api-cluster",
+        "Match": {
+          "Path": "/gateway/admin/transactions/por-fecha"
+        },
+        "Transforms": [
+          { "PathSet": "/transactions/por-fecha" },
           { "RequestHeadersCopy": "true" }
         ]
       }
