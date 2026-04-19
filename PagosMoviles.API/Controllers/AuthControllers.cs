@@ -108,6 +108,7 @@ namespace PagosMoviles.API.Controllers
                 refresh_token = refresh,
                 usuarioID = user.UsuarioId,
                 nombreCompleto = user.NombreCompleto,
+                identificacion = user.Identificacion,
                 rolId = user.RolId,
                 fotoPerfil = user.FotoPerfil,
                 colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar,
