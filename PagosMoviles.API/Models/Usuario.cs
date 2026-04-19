@@ -17,5 +17,6 @@
 
         public string FotoPerfil { get; set; } = string.Empty;
         public string ColorAvatar { get; set; } = "#4285F4";
+        public int? ClienteId { get; set; }
     }
 }

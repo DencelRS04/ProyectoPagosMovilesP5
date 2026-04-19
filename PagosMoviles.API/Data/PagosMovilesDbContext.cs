@@ -21,6 +21,7 @@ public class PagosMovilesDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.HasDefaultSchema("dbo");
 
         // Usuario
         modelBuilder.Entity<Usuario>(entity =>
@@ -39,6 +40,7 @@ public class PagosMovilesDbContext : DbContext
             entity.HasOne<Rol>().WithMany().HasForeignKey(e => e.RolId);
             entity.Property(e => e.FotoPerfil).HasMaxLength(255).IsUnicode(false);
             entity.Property(e => e.ColorAvatar).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.ClienteId).IsRequired(false);
         });
 
         // Rol

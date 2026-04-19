@@ -110,7 +110,8 @@ namespace PagosMoviles.API.Controllers
                 nombreCompleto = user.NombreCompleto,
                 rolId = user.RolId,
                 fotoPerfil = user.FotoPerfil,
-                colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar
+                colorAvatar = string.IsNullOrWhiteSpace(user.ColorAvatar) ? "#4285F4" : user.ColorAvatar,
+                clienteId = user.ClienteId
             });
         }
 
