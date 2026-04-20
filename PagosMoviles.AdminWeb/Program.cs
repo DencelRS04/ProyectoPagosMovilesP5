@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using PagosMoviles.AdminWeb.Handlers;
 using PagosMoviles.AdminWeb.Services;
 using PagosMoviles.AdminWeb.Services.Auth;
-using PagosMoviles.AdminWeb.Services.Perfil;
-using PagosMoviles.AdminWeb.Services.Pantallas;
-using PagosMoviles.AdminWeb.Services.Roles;
 using PagosMoviles.AdminWeb.Services.ClientesCore;
+using PagosMoviles.AdminWeb.Services.Cuentas;
 using PagosMoviles.AdminWeb.Services.Entidades;
+using PagosMoviles.AdminWeb.Services.Pantallas;
+using PagosMoviles.AdminWeb.Services.Perfil;
 using PagosMoviles.AdminWeb.Services.Reporte;
-using PagosMoviles.AdminWeb.Handlers;
+using PagosMoviles.AdminWeb.Services.Roles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,8 @@ builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<ClientesCoreService>();
 builder.Services.AddScoped<EntidadService>();
 builder.Services.AddScoped<ReporteService>();
+// Igual que EntidadService y ClientesCoreService
+builder.Services.AddScoped<CuentasService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
