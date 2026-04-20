@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PagosMoviles.AdminWeb.Helpers;
 using PagosMoviles.Shared.DTOs;
 using PagosMoviles.Shared.DTOs.Roles;
 using PagosMoviles.Shared.Models;
+using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace PagosMoviles.AdminWeb.Services.Roles
 {
@@ -23,60 +23,55 @@ namespace PagosMoviles.AdminWeb.Services.Roles
         {
             var client = _factory.CreateClient("gateway");
 
-            var json = _ctx.HttpContext?.Session.GetString("USUARIO_SESION");
-            string token = null;
+            var usuario = SessionHelper.ObtenerUsuarioSesion(_ctx.HttpContext!.Session);
+            var token = usuario?.AccessToken;
 
-            if (!string.IsNullOrEmpty(json))
+            if (!string.IsNullOrWhiteSpace(token))
             {
-                try
-                {
-                    var usuario = JsonSerializer.Deserialize<UsuarioSesionModel>(json);
-                    token = usuario?.AccessToken;
-                }
-                catch { }
-            }
-
-            if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
+            }
 
             return client;
         }
 
         public async Task<List<RolDto>> ObtenerRoles()
         {
-            var response = await ClienteAutenticado().GetAsync("rol");
+            var response = await ClienteAutenticado().GetAsync("gateway/admin/rol");
             response.EnsureSuccessStatusCode();
-            var wrapper = await response.Content
-                .ReadFromJsonAsync<ApiResponseDto<List<RolDto>>>();
+
+            var wrapper = await response.Content.ReadFromJsonAsync<ApiResponseDto<List<RolDto>>>();
             return wrapper?.Datos ?? new List<RolDto>();
         }
 
         public async Task<RolDto?> ObtenerRol(int id)
         {
-            var response = await ClienteAutenticado().GetAsync($"rol/{id}");
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+            var response = await ClienteAutenticado().GetAsync($"gateway/admin/rol/{id}");
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
+
             response.EnsureSuccessStatusCode();
-            var wrapper = await response.Content
-                .ReadFromJsonAsync<ApiResponseDto<RolDto>>();
+
+            var wrapper = await response.Content.ReadFromJsonAsync<ApiResponseDto<RolDto>>();
             return wrapper?.Datos;
         }
 
         public async Task CrearRol(RolCreateDto dto)
         {
-            var response = await ClienteAutenticado().PostAsJsonAsync("rol", dto);
+            var response = await ClienteAutenticado().PostAsJsonAsync("gateway/admin/rol", dto);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task ActualizarRol(int id, RolCreateDto dto)
         {
-            var response = await ClienteAutenticado().PutAsJsonAsync($"rol/{id}", dto);
+            var response = await ClienteAutenticado().PutAsJsonAsync($"gateway/admin/rol/{id}", dto);
             response.EnsureSuccessStatusCode();
         }
 
         public async Task EliminarRol(int id)
         {
-            var response = await ClienteAutenticado().DeleteAsync($"rol/{id}");
+            var response = await ClienteAutenticado().DeleteAsync($"gateway/admin/rol/{id}");
             response.EnsureSuccessStatusCode();
         }
     }

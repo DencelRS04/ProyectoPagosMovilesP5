@@ -37,7 +37,7 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
                     };
                 }
 
-                var endpoint = baseUrl.TrimEnd('/') + "/user/" + usuarioId;
+                var endpoint = baseUrl.TrimEnd('/') + "/gateway/admin/user/" + usuarioId;
 
                 var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
 
@@ -113,7 +113,7 @@ namespace PagosMoviles.PortalWeb.Services.Perfil
                 if (string.IsNullOrWhiteSpace(baseUrl))
                     return false;
 
-                var endpoint = baseUrl.TrimEnd('/') + "/user/actualizar-perfil";
+                var endpoint = baseUrl.TrimEnd('/') + "/gateway/admin/user/actualizar-perfil";
 
                 using var content = new MultipartFormDataContent();
 

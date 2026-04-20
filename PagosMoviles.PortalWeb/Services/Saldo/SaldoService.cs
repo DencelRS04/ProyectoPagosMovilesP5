@@ -2,9 +2,7 @@
 using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.Shared.DTOs;
 using PagosMoviles.Shared.DTOs.Saldo;
-using PagosMoviles.Shared.Models;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 
 namespace PagosMoviles.PortalWeb.Services.Saldo
 {
@@ -43,12 +41,19 @@ namespace PagosMoviles.PortalWeb.Services.Saldo
             };
 
             var response = await ClienteAutenticado()
-                .PostAsJsonAsync("gateway/admin/core/accounts/balance", request);
+                .PostAsJsonAsync("gateway/trans/accounts/balance", request);
 
-            response.EnsureSuccessStatusCode();
+            var raw = await response.Content.ReadAsStringAsync();
 
-            var wrapper = await response.Content
-                .ReadFromJsonAsync<ApiResponseDto<SaldoResponseDto>>();
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Error HTTP {(int)response.StatusCode}: {raw}");
+
+            var wrapper = System.Text.Json.JsonSerializer.Deserialize<ApiResponseDto<SaldoResponseDto>>(
+                raw,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             return wrapper?.Datos ?? new SaldoResponseDto();
         }

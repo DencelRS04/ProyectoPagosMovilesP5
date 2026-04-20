@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PagosMoviles.API.DTOs;
 using PagosMoviles.API.Services;
 
@@ -6,6 +7,7 @@ namespace PagosMoviles.API.Controllers
 {
     [ApiController]
     [Route("validate")]
+    [AllowAnonymous]
     public class ValidateController : ControllerBase
     {
         private readonly TokenService _tokenService;
@@ -15,7 +17,6 @@ namespace PagosMoviles.API.Controllers
             _tokenService = tokenService;
         }
 
-        // POST /validate
         [HttpPost]
         public IActionResult ValidarToken([FromBody] ValidateTokenDto dto)
         {

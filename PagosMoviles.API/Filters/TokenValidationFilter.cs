@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PagosMoviles.API.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace PagosMoviles.API.Filters
 {
@@ -18,7 +18,9 @@ namespace PagosMoviles.API.Filters
         {
             // Si el endpoint tiene [AllowAnonymous], no validamos token
             var endpoint = context.HttpContext.GetEndpoint();
-            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
+            var allowAnonymous = endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null;
+
+            if (allowAnonymous)
             {
                 await next();
                 return;
@@ -26,7 +28,8 @@ namespace PagosMoviles.API.Filters
 
             var auth = context.HttpContext.Request.Headers.Authorization.ToString();
 
-            if (string.IsNullOrWhiteSpace(auth) || !auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(auth) ||
+                !auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
                 context.Result = new UnauthorizedObjectResult(new
                 {
@@ -36,7 +39,7 @@ namespace PagosMoviles.API.Filters
                 return;
             }
 
-            var token = auth.Substring("Bearer ".Length).Trim();
+            var token = auth["Bearer ".Length..].Trim();
 
             var ok = await _tokenService.ValidarJwtAsync(token);
 

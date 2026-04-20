@@ -1,5 +1,8 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using PagosMoviles.PortalWeb.Helpers;
 using PagosMoviles.PortalWeb.Models.Afiliacion;
 
 namespace PagosMoviles.PortalWeb.Services.Afiliacion
@@ -7,15 +10,32 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
     public class AfiliacionService
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AfiliacionService(IHttpClientFactory httpClientFactory)
+        public AfiliacionService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private HttpClient CrearClienteConToken()
+        {
+            var client = _httpClientFactory.CreateClient("GatewayApi");
+
+            var usuario = SessionHelper.ObtenerUsuarioSesion(_httpContextAccessor.HttpContext!.Session);
+
+            if (usuario != null && !string.IsNullOrWhiteSpace(usuario.AccessToken))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", usuario.AccessToken);
+            }
+
+            return client;
         }
 
         public async Task<bool> ClienteExisteAsync(string identificacion)
         {
-            var client = _httpClientFactory.CreateClient("GatewayApi");
+            var client = CrearClienteConToken();
 
             var httpResponse = await client.GetAsync(
                 $"gateway/admin/core/client/exists?identificacion={Uri.EscapeDataString(identificacion)}");
@@ -44,7 +64,7 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
 
         public async Task<(bool ok, string mensaje)> RegistrarAsync(AfiliacionViewModel model)
         {
-            var client = _httpClientFactory.CreateClient("GatewayApi");
+            var client = CrearClienteConToken();
 
             var payload = new
             {
@@ -54,7 +74,7 @@ namespace PagosMoviles.PortalWeb.Services.Afiliacion
             };
 
             var httpResponse = await client.PostAsJsonAsync(
-                "gateway/admin/core/afiliacion/register",
+                "gateway/auth/register",
                 payload);
 
             var rawContent = await httpResponse.Content.ReadAsStringAsync();
