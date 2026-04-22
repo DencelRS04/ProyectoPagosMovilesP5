@@ -87,6 +87,24 @@ namespace PagosMoviles.CoreBancarioService.Services
     }
 }
 
+        public async Task<ClienteDto?> ObtenerPorIdentificacionAsync(string identificacion)
+        {
+            return await _db.Clientes
+                .AsNoTracking()
+                .Where(c => c.Identificacion == identificacion && c.Activo)
+                .Select(c => new ClienteDto
+                {
+                    ClienteId = c.ClienteId,
+                    Identificacion = c.Identificacion,
+                    TipoIdentificacion = c.TipoIdentificacion,
+                    NombreCompleto = c.NombreCompleto,
+                    FechaNacimiento = c.FechaNacimiento,
+                    Telefono = c.Telefono,
+                    Activo = c.Activo
+                })
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<bool> ExistePorIdentificacionAsync(string identificacion)
         {
             return await _db.Clientes

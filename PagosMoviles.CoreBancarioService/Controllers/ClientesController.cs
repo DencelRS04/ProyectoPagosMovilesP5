@@ -89,6 +89,27 @@ namespace PagosMoviles.CoreBancarioService.Controllers
             });
         }
 
+        [HttpGet("/core/clientes/{identificacion}")]
+        public async Task<IActionResult> ObtenerPorIdentificacion(string identificacion)
+        {
+            var cliente = await _service.ObtenerPorIdentificacionAsync(identificacion);
+
+            if (cliente == null)
+            {
+                return NotFound(new
+                {
+                    descripcion = "Cliente no encontrado",
+                    datos = (object?)null
+                });
+            }
+
+            return Ok(new
+            {
+                descripcion = "Cliente obtenido correctamente",
+                datos = cliente
+            });
+        }
+
         [HttpGet("exists")]
         public async Task<IActionResult> ExisteCliente([FromQuery] string identificacion)
         {

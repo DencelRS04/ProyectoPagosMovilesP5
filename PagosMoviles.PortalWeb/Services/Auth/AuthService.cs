@@ -24,13 +24,12 @@ namespace PagosMoviles.PortalWeb.Services.Auth
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // 🔵 LOGIN
         public async Task<Tuple<bool, string, UsuarioSesionModel>> LoginAsync(string usuario, string contrasena)
         {
             try
             {
                 var baseUrl = _configuration["GatewayApi:BaseUrl"];
-                var endpoint = baseUrl.TrimEnd('/') + "/gateway/auth/login";
+                var endpoint = baseUrl!.TrimEnd('/') + "/gateway/auth/login";
 
                 var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
                 request.Headers.Add("usuario", usuario);
@@ -44,20 +43,19 @@ namespace PagosMoviles.PortalWeb.Services.Auth
                     var texto = json.ToLower();
 
                     if (texto.Contains("bloqueado"))
-                        return new Tuple<bool, string, UsuarioSesionModel>(false, "El usuario se encuentra bloqueado.", null);
+                        return new Tuple<bool, string, UsuarioSesionModel>(false, "El usuario se encuentra bloqueado.", null!);
 
                     if (texto.Contains("intentos"))
-                        return new Tuple<bool, string, UsuarioSesionModel>(false, "El usuario se bloqueó por fallar 3 veces.", null);
+                        return new Tuple<bool, string, UsuarioSesionModel>(false, "El usuario se bloqueó por fallar 3 veces.", null!);
 
-                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Usuario y/o contraseña incorrectos.", null);
+                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Usuario y/o contraseña incorrectos.", null!);
                 }
 
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
                 var loginResponse = JsonSerializer.Deserialize<LoginResponseDto>(json, options);
 
                 if (loginResponse == null)
-                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Login inválido.", null);
+                    return new Tuple<bool, string, UsuarioSesionModel>(false, "Login inválido.", null!);
 
                 var usuarioSesion = new UsuarioSesionModel
                 {
@@ -69,7 +67,6 @@ namespace PagosMoviles.PortalWeb.Services.Auth
                     ExpiraEn = loginResponse.Expires_In
                 };
 
-                // 🔥 RESET TOTAL DE INTENTOS
                 var session = _httpContextAccessor.HttpContext?.Session;
 
                 if (session != null)
@@ -91,17 +88,16 @@ namespace PagosMoviles.PortalWeb.Services.Auth
             }
             catch
             {
-                return new Tuple<bool, string, UsuarioSesionModel>(false, "Error de autenticación.", null);
+                return new Tuple<bool, string, UsuarioSesionModel>(false, "Error de autenticación.", null!);
             }
         }
 
-        // 🔥 REGISTER
         public async Task<Tuple<bool, string>> RegisterAsync(UsuarioFormModel model)
         {
             try
             {
                 var baseUrl = _configuration["GatewayApi:BaseUrl"];
-                var endpoint = baseUrl.TrimEnd('/') + "/user";
+                var endpoint = baseUrl!.TrimEnd('/') + "/gateway/admin/user";
 
                 var jsonContent = JsonSerializer.Serialize(new
                 {
