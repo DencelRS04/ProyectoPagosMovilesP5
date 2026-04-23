@@ -84,10 +84,10 @@ namespace PagosMoviles.API.Controllers
             user.IntentosFallidos = 0;
             await _context.SaveChangesAsync();
 
-            int minutes = 5;
+            int minutes = 900;
             int.TryParse(_config["Jwt:Minutes"], out minutes);
             if (minutes <= 0)
-                minutes = 5;
+                minutes = 900;
 
             var jwt = _jwt.GenerarToken(user);
             var refresh = Guid.NewGuid().ToString();

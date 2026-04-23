@@ -17,11 +17,11 @@ namespace PagosMoviles.API.Services
 
         public string GenerarToken(Usuario usuario)
         {
-            int minutes = 5;
+            int minutes = 900;
             int.TryParse(_config["Jwt:Minutes"], out minutes);
 
             if (minutes <= 0)
-                minutes = 5;
+                minutes = 900;
 
             var claims = new[]
             {
