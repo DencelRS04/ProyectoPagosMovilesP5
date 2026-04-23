@@ -14,8 +14,6 @@ public class TransactionLogic : ITransactionLogic
     private readonly IConfiguration _config;
     private readonly HttpClient _httpClient;
     private readonly BitacoraService _bitacora;
-
-    // 1. Agregá el campo y el parámetro al constructor
     private readonly PagosMovilesRepository _repository;
 
     public TransactionLogic(
@@ -23,13 +21,13 @@ public class TransactionLogic : ITransactionLogic
         IConfiguration config,
         HttpClient httpClient,
         BitacoraService bitacora,
-        PagosMovilesRepository repository) //  agregá esto
+        PagosMovilesRepository repository)
     {
         _context = context;
         _config = config;
         _httpClient = httpClient;
         _bitacora = bitacora;
-        _repository = repository; //  y esto
+        _repository = repository;
     }
 
     public async Task<BusinessLogicResponseDto> ObtenerPorFecha(DateTime fecha)
@@ -43,7 +41,7 @@ public class TransactionLogic : ITransactionLogic
             {
                 StatusCode = 200,
                 Message = "OK",
-                ResponseObject = transacciones //  solo la lista, sin el objeto wrapper
+                ResponseObject = transacciones
             };
         }
         catch (Exception ex)
@@ -145,6 +143,29 @@ public class TransactionLogic : ITransactionLogic
                     transaction.Monto);
 
                 await _bitacora.Registrar("SISTEMA", "SRV12: Transacción interna", transaction, internalResponse);
+
+                // ✅ GUARDAR EN BD SI FUE EXITOSA
+                if (internalResponse.StatusCode == 200 || internalResponse.StatusCode == 201)
+                {
+                    var entity = new TransaccionMovil
+                    {
+                        EntidadOrigen = clienteOrigen.NumeroCuenta.Length >= 3
+                            ? clienteOrigen.NumeroCuenta.Substring(0, 3)
+                            : "001",
+                        EntidadDestino = destinoInterno.NumeroCuenta.Length >= 3
+                            ? destinoInterno.NumeroCuenta.Substring(0, 3)
+                            : "001",
+                        TelefonoOrigen = transaction.TelefonoOrigen,
+                        TelefonoDestino = transaction.TelefonoDestino,
+                        Monto = transaction.Monto,
+                        Descripcion = transaction.Descripcion,
+                        Fecha = DateTime.Now
+                    };
+
+                    _context.TransaccionesMoviles.Add(entity);
+                    await _context.SaveChangesAsync();
+                }
+
                 return internalResponse;
             }
 
@@ -189,6 +210,26 @@ public class TransactionLogic : ITransactionLogic
 
             var externalResponse = await SendTransaction(sendRequest);
             await _bitacora.Registrar("SISTEMA", "SRV12: Transacción externa", sendRequest, externalResponse);
+
+            // ✅ GUARDAR EN BD SI FUE EXITOSA
+            if (externalResponse.StatusCode == 200 || externalResponse.StatusCode == 201)
+            {
+                var entity = new TransaccionMovil
+                {
+                    EntidadOrigen = clienteOrigen.NumeroCuenta.Length >= 3
+                        ? clienteOrigen.NumeroCuenta.Substring(0, 3)
+                        : "001",
+                    EntidadDestino = entidadDestino,
+                    TelefonoOrigen = transaction.TelefonoOrigen,
+                    TelefonoDestino = transaction.TelefonoDestino,
+                    Monto = transaction.Monto,
+                    Descripcion = transaction.Descripcion,
+                    Fecha = DateTime.Now
+                };
+
+                _context.TransaccionesMoviles.Add(entity);
+                await _context.SaveChangesAsync();
+            }
 
             return externalResponse;
         }
