@@ -50,7 +50,7 @@ namespace PagosMoviles.API.Controllers
                 return NotFound(new
                 {
                     codigo = 404,
-                    descripcion = "Usuario no existente."
+                    descripcion = "Usuario y/o contraseña incorrectos."
                 });
             }
 
